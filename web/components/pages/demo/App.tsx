@@ -3,6 +3,7 @@ import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useState, useMemo } from "react";
 
+import "@web/components/molecules/Common/common.css";
 import "./app.css";
 
 const App = () => {
