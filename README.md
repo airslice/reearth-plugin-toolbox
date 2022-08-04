@@ -4,13 +4,11 @@
 
 This is a reearth plugin project, structure refrenced from https://github.com/eukarya-inc/reearth-plateauview.
 
-## Toolbox
-
-### Demo
+## Toolbox - Demo
 
 - Just a simple demo to show some UI elements.
 
-### Tag Cloud
+## Toolbox - Tag Cloud
 
 Tag Cloud will be helpful when you want to organize layer data in ONE dimension.
 
@@ -27,11 +25,11 @@ Tag Cloud will be helpful when you want to organize layer data in ONE dimension.
   - Layer will be visible when any of its tag is enabled.
   - If a layer does not have any tags of selected tag group it will be list in a special tag `...`
 
-### Tag Filter
+## Toolbox - Tag Filter
 
 - In plan.
 
-### GIS Tools
+## Toolbox -  GIS Tools
 
 - In plan.
 ## Known issue
