@@ -1,10 +1,12 @@
 // import Button from "@web/components/atoms/Button";
 import Button from "@web/components/atoms/Button";
+import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Group from "@web/components/atoms/Group";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useEffect, useState, useCallback, useMemo, useReducer } from "react";
 
+import "@web/components/molecules/Common/common.css";
 import "./app.css";
 
 type Tag = {
@@ -125,20 +127,24 @@ const App = () => {
   return (
     <Panel title="Tag Cloud" icon="tag" onResize={onResize}>
       <>
-        {tags.map((tagGroup) => (
-          <Group title={tagGroup.name} key={tagGroup.id}>
-            {tagGroup.tags.map((tag) => (
-              <Button
-                text={tag.name}
-                key={tag.id}
-                status={tagStatus.get(tag.id) ? "on" : "off"}
-                onClick={() => {
-                  toggleTag(tag.id);
-                }}
-              />
-            ))}
-          </Group>
-        ))}
+        {tags.length > 0 ? (
+          tags.map((tagGroup) => (
+            <Group key={tagGroup.id} noBorder={true}>
+              {tagGroup.tags.map((tag) => (
+                <Button
+                  text={tag.name}
+                  key={tag.id}
+                  status={tagStatus.get(tag.id) ? "on" : "off"}
+                  onClick={() => {
+                    toggleTag(tag.id);
+                  }}
+                />
+              ))}
+            </Group>
+          ))
+        ) : (
+          <EmptyInfo text="NO TAG GROUP SELECTED" />
+        )}
         {/* <Group title="Default">
           <Button text="Coffee" status="off" />
           <Button text="Books" />
