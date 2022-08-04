@@ -130,3 +130,7 @@ const handles: actHandles = {
     handles[msg.act]?.(msg.payload);
   }
 });
+
+(globalThis as any).reearth.on("update", () => {
+  handles.getTags?.();
+});
