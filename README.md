@@ -15,7 +15,7 @@ This is a reearth plugin project, structure refrenced from https://github.com/eu
 ![image](https://user-images.githubusercontent.com/21994748/182850183-b6673d82-c06e-445c-9b28-c2b5de88be77.png)
 
 - Show/hide layers by tags.
-- Only load layers data when initialize (for current version).
+- Layer will be visible when any of its tag is enabled.
 
 ## Known issue
 
