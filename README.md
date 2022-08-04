@@ -12,7 +12,7 @@ This is a reearth plugin project, structure refrenced from https://github.com/eu
 
 Tag Cloud will be helpful when you want to organize layer data in ONE dimension.
 
-![image](https://user-images.githubusercontent.com/21994748/182850183-b6673d82-c06e-445c-9b28-c2b5de88be77.png)
+![test reearth dev_published html_alias=chiafhhehd(1440 desktop)](https://user-images.githubusercontent.com/21994748/182887355-a26709cc-d3db-4f47-86ac-c04c021b9207.png)
 
 - Useage:
   - Show a certain tag group as tag cloud.
