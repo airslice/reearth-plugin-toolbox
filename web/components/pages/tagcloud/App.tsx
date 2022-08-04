@@ -86,6 +86,7 @@ const App = () => {
   const actHandles: actHandles = useMemo(() => {
     return {
       tags: (tagsdata: TagGroup[]) => {
+        layerTags.clear();
         tagsdata.forEach((tg) => {
           tg.tags.forEach((t) => {
             if (!tagStatus.has(t.id)) {
@@ -94,7 +95,6 @@ const App = () => {
 
             tagLayers.set(t.id, t.layerIds);
 
-            layerTags.clear();
             t.layerIds.forEach((lid) => {
               if (!layerTags.has(lid)) {
                 layerTags.set(lid, []);
