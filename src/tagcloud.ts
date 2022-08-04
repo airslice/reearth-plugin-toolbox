@@ -23,8 +23,10 @@ const addTagData = (
   groupName: string,
   tagId: string,
   tagName: string,
-  layerId: string
+  layerId: string,
+  allowedTagGroupName?: string
 ) => {
+  if (allowedTagGroupName && groupName !== allowedTagGroupName) return;
   let tg = tags.find((g) => g.id === groupId);
   if (!tg) {
     tags.push({
@@ -46,36 +48,82 @@ const addTagData = (
   tag?.layerIds.push(layerId);
 };
 
-const processLayer = (layer: Layer, tags: TagGroup[]) => {
+const processLayer = (
+  layer: Layer,
+  tags: TagGroup[],
+  tarTagGroupName: string,
+  otherLayerIds: string[]
+) => {
   if (layer.children) {
     layer.children.forEach((cl) => {
-      processLayer(cl, tags);
+      processLayer(cl, tags, tarTagGroupName, otherLayerIds);
     });
   } else {
+    let belongsToOthers = true;
     if (layer.tags) {
       layer.tags.forEach((tag) => {
         if (tag.tags) {
+          if (tag.label === tarTagGroupName) {
+            belongsToOthers = false;
+          }
           tag.tags.forEach((ct) => {
-            addTagData(tags, tag.id, tag.label, ct.id, ct.label, layer.id);
+            addTagData(
+              tags,
+              tag.id,
+              tag.label,
+              ct.id,
+              ct.label,
+              layer.id,
+              tarTagGroupName
+            );
           });
         } else {
-          addTagData(tags, "default", "Default", tag.id, tag.label, layer.id);
+          if ("Default" === tarTagGroupName) {
+            belongsToOthers = false;
+          }
+          addTagData(
+            tags,
+            "default",
+            "Default",
+            tag.id,
+            tag.label,
+            layer.id,
+            tarTagGroupName
+          );
         }
       });
+    }
+    // add to others
+    if (belongsToOthers) {
+      otherLayerIds.push(layer.id);
     }
   }
 };
 
-const getTagsFromLayers = (layers: Layer[]) => {
+const getTagsFromLayers = (layers: Layer[], tarTagGroupName: string) => {
   if (!layers) return [];
   const tags: TagGroup[] = [];
+  const otherLayerIds: string[] = [];
+
   layers.forEach((layer) => {
-    processLayer(layer, tags);
+    processLayer(layer, tags, tarTagGroupName, otherLayerIds);
   });
+
   tags.forEach((tagGroup) => {
     tagGroup.tags.sort((a, b) => (a.name > b.name ? 1 : -1));
   });
+
   tags.sort((a, b) => (a.name > b.name ? 1 : -1));
+
+  if (otherLayerIds) {
+    tags
+      .find((tg) => tg.name === tarTagGroupName)
+      ?.tags.push({
+        id: "others",
+        name: "...",
+        layerIds: otherLayerIds,
+      });
+  }
 
   const defaultGroup = tags.find((tg) => tg.id === "default");
   if (!defaultGroup) return tags;
@@ -92,8 +140,16 @@ const forceRerender = () => {
 
 const handles: actHandles = {
   getTags: () => {
+    const tarTagGroupName =
+      (globalThis as any).reearth.widget.property &&
+      (globalThis as any).reearth.widget.property.default
+        ? (globalThis as any).reearth.widget.property.default.tgname || ""
+        : "";
+
     const layers = (globalThis as any).reearth.layers.layers;
-    const tagsdata = getTagsFromLayers(layers);
+    const tagsdata = tarTagGroupName
+      ? getTagsFromLayers(layers, tarTagGroupName)
+      : [];
 
     (globalThis as any).reearth.ui.postMessage({
       act: "tags",
