@@ -1,0 +1,10 @@
+name: Toolbox
+version: 0.1.0
+id: reearth-plugin-toolbox
+extensions:
+  - id: demo
+    type: widget
+    name: Demo
+  - id: tagcloud
+    type: widget
+    name: Tag Cloud
