@@ -23,7 +23,6 @@ const StyledButton = styled.button<{ off: boolean; disabled?: boolean }>`
   padding: 2px 4px;
   gap: 10px;
   border-radius: 4px;
-  font-family: "Noto Sans";
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
