@@ -53,7 +53,7 @@ const Panel: React.FC<Props> = ({
             <IconArea width={cellSize}>
               <Icon icon={icon} size={18} />
             </IconArea>
-            {title}
+            <Title>{title}</Title>
           </HeaderInfo>
         </Header>
         <Content ref={content}>{children}</Content>
@@ -83,6 +83,12 @@ const IconArea = styled.div<{ width?: number }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: #c7c5c5;
 `;
 
 const Content = styled.div`

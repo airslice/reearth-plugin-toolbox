@@ -35,7 +35,6 @@ const Title = styled.div`
 `;
 
 const Content = styled.div<{ noBorder: boolean }>`
-  margin-top: 8px;
   padding: ${({ noBorder }) => (noBorder ? "0" : "8px")};
   display: flex;
   gap: 8px;

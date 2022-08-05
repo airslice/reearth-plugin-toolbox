@@ -2,39 +2,68 @@ import styled from "@emotion/styled";
 
 export type Props = {
   text: string;
+  buttonType?: "primary" | "secondary";
+  compact?: boolean;
   status?: string;
   disabled?: boolean;
+  extendWidth?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-const Button: React.FC<Props> = ({ text, onClick, status, disabled }) => {
+const Button: React.FC<Props> = ({
+  text,
+  buttonType = "primary",
+  compact = false,
+  status,
+  disabled = false,
+  extendWidth = false,
+  onClick,
+}) => {
   return (
-    <StyledButton onClick={onClick} off={status === "off"} disabled={disabled}>
+    <StyledButton
+      buttonType={buttonType}
+      compact={compact}
+      onClick={onClick}
+      off={status === "off"}
+      disabled={disabled}
+      extendWidth={extendWidth}
+    >
       {text}
     </StyledButton>
   );
 };
 
-const StyledButton = styled.button<{ off: boolean; disabled?: boolean }>`
+const StyledButton = styled.button<{
+  buttonType: string;
+  compact: boolean;
+  off: boolean;
+  disabled: boolean;
+  extendWidth: boolean;
+}>`
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 2px 4px;
-  gap: 10px;
+  padding: ${({ compact }) => (compact ? "2px 4px" : "2px 10px")};
   border-radius: 4px;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
   line-height: 21px;
   outline: none;
-  border: none;
+  border: ${({ buttonType }) =>
+    buttonType === "secondary" ? "1px solid #595959" : "none"};
   cursor: pointer;
   user-select: none;
-  background: ${({ off, disabled }) =>
-    off || disabled ? "#262626" : "#3b3cd0"};
+  background: ${({ off, disabled, buttonType }) =>
+    buttonType === "secondary"
+      ? "none"
+      : off || disabled
+      ? "#262626"
+      : "#3b3cd0"};
   color: ${({ off, disabled }) => (off || disabled ? "#595959" : "#ededed")};
   pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
+  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
 `;
 
 export default Button;

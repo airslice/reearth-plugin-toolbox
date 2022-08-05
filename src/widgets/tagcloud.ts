@@ -131,6 +131,27 @@ const getTagsFromLayers = (layers: Layer[], tarTagGroupName: string) => {
   return [defaultGroup, ...otherGroups];
 };
 
+const processLayerForId = (layer: Layer, allLayerIds: string[]) => {
+  if (layer.children) {
+    layer.children.forEach((cl) => {
+      processLayerForId(cl, allLayerIds);
+    });
+  } else {
+    allLayerIds.push(layer.id);
+  }
+};
+
+const getAllLayerIds = () => {
+  const allLayerIds: string[] = [];
+  const layers = (globalThis as any).reearth.layers.layers;
+  if (!layers) return allLayerIds;
+  layers.forEach((layer: Layer) => {
+    processLayerForId(layer, allLayerIds);
+  });
+
+  return allLayerIds;
+};
+
 const forceRerender = () => {
   (globalThis as any).reearth.visualizer.camera.flyTo(
     (globalThis as any).reearth.visualizer.camera.position
@@ -174,6 +195,15 @@ const handles: actHandles = {
     }
     //
     forceRerender();
+  },
+  showAll: () => {
+    const allLayerIds = getAllLayerIds();
+    (globalThis as any).reearth.layers.show(...allLayerIds);
+    forceRerender();
+  },
+  hideAll: () => {
+    const allLayerIds = getAllLayerIds();
+    (globalThis as any).reearth.layers.hide(...allLayerIds);
   },
   resize: (size: any) => {
     (globalThis as any).reearth.ui.resize(...size);

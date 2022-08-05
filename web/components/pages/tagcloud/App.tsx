@@ -2,9 +2,12 @@
 import Button from "@web/components/atoms/Button";
 import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Group from "@web/components/atoms/Group";
+import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useEffect, useState, useCallback, useMemo, useReducer } from "react";
+
+import { mockTagsData } from "./mock";
 
 import "@web/components/molecules/Common/common.css";
 import "./app.css";
@@ -15,7 +18,7 @@ type Tag = {
   layerIds: string[];
 };
 
-type TagGroup = {
+export type TagGroup = {
   id: string;
   name: string;
   tags: Tag[];
@@ -75,6 +78,32 @@ const App = () => {
     [tagStatus, layerTags, tagLayers]
   );
 
+  const showAll = useCallback(() => {
+    tagStatus.forEach((v, k) => {
+      tagStatus.set(k, true);
+    });
+    (globalThis as any).parent.postMessage(
+      {
+        act: "showAll",
+      },
+      "*"
+    );
+    forceUpdate();
+  }, [tagStatus]);
+
+  const hideAll = useCallback(() => {
+    tagStatus.forEach((v, k) => {
+      tagStatus.set(k, false);
+    });
+    (globalThis as any).parent.postMessage(
+      {
+        act: "hideAll",
+      },
+      "*"
+    );
+    forceUpdate();
+  }, [tagStatus]);
+
   const onResize = (width: number, height: number) => {
     (globalThis as any).parent.postMessage(
       {
@@ -85,31 +114,36 @@ const App = () => {
     );
   };
 
-  const actHandles: actHandles = useMemo(() => {
-    return {
-      tags: (tagsdata: TagGroup[]) => {
-        layerTags.clear();
-        tagsdata.forEach((tg) => {
-          tg.tags.forEach((t) => {
-            if (!tagStatus.has(t.id)) {
-              tagStatus.set(t.id, true);
+  const processTagsData = useCallback(
+    (tagsdata: TagGroup[]) => {
+      layerTags.clear();
+      tagsdata.forEach((tg) => {
+        tg.tags.forEach((t) => {
+          if (!tagStatus.has(t.id)) {
+            tagStatus.set(t.id, true);
+          }
+
+          tagLayers.set(t.id, t.layerIds);
+
+          t.layerIds.forEach((lid) => {
+            if (!layerTags.has(lid)) {
+              layerTags.set(lid, []);
             }
-
-            tagLayers.set(t.id, t.layerIds);
-
-            t.layerIds.forEach((lid) => {
-              if (!layerTags.has(lid)) {
-                layerTags.set(lid, []);
-              }
-              layerTags.get(lid).push(t.id);
-            });
+            layerTags.get(lid).push(t.id);
           });
         });
+      });
 
-        setTags(tagsdata);
-      },
+      setTags(tagsdata);
+    },
+    [layerTags, tagLayers, tagStatus]
+  );
+
+  const actHandles: actHandles = useMemo(() => {
+    return {
+      tags: processTagsData,
     };
-  }, [tagStatus, layerTags, tagLayers]);
+  }, [processTagsData]);
 
   const init = useCallback(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
@@ -118,7 +152,11 @@ const App = () => {
     });
 
     (globalThis as any).parent.postMessage({ act: "getTags" }, "*");
-  }, [actHandles]);
+
+    if (import.meta.env.MODE === "development") {
+      processTagsData(mockTagsData);
+    }
+  }, [actHandles, processTagsData]);
 
   useEffect(() => {
     init();
@@ -128,29 +166,38 @@ const App = () => {
     <Panel title="Tag Cloud" icon="tag" onResize={onResize}>
       <>
         {tags.length > 0 ? (
-          tags.map((tagGroup) => (
-            <Group key={tagGroup.id} noBorder={true}>
-              {tagGroup.tags.map((tag) => (
-                <Button
-                  text={tag.name}
-                  key={tag.id}
-                  status={tagStatus.get(tag.id) ? "on" : "off"}
-                  onClick={() => {
-                    toggleTag(tag.id);
-                  }}
-                />
-              ))}
-            </Group>
-          ))
+          <>
+            {tags.map((tagGroup) => (
+              <Group key={tagGroup.id} noBorder={true}>
+                {tagGroup.tags.map((tag) => (
+                  <Button
+                    text={tag.name}
+                    key={tag.id}
+                    compact={true}
+                    status={tagStatus.get(tag.id) ? "on" : "off"}
+                    onClick={() => {
+                      toggleTag(tag.id);
+                    }}
+                  />
+                ))}
+              </Group>
+            ))}
+            <Line>
+              <Button
+                text="Show All"
+                buttonType="secondary"
+                onClick={showAll}
+              />
+              <Button
+                text="Hide All"
+                buttonType="secondary"
+                onClick={hideAll}
+              />
+            </Line>
+          </>
         ) : (
           <EmptyInfo text="NO TAG GROUP SELECTED" />
         )}
-        {/* <Group title="Default">
-          <Button text="Coffee" status="off" />
-          <Button text="Books" />
-          <Button text="Cameras" />
-        </Group>
-        <Group title="Tag Group A"></Group> */}
       </>
     </Panel>
   );
