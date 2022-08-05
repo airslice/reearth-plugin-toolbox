@@ -4,9 +4,9 @@
 
 This is a reearth plugin project, structure refrenced from https://github.com/eukarya-inc/reearth-plateauview.
 
-## Toolbox - Demo
+## Toolbox - Starter
 
-- Just a simple demo to show some UI elements.
+- Just a simple starter to show some UI elements.
 
 ## Toolbox - Tag Cloud
 
