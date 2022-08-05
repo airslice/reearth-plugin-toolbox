@@ -9,15 +9,18 @@
     "node": ">=16"
   },
   "scripts": {
-    "start:demo": "vite -c vite.config.demo-web.ts",
+    "start:starter": "vite -c vite.config.starter-web.ts",
     "start:tagcloud": "vite -c vite.config.tagcloud-web.ts",
+    "start:tagfilter": "vite -c vite.config.tagfilter-web.ts",
     "build": "run-s typecheck build:web build:plugin",
-    "build:plugin": "run-s build:demo build:tagcloud",
-    "build:web": "run-s build:demo-web build:tagcloud-web",
-    "build:demo": "vite build -c vite.config.demo.ts",
-    "build:demo-web": "vite build -c vite.config.demo-web.ts",
+    "build:plugin": "run-s build:starter build:tagcloud build:tagfilter",
+    "build:web": "run-s build:starter-web build:tagcloud-web build:tagfilter-web",
+    "build:starter": "vite build -c vite.config.starter.ts",
+    "build:starter-web": "vite build -c vite.config.starter-web.ts",
     "build:tagcloud": "vite build -c vite.config.tagcloud.ts",
     "build:tagcloud-web": "vite build -c vite.config.tagcloud-web.ts",
+    "build:tagfilter": "vite build -c vite.config.tagfilter.ts",
+    "build:tagfilter-web": "vite build -c vite.config.tagfilter-web.ts",
     "package": "run-s typecheck build:web build:plugin zip",
     "typecheck": "tsc",
     "test": "vitest",
@@ -25,7 +28,8 @@
     "lint": "eslint .",
     "format": "eslint . --fix",
     "type": "tsc",
-    "zip": "node zip.mjs"
+    "zip": "node ./scripts/zip.mjs",
+    "createwidget": "node ./scripts/createwidget.mjs"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
@@ -47,6 +51,7 @@
     "eslint-plugin-react-hooks": "^4.5.0",
     "eslint-plugin-testing-library": "^5.5.1",
     "jsdom": "^19.0.0",
+    "json-to-pretty-yaml": "^1.2.2",
     "msw": "^0.41.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
