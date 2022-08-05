@@ -14,7 +14,7 @@ export const plugin = (name: string): UserConfigExport => ({
     lib: {
       formats: ["iife"],
       // https://github.com/vitejs/vite/pull/7047
-      entry: `src/${name}.ts`,
+      entry: `src/widgets/${name}.ts`,
       name: `ReearthPluginST_${name}`,
       fileName: () => `${name}.js`,
     },

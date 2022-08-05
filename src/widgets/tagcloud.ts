@@ -1,7 +1,6 @@
-import html from "../dist/web/tagcloud/index.html?raw";
-
-import type { Layer } from "./apiType";
-import type { pluginMessage, actHandles } from "./type";
+import html from "../../dist/web/tagcloud/index.html?raw";
+import type { Layer } from "../apiType";
+import type { pluginMessage, actHandles } from "../type";
 
 (globalThis as any).reearth.ui.show(html, { width: 312, height: 46 });
 
