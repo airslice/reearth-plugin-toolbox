@@ -12,15 +12,18 @@
     "start:starter": "vite -c vite.config.starter-web.ts",
     "start:tagcloud": "vite -c vite.config.tagcloud-web.ts",
     "start:tagfilter": "vite -c vite.config.tagfilter-web.ts",
+    "start:distance": "vite -c vite.config.distance-web.ts",
     "build": "run-s typecheck build:web build:plugin",
-    "build:plugin": "run-s build:starter build:tagcloud build:tagfilter",
-    "build:web": "run-s build:starter-web build:tagcloud-web build:tagfilter-web",
+    "build:plugin": "run-s build:starter build:tagcloud build:tagfilter build:distance",
+    "build:web": "run-s build:starter-web build:tagcloud-web build:tagfilter-web build:distance-web",
     "build:starter": "vite build -c vite.config.starter.ts",
     "build:starter-web": "vite build -c vite.config.starter-web.ts",
     "build:tagcloud": "vite build -c vite.config.tagcloud.ts",
     "build:tagcloud-web": "vite build -c vite.config.tagcloud-web.ts",
     "build:tagfilter": "vite build -c vite.config.tagfilter.ts",
     "build:tagfilter-web": "vite build -c vite.config.tagfilter-web.ts",
+    "build:distance": "vite build -c vite.config.distance.ts",
+    "build:distance-web": "vite build -c vite.config.distance-web.ts",
     "package": "run-s typecheck build:web build:plugin zip",
     "typecheck": "tsc",
     "test": "vitest",
@@ -71,6 +74,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
+    "@turf/turf": "^6.5.0",
     "mini-svg-data-uri": "^1.4.4",
     "react-inlinesvg": "^3.0.0"
   }

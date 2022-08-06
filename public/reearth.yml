@@ -29,3 +29,6 @@ extensions:
             - id: tgname
               type: string
               title: Tag Group Name
+  - id: distance
+    type: widget
+    name: Distance
