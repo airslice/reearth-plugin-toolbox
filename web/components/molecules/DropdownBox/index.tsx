@@ -40,6 +40,7 @@ const DropdownBox: React.FC<Props> = ({
     <Wrapper noBorder={noBorder}>
       {title && (
         <Title
+          interactive={!noFolder}
           onClick={() => {
             !noFolder && setFolded(!folded);
           }}
@@ -72,7 +73,7 @@ const Wrapper = styled.div<{ noBorder: boolean }>`
   overflow: hidden;
 `;
 
-const Title = styled.div`
+const Title = styled.div<{ interactive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -83,7 +84,7 @@ const Title = styled.div`
   line-height: 21px;
   color: #bfbfbf;
   user-select: none;
-  cursor: pointer;
+  cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
 `;
 
 const FixedContent = styled.div<{ noBorder: boolean }>`
