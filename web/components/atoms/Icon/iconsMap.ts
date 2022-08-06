@@ -135,6 +135,9 @@ import PrivateGitHubRepo from "./Icons/privateGitHubRepo.svg";
 // Indicator
 import Crosshair from "./Icons/crosshair.svg";
 
+// Plugins
+import Filter from "./Icons/filter.svg";
+
 export default {
   outline: Layer,
   layer: Layer,
@@ -248,4 +251,5 @@ export default {
   plugin: Plugin,
   tag: Tag,
   crosshair: Crosshair,
+  filter: Filter,
 };

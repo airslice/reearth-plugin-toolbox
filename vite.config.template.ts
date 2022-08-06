@@ -1,11 +1,13 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
+
 import { resolve } from "path";
 
 import react from "@vitejs/plugin-react";
 import type { UserConfigExport, Plugin } from "vite";
 // import { Plugin as importToCDN, autoComplete } from "vite-plugin-cdn-import";
 import { viteSingleFile } from "vite-plugin-singlefile";
+import svgr from "vite-plugin-svgr";
 
 export const plugin = (name: string): UserConfigExport => ({
   build: {
@@ -18,6 +20,7 @@ export const plugin = (name: string): UserConfigExport => ({
       name: `ReearthPluginST_${name}`,
       fileName: () => `${name}.js`,
     },
+    reportCompressedSize: false,
   },
 });
 
@@ -28,6 +31,7 @@ export const web =
       react(),
       viteSingleFile(),
       serverHeaders(),
+      svgr(),
       // importToCDN({
       //   modules: [autoComplete("react"), autoComplete("react-dom")],
       // }),
@@ -36,6 +40,8 @@ export const web =
     root: `./web/components/pages/${name}`,
     build: {
       outDir: `../../../../dist/web/${name}`,
+      emptyOutDir: true,
+      reportCompressedSize: false,
     },
     test: {
       globals: true,
