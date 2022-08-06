@@ -49,10 +49,14 @@ const StyledButton = styled.button<{
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 21px;
+  line-height: 19px;
   outline: none;
-  border: ${({ buttonType }) =>
-    buttonType === "secondary" ? "1px solid #595959" : "none"};
+  border: ${({ off, disabled, buttonType }) =>
+    buttonType === "secondary"
+      ? "1px solid #595959"
+      : off || disabled
+      ? "1px solid #262626"
+      : "1px solid #3b3cd0"};
   cursor: pointer;
   user-select: none;
   background: ${({ off, disabled, buttonType }) =>

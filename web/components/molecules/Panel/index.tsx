@@ -9,6 +9,7 @@ export type Props = {
   onResize?: (width: number, height: number) => void;
   cellSize?: number;
   fullWidth?: number;
+  ref?: any;
 };
 
 const Panel: React.FC<Props> = ({
@@ -43,7 +44,14 @@ const Panel: React.FC<Props> = ({
       setWidth(fullWidth);
       onResize?.(fullWidth, fullHeight);
     }
-  }, [folded, cellSize, fullWidth, onResize]);
+  }, [
+    folded,
+    cellSize,
+    fullWidth,
+    onResize,
+    content.current?.clientWidth,
+    content.current?.clientHeight,
+  ]);
 
   return (
     <Wrapper ref={wrapper} width={width} height={height}>
