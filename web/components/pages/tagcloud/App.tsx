@@ -1,4 +1,3 @@
-// import Button from "@web/components/atoms/Button";
 import Button from "@web/components/atoms/Button";
 import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Group from "@web/components/atoms/Group";
