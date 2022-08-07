@@ -4,6 +4,11 @@
 
 This is a reearth plugin project, structure refrenced from https://github.com/eukarya-inc/reearth-plateauview.
 
+## Install
+
+- Download the zip file at https://github.com/airslice/reearth-plugin-toolbox/tree/main/package
+- Install it in your Re:earth project.
+
 ## Toolbox - Starter
 
 - Just a simple starter to show some UI elements.
