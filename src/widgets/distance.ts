@@ -5,6 +5,12 @@ import type { pluginMessage, actHandles } from "../type";
 
 let toolboxFolderId: string | undefined;
 
+const forceRerender = () => {
+  (globalThis as any).reearth.visualizer.camera.flyTo(
+    (globalThis as any).reearth.visualizer.camera.position
+  );
+};
+
 const addToolboxFolder = () => {
   (globalThis as any).reearth.layers.add({
     extensionId: "",
@@ -103,6 +109,8 @@ const handles: actHandles = {
         layerId: findToolboxLayerId(id),
       },
     });
+
+    forceRerender();
   },
   addLine: ({
     lat,
