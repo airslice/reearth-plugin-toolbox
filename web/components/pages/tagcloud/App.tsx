@@ -173,6 +173,7 @@ const App = () => {
                     text={tag.name}
                     key={tag.id}
                     compact={true}
+                    buttonType="tag"
                     status={tagStatus.get(tag.id) ? "on" : "off"}
                     onClick={() => {
                       toggleTag(tag.id);
@@ -184,12 +185,14 @@ const App = () => {
             <Line>
               <Button
                 text="Show All"
-                buttonType="secondary"
+                buttonType="tag"
+                buttonStyle="secondary"
                 onClick={showAll}
               />
               <Button
                 text="Hide All"
-                buttonType="secondary"
+                buttonType="tag"
+                buttonStyle="secondary"
                 onClick={hideAll}
               />
             </Line>
