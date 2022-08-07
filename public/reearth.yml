@@ -11,7 +11,7 @@ extensions:
     schema:
       groups:
         - id: default
-          name: Tag Cloud
+          title: Tag Cloud
           fields:
             - id: tgname
               type: string
@@ -31,11 +31,11 @@ extensions:
               title: Tag Group Name
   - id: distance
     type: widget
-    name: Distance
+    name: Measure Distance
     schema:
       groups:
         - id: default
-          name: Measure Distance
+          title: Measure Distance
           fields:
             - id: pointcolor
               type: string
