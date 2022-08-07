@@ -2,7 +2,8 @@ import styled from "@emotion/styled";
 
 export type Props = {
   text: string;
-  buttonType?: "primary" | "secondary";
+  buttonType?: "button" | "tag";
+  buttonStyle?: "primary" | "secondary";
   compact?: boolean;
   status?: string;
   disabled?: boolean;
@@ -12,7 +13,8 @@ export type Props = {
 
 const Button: React.FC<Props> = ({
   text,
-  buttonType = "primary",
+  buttonType = "button",
+  buttonStyle = "primary",
   compact = false,
   status,
   disabled = false,
@@ -22,6 +24,7 @@ const Button: React.FC<Props> = ({
   return (
     <StyledButton
       buttonType={buttonType}
+      buttonStyle={buttonStyle}
       compact={compact}
       onClick={onClick}
       off={status === "off"}
@@ -35,6 +38,7 @@ const Button: React.FC<Props> = ({
 
 const StyledButton = styled.button<{
   buttonType: string;
+  buttonStyle: string;
   compact: boolean;
   off: boolean;
   disabled: boolean;
@@ -51,16 +55,16 @@ const StyledButton = styled.button<{
   font-size: 14px;
   line-height: 19px;
   outline: none;
-  border: ${({ off, disabled, buttonType }) =>
-    buttonType === "secondary"
+  border: ${({ off, disabled, buttonStyle }) =>
+    buttonStyle === "secondary"
       ? "1px solid #595959"
       : off || disabled
       ? "1px solid #262626"
       : "1px solid #3b3cd0"};
   cursor: pointer;
   user-select: none;
-  background: ${({ off, disabled, buttonType }) =>
-    buttonType === "secondary"
+  background: ${({ off, disabled, buttonStyle }) =>
+    buttonStyle === "secondary"
       ? "none"
       : off || disabled
       ? "#262626"
@@ -68,6 +72,23 @@ const StyledButton = styled.button<{
   color: ${({ off, disabled }) => (off || disabled ? "#595959" : "#ededed")};
   pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
   width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
+  height: ${({ buttonType }) => (buttonType === "button" ? "30px" : "23px")};
+  transition: all 0.1s ease-out;
+
+  &:hover {
+    background: ${({ off, disabled, buttonStyle }) =>
+      off || disabled
+        ? buttonStyle === "secondary"
+          ? "none"
+          : "#262626"
+        : "#3b3cd0"};
+    border: ${({ off, disabled, buttonStyle }) =>
+      off || disabled
+        ? buttonStyle === "secondary"
+          ? "1px solid #595959"
+          : "1px solid #262626"
+        : "1px solid #3b3cd0"};
+  }
 `;
 
 export default Button;

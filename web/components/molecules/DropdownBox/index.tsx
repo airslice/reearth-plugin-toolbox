@@ -1,26 +1,34 @@
 import styled from "@emotion/styled";
 import Divider from "@web/components/atoms/Divider";
 import Icon from "@web/components/atoms/Icon";
-import { useEffect, useMemo, useState } from "react";
+import Switch from "@web/components/atoms/Switch";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type Props = {
   title?: string;
-  noFolder?: boolean;
+  contentId?: string;
+  switcher?: boolean;
+  folder?: boolean;
   mainContent?: React.ReactNode;
   fixedContent?: React.ReactNode;
   noBorder?: boolean;
   onResize?: () => void;
+  onSwitchChange?: (contentId: string | undefined, enabled: boolean) => void;
 };
 
 const DropdownBox: React.FC<Props> = ({
   title,
-  noFolder = false,
+  contentId,
+  switcher = false,
+  folder = false,
   mainContent,
   fixedContent,
   noBorder = false,
   onResize,
+  onSwitchChange,
 }) => {
   const [folded, setFolded] = useState(false);
+  const [enabled, setEnabled] = useState(false);
 
   const hasMainContent = useMemo(
     () => !!mainContent?.toString(),
@@ -32,34 +40,47 @@ const DropdownBox: React.FC<Props> = ({
     [fixedContent]
   );
 
+  const toggleEnabled = useCallback(() => {
+    setEnabled(!enabled);
+  }, [enabled]);
+
   useEffect(() => {
     onResize?.();
-  }, [folded, onResize]);
+  }, [folded, enabled, onResize]);
+
+  useEffect(() => {
+    onSwitchChange?.(contentId, enabled);
+  }, [contentId, enabled, onSwitchChange]);
 
   return (
     <Wrapper noBorder={noBorder}>
       {title && (
         <Title
-          interactive={!noFolder}
+          interactive={folder}
           onClick={() => {
-            !noFolder && setFolded(!folded);
+            folder && setFolded(!folded);
           }}
         >
           {title}
-          {!noFolder && (
-            <Icon
-              icon="arrowSelect"
-              size={9}
-              style={{ transform: `rotate(${folded ? "90" : "0"}deg)` }}
-            />
-          )}
+          <>
+            {folder && (
+              <Icon
+                icon="arrowSelect"
+                size={9}
+                style={{ transform: `rotate(${folded ? "90" : "0"}deg)` }}
+              />
+            )}
+            {switcher && <Switch onClick={toggleEnabled} enabled={enabled} />}
+          </>
         </Title>
       )}
-      {hasFixedContent && (
+      {(!switcher || (switcher && enabled)) && hasFixedContent && (
         <FixedContent noBorder={noBorder}>{fixedContent}</FixedContent>
       )}
-      {!folded && hasMainContent && <Divider dividerType="secondary" />}
-      {!folded && hasMainContent && (
+      {(!switcher || (switcher && enabled)) && !folded && hasMainContent && (
+        <Divider dividerType="secondary" />
+      )}
+      {(!switcher || (switcher && enabled)) && !folded && hasMainContent && (
         <MainContent noBorder={noBorder}>{mainContent}</MainContent>
       )}
     </Wrapper>

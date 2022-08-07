@@ -1,5 +1,6 @@
 import Button from "@web/components/atoms/Button";
 import EmptyInfo from "@web/components/atoms/EmptyInfo";
+import Line from "@web/components/atoms/Line";
 import DropdownBox from "@web/components/molecules/DropdownBox";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
@@ -31,7 +32,9 @@ export type TagGroup = {
 
 const App = () => {
   const [tags, setTags] = useState<TagGroup[]>([]);
+
   const tagStatus = useRef(new Map());
+  const tagGroupEnabled = useRef(new Map());
   const layerTags = useRef(new Map());
   const tagLayers = useRef(new Map());
 
@@ -43,16 +46,13 @@ const App = () => {
 
   const [tagRenderKey, updateTagRenderKey] = useReducer(updateReducer, 0);
 
-  const toggleTag = useCallback(
-    (tagId: string) => {
-      const status = tagStatus.current.get(tagId);
-      tagStatus.current.set(tagId, !status);
+  const filter = useCallback(() => {
+    const visibleLayers: string[] = [];
+    const invisibleLayers: string[] = [];
 
-      const visibleLayers: string[] = [];
-      const invisibleLayers: string[] = [];
-
-      const alive: Set<string>[] = [];
-      tags.forEach((tagGroup) => {
+    const alive: Set<string>[] = [];
+    tags.forEach((tagGroup) => {
+      if (tagGroupEnabled.current.get(tagGroup.id)) {
         const aliveInThisGroup = new Set<string>();
         tagGroup.tags.forEach((tag) => {
           if (tagStatus.current.get(tag.id)) {
@@ -62,40 +62,46 @@ const App = () => {
           }
         });
         alive.push(aliveInThisGroup);
+      }
+    });
+
+    [...layerTags.current.keys()].forEach((layerId: string) => {
+      let visible = true;
+
+      alive.forEach((groupAliveSet) => {
+        if (!groupAliveSet.has(layerId)) visible = false;
       });
 
-      [...layerTags.current.keys()].forEach((layerId: string) => {
-        let visible = true;
+      if (visible) {
+        visibleLayers.push(layerId);
+      } else {
+        invisibleLayers.push(layerId);
+      }
+    });
 
-        alive.forEach((groupAliveSet) => {
-          if (!groupAliveSet.has(layerId)) visible = false;
-        });
+    (globalThis as any).parent.postMessage(
+      {
+        act: "showLayers",
+        payload: visibleLayers,
+      },
+      "*"
+    );
+    (globalThis as any).parent.postMessage(
+      {
+        act: "hideLayers",
+        payload: invisibleLayers,
+      },
+      "*"
+    );
+  }, [tags, layerTags, tagLayers]);
 
-        if (visible) {
-          visibleLayers.push(layerId);
-        } else {
-          invisibleLayers.push(layerId);
-        }
-      });
-
-      (globalThis as any).parent.postMessage(
-        {
-          act: "showLayers",
-          payload: visibleLayers,
-        },
-        "*"
-      );
-      (globalThis as any).parent.postMessage(
-        {
-          act: "hideLayers",
-          payload: invisibleLayers,
-        },
-        "*"
-      );
-
+  const toggleTag = useCallback(
+    (tagId: string) => {
+      const status = tagStatus.current.get(tagId);
+      tagStatus.current.set(tagId, !status);
       updateTagRenderKey();
     },
-    [tags, tagStatus, layerTags, tagLayers, updateTagRenderKey]
+    [tagStatus, updateTagRenderKey]
   );
 
   useEffect(() => {
@@ -112,13 +118,26 @@ const App = () => {
     );
   }, []);
 
+  const handleTagGroupEnableChange = useCallback(
+    (tagGroupId: string | undefined, enabled: boolean) => {
+      if (tagGroupId) {
+        tagGroupEnabled.current.set(tagGroupId, enabled);
+      }
+    },
+    []
+  );
+
   const processTagsData = useCallback(
     (tagsdata: TagGroup[]) => {
       layerTags.current.clear();
+      tagGroupEnabled.current.clear();
+
       tagsdata.forEach((tg) => {
+        tagGroupEnabled.current.set(tg.id, false);
+
         tg.tags.forEach((t) => {
           if (!tagStatus.current.has(t.id)) {
-            tagStatus.current.set(t.id, true);
+            tagStatus.current.set(t.id, false);
           }
 
           tagLayers.current.set(t.id, t.layerIds);
@@ -169,13 +188,15 @@ const App = () => {
               <DropdownBox
                 key={tagGroup.id}
                 title={tagGroup.name}
-                noFolder={true}
+                contentId={tagGroup.id}
+                switcher={true}
                 fixedContent={tagGroup.tags
                   .filter((tag) => tagStatus.current.get(tag.id) === true)
                   .map((tag) => (
                     <Button
                       text={tag.name}
                       key={tag.id}
+                      buttonType="tag"
                       compact={true}
                       status={tagStatus.current.get(tag.id) ? "on" : "off"}
                       onClick={() => {
@@ -189,7 +210,8 @@ const App = () => {
                     <Button
                       text={tag.name}
                       key={tag.id}
-                      buttonType="secondary"
+                      buttonType="tag"
+                      buttonStyle="secondary"
                       compact={true}
                       status={tagStatus.current.get(tag.id) ? "on" : "off"}
                       onClick={() => {
@@ -198,8 +220,17 @@ const App = () => {
                     />
                   ))}
                 onResize={forceUpdate}
+                onSwitchChange={handleTagGroupEnableChange}
               ></DropdownBox>
             ))}
+            <Line>
+              <Button
+                buttonStyle="secondary"
+                extendWidth
+                text="Filter"
+                onClick={filter}
+              />
+            </Line>
           </>
         ) : (
           <EmptyInfo text="NO TAG GROUP SELECTED" />
