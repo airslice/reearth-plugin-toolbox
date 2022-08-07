@@ -81,6 +81,8 @@ const handles: actHandles = {
               lat,
               lng,
             },
+            pointColor: "#ff0000",
+            style: "point",
           },
           customs: {
             id,
