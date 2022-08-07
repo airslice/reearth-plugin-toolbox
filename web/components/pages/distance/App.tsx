@@ -26,7 +26,11 @@ type Point = {
 };
 
 const App = () => {
+  const isActive = useRef(false);
   const isRecording = useRef(false);
+  // const isModifying = useRef(false);
+  // const modifyingPoint = useRef<Point>();
+
   const measureIndex = useRef(0);
   const points = useRef<Point[]>([]);
   const lineId = useRef<string>("");
@@ -36,6 +40,10 @@ const App = () => {
   const [buttonText, setButtonText] = useState("Start");
   const [totalDistance, setTotalDistance] = useState<string>("0.00");
   const [displayUnit, setDisplayUnit] = useState("km");
+
+  const handleActiveChange = useCallback((active: boolean) => {
+    isActive.current = active;
+  }, []);
 
   const clear = useCallback(() => {
     (globalThis as any).parent.postMessage(
@@ -55,6 +63,8 @@ const App = () => {
     points.current = [];
     // lineId.current = "";
     distances.current = [];
+    // isModifying.current = false;
+    // modifyingPoint.current = undefined;
     setTotalDistance("0.00");
   }, []);
 
@@ -168,19 +178,21 @@ const App = () => {
     }
   }, []);
 
-  const handleClick = useCallback(
-    (mousedata: MouseEvent) => {
-      if (isRecording.current && mousedata.lat && mousedata.lng) {
-        addPoint(mousedata.lat, mousedata.lng);
-        if (points.current.length === 1) {
-          // addLine(mousedata.lat, mousedata.lng);
-        } else {
-          updateLine();
-        }
-      }
-    },
-    [addPoint, updateLine]
-  );
+  // const updatePoint = useCallback((point: Point) => {
+  //   (globalThis as any).parent.postMessage(
+  //     {
+  //       act: "updatePoint",
+  //       payload: {
+  //         location: {
+  //           lat: point.lat,
+  //           lng: point.lng,
+  //         },
+  //         layerId: point.layerId,
+  //       },
+  //     },
+  //     "*"
+  //   );
+  // }, []);
 
   const handlePointAdded = useCallback(
     ({ index, layerId }: { index: number; layerId: string }) => {
@@ -193,8 +205,24 @@ const App = () => {
     lineId.current = layerId;
   }, []);
 
+  const handleClick = useCallback(
+    (mousedata: MouseEvent) => {
+      if (!isActive.current) return;
+      if (isRecording.current && mousedata.lat && mousedata.lng) {
+        addPoint(mousedata.lat, mousedata.lng);
+        if (points.current.length === 1) {
+          // addLine(mousedata.lat, mousedata.lng);
+        } else {
+          updateLine();
+        }
+      }
+    },
+    [addPoint, updateLine]
+  );
+
   const handleMouseMove = useCallback(
     (mousedata: MouseEvent) => {
+      if (!isActive.current) return;
       if (
         isRecording.current &&
         points.current.length > 0 &&
@@ -207,9 +235,37 @@ const App = () => {
         );
         setTotalDistance((d + calcTotalDistance()).toFixed(2));
       }
+      // else if (
+      //   isModifying.current &&
+      //   modifyingPoint.current &&
+      //   mousedata.lat &&
+      //   mousedata.lng
+      // ) {
+      //   modifyingPoint.current.lat = mousedata.lat;
+      //   modifyingPoint.current.lng = mousedata.lng;
+      //   updatePoint(modifyingPoint.current);
+      // }
     },
     [calcDistance]
   );
+
+  // const handleMouseDown = useCallback((mousedata: MouseEvent) => {
+  //   if (!isActive.current || isRecording.current) return;
+  //   if (mousedata.layerId) {
+  //     points.current.forEach((p) => {
+  //       if (p.layerId && p.layerId === mousedata.layerId) {
+  //         isModifying.current = true;
+  //         modifyingPoint.current = p;
+  //       }
+  //     });
+  //   }
+  // }, []);
+
+  // const handleMouseUp = useCallback(() => {
+  //   if (!isActive.current || isRecording.current) return;
+  //   isModifying.current = false;
+  //   modifyingPoint.current = undefined;
+  // }, []);
 
   const reCalcDistances = useCallback(() => {
     if (points.current.length <= 1) return;
@@ -251,8 +307,18 @@ const App = () => {
       pointAdded: handlePointAdded,
       lineAdded: handleLineAdded,
       rightclick: finish,
+      // mousedown: handleMouseDown,
+      // mouseup: handleMouseUp,
     };
-  }, [handleClick, handleMouseMove, handlePointAdded, handleLineAdded, finish]);
+  }, [
+    handleClick,
+    handleMouseMove,
+    // handleMouseDown,
+    // handleMouseUp,
+    handlePointAdded,
+    handleLineAdded,
+    finish,
+  ]);
 
   const init = useCallback(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
@@ -269,7 +335,12 @@ const App = () => {
   }, [init]);
 
   return (
-    <Panel title="Measure Distance" onResize={onResize} icon="ruler">
+    <Panel
+      title="Measure Distance"
+      onResize={onResize}
+      onFoldChange={handleActiveChange}
+      icon="ruler"
+    >
       <Result>
         {totalDistance}
         <Unit onClick={toggleUnit}>{displayUnit}</Unit>

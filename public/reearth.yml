@@ -1,5 +1,5 @@
 name: Toolbox
-version: 0.1.3
+version: 0.1.4
 id: reearth-plugin-toolbox
 extensions:
   - id: starter
@@ -32,3 +32,17 @@ extensions:
   - id: distance
     type: widget
     name: Distance
+    schema:
+      groups:
+        - id: default
+          name: Measure Distance
+          fields:
+            - id: pointcolor
+              type: string
+              title: Point Color
+              ui: color
+            - id: linecolor
+              type: string
+              title: Line Color
+              ui: color
+

@@ -68,6 +68,10 @@ const handles: actHandles = {
       }
     }
 
+    const color =
+      (globalThis as any).reearth.widget?.property?.default?.pointcolor ??
+      "#ff0000";
+
     const id = `toolbox-distance-${mIndex}-point-${index}`;
 
     (globalThis as any).reearth.layers.add(
@@ -81,7 +85,7 @@ const handles: actHandles = {
               lat,
               lng,
             },
-            pointColor: "#ff0000",
+            pointColor: color,
             style: "point",
           },
           customs: {
@@ -117,6 +121,10 @@ const handles: actHandles = {
       }
     }
 
+    const color =
+      (globalThis as any).reearth.widget?.property?.default?.linecolor ??
+      "#ff9900";
+
     const id = `toolbox-distance-${mIndex}-line`;
 
     (globalThis as any).reearth.layers.add(
@@ -138,7 +146,7 @@ const handles: actHandles = {
                 height: 0,
               },
             ],
-            strokeColor: "#ff9900",
+            strokeColor: color,
             strokeWidth: 5,
             clampToGround: true,
           },
@@ -173,6 +181,13 @@ const handles: actHandles = {
       (globalThis as any).reearth.layers.show(layerId);
     }
   },
+  updatePoint: ({ location, layerId }: { location: any; layerId: string }) => {
+    (globalThis as any).reearth.layers.overrideProperty(layerId, {
+      default: {
+        location,
+      },
+    });
+  },
 };
 
 (globalThis as any).reearth.on("message", (msg: pluginMessage) => {
@@ -201,3 +216,17 @@ const handles: actHandles = {
     payload: mousedata,
   });
 });
+
+// (globalThis as any).reearth.on("mousedown", (mousedata: any) => {
+//   (globalThis as any).reearth.ui.postMessage({
+//     act: "mousedown",
+//     payload: mousedata,
+//   });
+// });
+
+// (globalThis as any).reearth.on("mouseup", (mousedata: any) => {
+//   (globalThis as any).reearth.ui.postMessage({
+//     act: "mouseup",
+//     payload: mousedata,
+//   });
+// });

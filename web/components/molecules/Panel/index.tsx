@@ -6,10 +6,12 @@ export type Props = {
   title: string;
   icon: string;
   children?: React.ReactNode;
-  onResize?: (width: number, height: number) => void;
+
   cellSize?: number;
   fullWidth?: number;
   ref?: any;
+  onResize?: (width: number, height: number) => void;
+  onFoldChange?: (active: boolean) => void;
 };
 
 const Panel: React.FC<Props> = ({
@@ -17,6 +19,7 @@ const Panel: React.FC<Props> = ({
   icon,
   children,
   onResize,
+  onFoldChange,
   cellSize = 46,
   fullWidth = 312,
 }) => {
@@ -29,7 +32,8 @@ const Panel: React.FC<Props> = ({
 
   const toggleFolded = useCallback(() => {
     setFolded(!folded);
-  }, [folded]);
+    onFoldChange?.(folded);
+  }, [folded, onFoldChange]);
 
   useEffect(() => {
     if (folded) {
