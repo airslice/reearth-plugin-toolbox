@@ -173,9 +173,13 @@ const handles: actHandles = {
     if (coords.length <= 1) {
       (globalThis as any).reearth.layers.hide(layerId);
     } else {
+      const color =
+        (globalThis as any).reearth.widget?.property?.default?.linecolor ??
+        "#ff9900";
       (globalThis as any).reearth.layers.overrideProperty(layerId, {
         default: {
           coordinates: coords,
+          strokeColor: color,
         },
       });
       (globalThis as any).reearth.layers.show(layerId);
