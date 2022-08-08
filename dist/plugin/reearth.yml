@@ -1,0 +1,15 @@
+name: TagCloud
+version: 0.1.0
+id: reearth-plugin-tagcloud
+extensions:
+  - id: tagcloud
+    type: widget
+    name: Tag Cloud
+    schema:
+      groups:
+        - id: default
+          title: Tag Cloud
+          fields:
+            - id: tgname
+              type: string
+              title: Tag Group Name
