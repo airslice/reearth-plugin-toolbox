@@ -1,48 +1,7 @@
-name: Toolbox
-version: 0.1.4
-id: reearth-plugin-toolbox
+name: Toolbox Starter
+version: 0.1.0
+id: reearth-plugin-toolbox-starter
 extensions:
   - id: starter
     type: widget
     name: Starter
-  - id: tagcloud
-    type: widget
-    name: Tag Cloud
-    schema:
-      groups:
-        - id: default
-          title: Tag Cloud
-          fields:
-            - id: tgname
-              type: string
-              title: Tag Group Name
-  - id: tagfilter
-    type: widget
-    name: Tag Filter
-    schema:
-      groups:
-        - id: default
-          title: Tag Filter
-          list: true
-          representativeField: tgname
-          fields:
-            - id: tgname
-              type: string
-              title: Tag Group Name
-  - id: distance
-    type: widget
-    name: Measure Distance
-    schema:
-      groups:
-        - id: default
-          title: Measure Distance
-          fields:
-            - id: pointcolor
-              type: string
-              title: Point Color
-              ui: color
-            - id: linecolor
-              type: string
-              title: Line Color
-              ui: color
-
