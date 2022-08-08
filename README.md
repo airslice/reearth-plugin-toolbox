@@ -7,7 +7,7 @@ Main content is on branch `starter`.
 
 Every plugin has its on branch base on `starter`.
 
-## How To Use
+## How to use
 
 - Clone the `starter` branch.
 - Made a new branch base on `starter`.
