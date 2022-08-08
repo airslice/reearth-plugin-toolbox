@@ -1,7 +1,7 @@
 {
   "name": "reearth-plugin-toolbox",
   "version": "0.1.0",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "main": "./dist/reearth-plugin-toolbox.js",
@@ -13,7 +13,7 @@
     "start:tagcloud": "vite -c vite.config.tagcloud-web.ts",
     "start:tagfilter": "vite -c vite.config.tagfilter-web.ts",
     "start:distance": "vite -c vite.config.distance-web.ts",
-    "build": "run-s typecheck build:web build:plugin",
+    "build": "run-s typecheck clean build:web build:plugin",
     "build:plugin": "run-s build:starter build:tagcloud build:tagfilter build:distance",
     "build:web": "run-s build:starter-web build:tagcloud-web build:tagfilter-web build:distance-web",
     "build:starter": "vite build -c vite.config.starter.ts",
@@ -24,7 +24,7 @@
     "build:tagfilter-web": "vite build -c vite.config.tagfilter-web.ts",
     "build:distance": "vite build -c vite.config.distance.ts",
     "build:distance-web": "vite build -c vite.config.distance-web.ts",
-    "package": "run-s typecheck build:web build:plugin zip",
+    "package": "run-s build zip",
     "typecheck": "tsc",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -32,7 +32,8 @@
     "format": "eslint . --fix",
     "type": "tsc",
     "zip": "node ./scripts/zip.mjs",
-    "createwidget": "node ./scripts/createwidget.mjs"
+    "createwidget": "node ./scripts/createwidget.mjs",
+    "clean": "del dist"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
@@ -46,6 +47,7 @@
     "@typescript-eslint/parser": "^5.26.0",
     "@vitejs/plugin-react": "^1.3.2",
     "archiver": "^5.3.1",
+    "del-cli": "^5.0.0",
     "eslint": "^8.16.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
