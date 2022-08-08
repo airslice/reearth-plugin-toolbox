@@ -1,0 +1,17 @@
+name: Tag Filter
+version: 0.1.0
+id: reearth-plugin-tag-filter
+extensions:
+  - id: tagfilter
+    type: widget
+    name: Tag Filter
+    schema:
+      groups:
+        - id: default
+          title: Tag Filter
+          list: true
+          representativeField: tgname
+          fields:
+            - id: tgname
+              type: string
+              title: Tag Group Name
