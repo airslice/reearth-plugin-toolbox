@@ -1,7 +1,20 @@
-name: Toolbox Starter
+name: Distance Measurement
 version: 0.1.0
-id: reearth-plugin-toolbox-starter
+id: reearth-plugin-distance-measurement
 extensions:
-  - id: starter
+  - id: distance
     type: widget
-    name: Starter
+    name: Distance Measurement
+    schema:
+      groups:
+        - id: default
+          title: Distance Measurement
+          fields:
+            - id: pointcolor
+              type: string
+              title: Point Color
+              ui: color
+            - id: linecolor
+              type: string
+              title: Line Color
+              ui: color
