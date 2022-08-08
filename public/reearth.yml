@@ -1,7 +1,7 @@
-name: Toolbox Starter
+name: Tag Filter
 version: 0.1.0
-id: reearth-plugin-toolbox-starter
+id: reearth-plugin-tag-filter
 extensions:
-  - id: starter
+  - id: tagfilter
     type: widget
-    name: Starter
+    name: Tag Filter
