@@ -63,7 +63,7 @@ const Panel: React.FC<Props> = ({
         <Header onClick={toggleFolded} height={cellSize}>
           <HeaderInfo>
             <IconArea width={cellSize}>
-              <Icon icon={icon} size={18} />
+              <Icon icon={icon} size={20} />
             </IconArea>
             <Title>{title}</Title>
           </HeaderInfo>
