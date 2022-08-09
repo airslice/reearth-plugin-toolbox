@@ -1,4 +1,5 @@
 import Button from "@web/components/atoms/Button";
+import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useState, useMemo } from "react";
@@ -9,19 +10,10 @@ import "./app.css";
 const App = () => {
   const [mouseLocation, setMouseLocation] = useState({ lat: 0, lng: 0 });
 
-  const flyTo = () => {
+  const exportCSV = () => {
     (globalThis as any).parent.postMessage(
       {
-        act: "flyTo",
-        payload: {
-          lng: 139.74670369973546,
-          lat: 35.659869744800325,
-          height: 2015.9398450375584,
-          heading: 0.09500238074897371,
-          pitch: -0.6734953976277236,
-          roll: 0.00011756776520588375,
-          fov: 0.75,
-        },
+        act: "export",
       },
       "*"
     );
@@ -60,10 +52,13 @@ const App = () => {
   }, [init]);
 
   return (
-    <Panel title="layerexporter" onResize={onResize} icon="sun">
-      <Button text="flyTo" onClick={flyTo} />
-      <div>{`lat:${mouseLocation.lat}`}</div>
-      <div>{`lng:${mouseLocation.lng}`}</div>
+    <Panel title="Layer Exporter" onResize={onResize} icon="export">
+      <EmptyInfo text="Please make settings in right panel.">
+        <div>Please make settings in right panel.</div>
+        <div>We now only support file export in csv format.</div>
+      </EmptyInfo>
+
+      <Button text="Export" onClick={exportCSV} />
     </Panel>
   );
 };
