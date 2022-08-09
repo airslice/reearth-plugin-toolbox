@@ -7,12 +7,21 @@ Main content is on branch `starter`.
 
 Every plugin has its on branch base on `starter`.
 
-## How to use
+## Usage
 
 - Clone the `starter` branch.
-- Made a new branch base on `starter`.
+- Make a new branch base on `starter`.
 - Run `yarn`.
 - Run `yarn createwidget ${newWidgetId}`.
+- Develop Web:
+  - Run `yarn start:${newWidgetId}`
+  - Working with `web/components/pages/${newWidgetId}/*`.
+- Develop Plugin:
+  - Working with `src/widgets/${newWidgetId}.ts`.
+- Package:
+  - Run `yarn package`.
+- Test:
+  - Install and test your plugin with packaged .zip file.
 
 ## Plugin list
 
