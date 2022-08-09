@@ -18,9 +18,10 @@ Every plugin has its on branch base on `starter`.
 
 | Plugin      | Repo        |
 | ----------- | ----------- |
-| Tag Cloud   | [Link](https://github.com/airslice/reearth-plugin-tag-cloud)  |
-| Tag Filter  | [Link](https://github.com/airslice/reearth-plugin-tag-filter) |
-| Distance Measurement | [Link](https://github.com/airslice/reearth-plugin-distance-measurement) |
+| Tag Cloud   | [link](https://github.com/airslice/reearth-plugin-tag-cloud)  |
+| Tag Filter  | [link](https://github.com/airslice/reearth-plugin-tag-filter) |
+| Distance Measurement | [link](https://github.com/airslice/reearth-plugin-distance-measurement) |
+| Layer Exporter | [link](https://github.com/airslice/reearth-plugin-layer-exporter) |
 
 ## Known issue
 
