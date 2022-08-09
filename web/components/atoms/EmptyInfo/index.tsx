@@ -1,11 +1,17 @@
 import styled from "@emotion/styled";
 
 export type Props = {
-  text: string;
+  text?: string;
+  children?: string;
 };
 
-const EmptyInfo: React.FC<Props> = ({ text }) => {
-  return <Info>{text}</Info>;
+const EmptyInfo: React.FC<Props> = ({ text, children }) => {
+  return (
+    <Info>
+      {text && <>text</>}
+      {children && <>children</>}
+    </Info>
+  );
 };
 
 const Info = styled.div`
@@ -20,7 +26,7 @@ const Info = styled.div`
   font-weight: 500;
   font-size: 14px;
   line-height: 21px;
-  color: #333;
+  color: #4a4a4a;
   user-select: none;
 `;
 
