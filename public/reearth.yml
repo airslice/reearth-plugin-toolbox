@@ -5,3 +5,6 @@ extensions:
   - id: starter
     type: widget
     name: Starter
+  - id: layerexporter
+    type: widget
+    name: layerexporter
