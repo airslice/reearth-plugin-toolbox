@@ -15,7 +15,8 @@ const processProperty = (
   extensionId = ""
 ) => {
   const currentName = name === "" ? `${extensionId}.${key}` : `${name}.${key}`;
-  if (typeof obj[key] === "object") {
+
+  if (typeof obj[key] === "object" && obj[key] !== null) {
     Object.keys(obj[key]).forEach((k) => {
       processProperty(
         obj[key],
