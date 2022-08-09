@@ -112,7 +112,6 @@ const App = () => {
   return (
     <Panel title="Layer Exporter" onResize={onResize} icon="export">
       <EmptyInfo>
-        <div>Please make settings in right panel.</div>
         <div>We now only support file export in csv format.</div>
       </EmptyInfo>
       <Button text="Export" buttonStyle="secondary" onClick={exportCSV} />
