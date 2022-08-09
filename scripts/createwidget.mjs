@@ -3,6 +3,8 @@ import path from "path";
 import { exit } from "process";
 
 import YAML from "json-to-pretty-yaml";
+import load from "load-pkg";
+import { writePackageSync } from "write-pkg";
 import Yml from "yml";
 
 const root = path.resolve("./");
@@ -81,7 +83,34 @@ fs.writeFileSync(
     .replace("Starter", widgetId)
 );
 
-console.log(
-  "\x1B[36m%s\x1B[0m",
-  "Create finished. You need to add script in package.json manually."
-);
+// add packagejson
+const pkg = load.sync();
+if (pkg) {
+  pkg.scripts[`start:${widgetId}`] = `vite -c vite.config.${widgetId}-web.ts`;
+  pkg.scripts[`build:${widgetId}`] = `vite build -c vite.config.${widgetId}.ts`;
+  pkg.scripts[
+    `build:${widgetId}-web`
+  ] = `vite build -c vite.config.${widgetId}-web.ts`;
+
+  if (pkg.scripts["build:plugin"].includes("starter")) {
+    pkg.scripts["build:plugin"] = pkg.scripts["build:plugin"].replace(
+      /starter/g,
+      widgetId
+    );
+    pkg.scripts["build:web"] = pkg.scripts["build:web"].replace(
+      /starter/g,
+      widgetId
+    );
+  } else {
+    pkg.scripts[
+      "build:plugin"
+    ] = `${pkg.scripts["build:plugin"]} build:${widgetId}`;
+    pkg.scripts[
+      "build:web"
+    ] = `${pkg.scripts["build:web"]} build:${widgetId}-web`;
+  }
+}
+
+writePackageSync(`${root}`, pkg);
+
+console.log("\x1B[36m%s\x1B[0m", "Create finished");
