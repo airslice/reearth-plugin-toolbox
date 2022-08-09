@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 
 export type Props = {
   text?: string;
-  children?: string;
+  children?: React.ReactNode;
 };
 
 const EmptyInfo: React.FC<Props> = ({ text, children }) => {
@@ -26,6 +26,7 @@ const Info = styled.div`
   font-weight: 500;
   font-size: 14px;
   line-height: 21px;
+  text-align: center;
   color: #4a4a4a;
   user-select: none;
 `;
