@@ -12,8 +12,7 @@ Every plugin has its on branch base on `starter`.
 - Clone the `starter` branch.
 - Made a new branch base on `starter`.
 - Run `yarn`.
-- Run `yarn createwidget yournewpluginid`.
-- Config `package.json` to run your new plugin (This step may not needed in the future).
+- Run `yarn createwidget ${newWidgetId}`.
 
 ## Plugin list
 
