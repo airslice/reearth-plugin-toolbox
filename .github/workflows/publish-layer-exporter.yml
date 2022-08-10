@@ -2,8 +2,10 @@ name: Publish Layer Exporter
 
 on:
   push:
-    branches: [ "plugin/layer-exporter" ]
+    branches: 
+      - plugin/layer-exporter
   workflow_dispatch:
+  
 jobs:
   publish:
     runs-on: ubuntu-latest
