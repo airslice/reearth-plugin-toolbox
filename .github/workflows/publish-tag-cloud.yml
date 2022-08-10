@@ -1,0 +1,22 @@
+name: Publish Tag Cloud
+
+on:
+  push:
+    branches: 
+      - plugin/tag-cloud
+  workflow_dispatch:
+  
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: plugin/tag-cloud
+      - name: publish
+        uses: s0/git-publish-subdir-action@master
+        env:
+          REPO: git@github.com:airslice/reearth-plugin-tag-cloud.git
+          BRANCH: main
+          FOLDER: dist/plugin
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_TAG_CLOUD }}
