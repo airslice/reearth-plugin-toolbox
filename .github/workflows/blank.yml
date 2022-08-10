@@ -8,7 +8,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@plugin/tag-cloud
+      - uses: actions/checkout@v3
+        with:
+          ref: plugin/tag-cloud
       - name: publish
         uses: s0/git-publish-subdir-action@master
         env:
