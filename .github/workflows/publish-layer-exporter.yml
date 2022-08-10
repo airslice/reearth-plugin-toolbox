@@ -17,4 +17,4 @@ jobs:
           REPO: git@github.com:airslice/reearth-plugin-layer-exporter.git
           BRANCH: main
           FOLDER: dist/plugin
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_LAYER_EXPORTER }}
