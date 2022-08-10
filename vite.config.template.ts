@@ -5,7 +5,8 @@ import { resolve } from "path";
 
 import react from "@vitejs/plugin-react";
 import type { UserConfigExport, Plugin } from "vite";
-// import { Plugin as importToCDN, autoComplete } from "vite-plugin-cdn-import";
+import { Plugin as importToCDN, autoComplete } from "vite-plugin-cdn-import";
+import { viteExternalsPlugin } from "vite-plugin-externals";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgr from "vite-plugin-svgr";
 
@@ -17,7 +18,7 @@ export const plugin = (name: string): UserConfigExport => ({
       formats: ["iife"],
       // https://github.com/vitejs/vite/pull/7047
       entry: `src/widgets/${name}.ts`,
-      name: `ReearthPluginST_${name}`,
+      name: `ReearthPluginTB_${name}`,
       fileName: () => `${name}.js`,
     },
     reportCompressedSize: false,
@@ -26,15 +27,21 @@ export const plugin = (name: string): UserConfigExport => ({
 
 export const web =
   (name: string): UserConfigExport =>
-  () => ({
+  ({ mode }) => ({
     plugins: [
       react(),
       viteSingleFile(),
       serverHeaders(),
       svgr(),
-      // importToCDN({
-      //   modules: [autoComplete("react"), autoComplete("react-dom")],
-      // }),
+      mode === "production" &&
+        importToCDN({
+          modules: [autoComplete("react"), autoComplete("react-dom")],
+        }),
+      mode === "production" &&
+        viteExternalsPlugin({
+          react: "React",
+          "react-dom": "ReactDOM",
+        }),
     ],
     publicDir: false,
     root: `./web/components/pages/${name}`,
