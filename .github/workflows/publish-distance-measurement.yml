@@ -2,8 +2,10 @@ name: Publish Distance Measurement
 
 on:
   push:
-    branches: [ "plugin/distance-measurement" ]
+    branches:
+      - plugin/distance-measurement
   workflow_dispatch:
+  
 jobs:
   publish:
     runs-on: ubuntu-latest
