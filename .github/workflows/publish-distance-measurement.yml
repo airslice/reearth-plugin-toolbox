@@ -1,0 +1,19 @@
+name: Publish Distance Measurement
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: plugin/distance-measurement
+      - name: publish
+        uses: s0/git-publish-subdir-action@master
+        env:
+          REPO: git@github.com:airslice/reearth-plugin-distance-measurement.git
+          BRANCH: main
+          FOLDER: dist/plugin
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_DISTANCE_MEASUREMENT }}
