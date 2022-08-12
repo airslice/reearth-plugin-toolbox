@@ -2,15 +2,17 @@ import styled from "@emotion/styled";
 
 export type Props = {
   children?: React.ReactNode;
+  centered?: boolean;
 };
 
-const Line: React.FC<Props> = ({ children }) => {
-  return <StyledLine>{children}</StyledLine>;
+const Line: React.FC<Props> = ({ children, centered = false }) => {
+  return <StyledLine centered={centered}>{children}</StyledLine>;
 };
 
-const StyledLine = styled.div`
+const StyledLine = styled.div<{ centered: boolean }>`
   display: flex;
   gap: 8px;
+  justify-content: ${({ centered }) => (centered ? "center" : "flex-start")}; ;
 `;
 
 export default Line;
