@@ -1,7 +1,7 @@
-name: Toolbox Starter
+name: Pedestrain
 version: 0.1.0
-id: reearth-plugin-toolbox-starter
+id: reearth-plugin-pedestrain
 extensions:
-  - id: starter
+  - id: pedestrain
     type: widget
-    name: Starter
+    name: Pedestrain
