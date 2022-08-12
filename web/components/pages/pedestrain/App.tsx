@@ -1,7 +1,12 @@
+/// <reference types="vite-plugin-svgr/client" />
+
 import Button from "@web/components/atoms/Button";
+import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useState, useMemo } from "react";
+
+import { ReactComponent as Tooltip } from "./tooltip.svg";
 
 import "@web/components/molecules/Common/common.css";
 import "./app.css";
@@ -66,9 +71,12 @@ const App = () => {
       icon="pedestrain"
       fullWidth={144}
     >
-      <Button text="flyTo" onClick={flyTo} />
+      <Button text="Start" buttonStyle="secondary" onClick={flyTo} />
       <div>{`lat:${mouseLocation.lat}`}</div>
       <div>{`lng:${mouseLocation.lng}`}</div>
+      <Line>
+        <Tooltip />
+      </Line>
     </Panel>
   );
 };
