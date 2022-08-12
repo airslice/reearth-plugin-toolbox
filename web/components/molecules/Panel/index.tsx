@@ -98,8 +98,9 @@ const IconArea = styled.div<{ width?: number }>`
 `;
 
 const Title = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
+  line-height: 22px;
   color: #c7c5c5;
 `;
 
