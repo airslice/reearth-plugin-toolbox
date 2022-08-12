@@ -60,7 +60,12 @@ const App = () => {
   }, [init]);
 
   return (
-    <Panel title="Pedestrain" onResize={onResize} icon="sun">
+    <Panel
+      title="Pedestrain"
+      onResize={onResize}
+      icon="pedestrain"
+      fullWidth={144}
+    >
       <Button text="flyTo" onClick={flyTo} />
       <div>{`lat:${mouseLocation.lat}`}</div>
       <div>{`lng:${mouseLocation.lng}`}</div>

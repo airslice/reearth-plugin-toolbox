@@ -1,3 +1,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-export default {};
+import { ReactComponent as PersonSimpleWalk } from "./Icons/personSimpleWalk.svg";
+
+export default {
+  pedestrain: PersonSimpleWalk,
+};
