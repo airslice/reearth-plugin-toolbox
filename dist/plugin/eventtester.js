@@ -17,4 +17,4 @@ const p=function(){const r=document.createElement("link").relList;if(r&&r.suppor
 <div id="root"></div>
 
 
-`;globalThis.reearth.ui.show(e,{width:312,height:46}),globalThis.reearth.on("mousemove",t=>{globalThis.reearth.ui.postMessage(t)})})();
+`;globalThis.reearth.ui.show(e,{width:312,height:46}),globalThis.reearth.on("mousemove",t=>{globalThis.reearth.ui.postMessage({foo:t})})})();
