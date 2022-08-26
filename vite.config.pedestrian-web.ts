@@ -3,7 +3,7 @@
 
 import { defineConfig } from "vite";
 
-import { plugin } from "./vite.config.template";
+import { web } from "./vite.config.template";
 
 // https://vitejs.dev/config/
-export default defineConfig(plugin("pedestrain"));
+export default defineConfig(web("pedestrian"));

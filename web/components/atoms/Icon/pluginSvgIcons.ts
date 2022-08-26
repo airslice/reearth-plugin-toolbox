@@ -3,5 +3,5 @@
 import { ReactComponent as PersonSimpleWalk } from "./Icons/personSimpleWalk.svg";
 
 export default {
-  pedestrain: PersonSimpleWalk,
+  pedestrian: PersonSimpleWalk,
 };
