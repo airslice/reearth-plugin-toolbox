@@ -1,62 +1,35 @@
 /// <reference types="vite-plugin-svgr/client" />
 
+import styled from "@emotion/styled";
 import Button from "@web/components/atoms/Button";
+import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 
-import type { CameraPosition, MouseEvent } from "../../../../src/apiType";
+import type { MouseEvent } from "../../../../src/apiType";
 
-import { ReactComponent as Tooltip } from "./tooltip.svg";
+import { ReactComponent as MouseTip } from "./mousetip.svg";
 
 import "@web/components/molecules/Common/common.css";
 import "./app.css";
-
-type screenPos = {
-  x: number;
-  y: number;
-};
 
 const App = () => {
   const isActive = useRef(false);
   const isPicking = useRef(false);
   const isPedestrianMode = useRef(false);
-  const isControllingCamera = useRef(false);
-
-  const initialCamera = useRef<CameraPosition>();
-  const startCamera = useRef<CameraPosition>();
-  const startScreenPos = useRef<screenPos>();
 
   const [buttonText, setButtonText] = useState("Start");
 
   const onExit = useCallback(() => {
+    postMsg(
+      "exitPedestrianMode",
+      isPedestrianMode.current && !isPicking.current
+    );
     isPedestrianMode.current = false;
     isPicking.current = false;
     setButtonText("Start");
-
-    (globalThis as any).parent.postMessage(
-      {
-        act: "setSSCameraController",
-        payload: true,
-      },
-      "*"
-    );
-
-    if (initialCamera.current) {
-      (globalThis as any).parent.postMessage(
-        {
-          act: "flyTo",
-          payload: {
-            target: initialCamera.current,
-            duration: 2,
-          },
-        },
-        "*"
-      );
-
-      initialCamera.current = undefined;
-    }
   }, []);
 
   const handleActiveChange = useCallback(
@@ -79,124 +52,55 @@ const App = () => {
   }, [onExit]);
 
   const onResize = useCallback((width: number, height: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "resize",
-        payload: [width, height],
-      },
-      "*"
-    );
+    postMsg("resize", [width, height]);
   }, []);
 
-  const handleClick = useCallback((mousedata: MouseEvent) => {
+  const onClick = useCallback((mousedata: MouseEvent) => {
     if (!isActive.current || !isPicking.current) return;
-    if (!!mousedata.lat && !!mousedata.lng) {
+    if (mousedata.lat !== undefined && mousedata.lng !== undefined) {
       isPicking.current = false;
       isPedestrianMode.current = true;
 
-      (globalThis as any).parent.postMessage(
-        {
-          act: "getInitialCamera",
-        },
-        "*"
-      );
-
-      (globalThis as any).parent.postMessage(
-        {
-          act: "setSSCameraController",
-          payload: false,
-        },
-        "*"
-      );
-
-      (globalThis as any).parent.postMessage(
-        {
-          act: "flyTo",
-          payload: {
-            target: {
-              lng: mousedata.lng,
-              lat: mousedata.lat,
-              height: 10,
-              heading: 0,
-              pitch: 0,
-              roll: 0,
-              fov: 0.75,
-            },
-            duration: 2,
-          },
-        },
-        "*"
-      );
+      postMsg("enterPedestrianMode", {
+        lng: mousedata.lng,
+        lat: mousedata.lat,
+      });
     }
   }, []);
 
-  const handleMousedown = useCallback((mousedata: MouseEvent) => {
-    // console.log("md", mousedata);
+  const onMouseDown = useCallback((mousedata: MouseEvent) => {
     if (!isPedestrianMode.current) return;
-    if (!!mousedata.x && !!mousedata.y) {
-      isControllingCamera.current = true;
-
-      startScreenPos.current = {
-        x: mousedata.x,
-        y: mousedata.y,
-      };
-
-      (globalThis as any).parent.postMessage(
-        {
-          act: "getStartCamera",
-        },
-        "*"
-      );
+    if (mousedata.x !== undefined && mousedata.y !== undefined) {
+      postMsg("setLooking", true);
     }
   }, []);
 
-  const handleMousemove = useCallback((mousedata: MouseEvent) => {
-    console.log("mv");
-    if (
-      !isPedestrianMode.current ||
-      !isControllingCamera.current ||
-      !startCamera.current ||
-      !startScreenPos.current ||
-      (!mousedata.x && mousedata.x !== 0) ||
-      (!mousedata.y && mousedata.y !== 0)
-    )
-      return;
-    const deltaX = mousedata.x - startScreenPos.current.x;
-    const deltaY = mousedata.y - startScreenPos.current.y;
-    startScreenPos.current.x = mousedata.x;
-    startScreenPos.current.y = mousedata.y;
-    startCamera.current.heading += deltaX / -1000;
-    startCamera.current.pitch += deltaY / 1000;
-    (globalThis as any).parent.postMessage(
-      {
-        act: "flyTo",
-        payload: {
-          target: startCamera.current,
-          duration: 0,
-        },
-      },
-      "*"
-    );
+  const onMouseUp = useCallback(() => {
+    postMsg("setLooking", false);
   }, []);
 
-  const handleMouseup = useCallback(() => {
-    isControllingCamera.current = false;
+  const onKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!isPedestrianMode.current || isPicking.current) return;
+    const moveType = getMoveTypeFromCode(e.code);
+    if (typeof moveType !== "undefined") {
+      postMsg("doMove", moveType);
+    }
+  }, []);
+
+  const onKeyUp = useCallback((e: KeyboardEvent) => {
+    const moveType = getMoveTypeFromCode(e.code);
+    if (typeof moveType !== "undefined") {
+      postMsg("endMove", moveType);
+    }
   }, []);
 
   const actHandles: actHandles = useMemo(() => {
     return {
-      click: handleClick,
-      mousedown: handleMousedown,
-      mousemove: handleMousemove,
-      mouseup: handleMouseup,
-      initialCamera: (camera: CameraPosition) => {
-        initialCamera.current = camera;
-      },
-      startCamera: (camera: CameraPosition) => {
-        startCamera.current = camera;
-      },
+      click: onClick,
+      mousedown: onMouseDown,
+      mouseup: onMouseUp,
     };
-  }, [handleClick, handleMousedown, handleMousemove, handleMouseup]);
+  }, [onClick, onMouseDown, onMouseUp]);
 
   const execEventHandels = useCallback(
     (msg: any) => {
@@ -206,20 +110,29 @@ const App = () => {
     [actHandles]
   );
 
-  const init = useCallback(() => {
-    (globalThis as any).addEventListener("message", execEventHandels);
-  }, [execEventHandels]);
-
   useEffect(() => {
-    init();
-  }, [init]);
+    (globalThis as any).addEventListener("message", execEventHandels);
+
+    (globalThis as any).parent.document.addEventListener(
+      "keydown",
+      onKeyDown,
+      false
+    );
+
+    (globalThis as any).parent.document.addEventListener(
+      "keyup",
+      onKeyUp,
+      false
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Panel
       title="Pedestrian"
       onResize={onResize}
       icon="pedestrian"
-      fullWidth={144}
+      fullWidth={208}
       onFoldChange={handleActiveChange}
     >
       <Button
@@ -228,10 +141,97 @@ const App = () => {
         onClick={handleButtonClick}
       />
       <Line centered>
-        <Tooltip />
+        <MouseTip />
+      </Line>
+      <EmptyInfo>
+        Pick up a start point on map. Use mouse turn right and left.
+      </EmptyInfo>
+
+      <ArrowWrapper>
+        <Line centered>
+          <Button
+            text={"W"}
+            buttonStyle="secondary"
+            onClick={handleButtonClick}
+          />
+        </Line>
+        <Line centered>
+          <Button
+            text={"A"}
+            buttonStyle="secondary"
+            extendWidth={true}
+            onClick={handleButtonClick}
+          />
+          <Button
+            text={"S"}
+            buttonStyle="secondary"
+            extendWidth={true}
+            onClick={handleButtonClick}
+          />
+          <Button
+            text={"D"}
+            buttonStyle="secondary"
+            extendWidth={true}
+            onClick={handleButtonClick}
+          />
+        </Line>
+      </ArrowWrapper>
+      <Line centered>
+        <Button
+          text={"Space"}
+          buttonStyle="secondary"
+          extendWidth={true}
+          onClick={handleButtonClick}
+        />
+        <Button
+          text={"Shift"}
+          buttonStyle="secondary"
+          extendWidth={true}
+          onClick={handleButtonClick}
+        />
       </Line>
     </Panel>
   );
 };
 
 export default App;
+
+const ArrowWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+function postMsg(act: string, payload?: any) {
+  (globalThis as any).parent.postMessage(
+    {
+      act,
+      payload,
+    },
+    "*"
+  );
+}
+
+function getMoveTypeFromCode(keyCode: string) {
+  switch (keyCode) {
+    case "KeyW":
+      return "moveForward";
+    case "KeyS":
+      return "moveBackward";
+    case "Space":
+      return "moveUp";
+    case "ShiftLeft":
+    case "ShiftRight":
+      return "moveDown";
+    case "KeyD":
+      return "moveRight";
+    case "KeyA":
+      return "moveLeft";
+    case "KeyQ":
+      return "lookLeft";
+    case "KeyE":
+      return "lookRight";
+    default:
+      return undefined;
+  }
+}
