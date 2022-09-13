@@ -8,7 +8,9 @@ const handles: actHandles = {
     (globalThis as any).reearth.ui.resize(...size);
   },
   flyTo: (target: any) => {
-    (globalThis as any).reearth.visualizer.camera.flyTo(target);
+    (globalThis as any).reearth.visualizer.camera.flyTo(target, {
+      duration: 2,
+    });
   },
 };
 
