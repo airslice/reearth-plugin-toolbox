@@ -68,8 +68,10 @@ const handles: actHandles = {
   },
   enterPedestrianMode: ({ lng, lat }: { lng: number; lat: number }) => {
     initCameraPos = (globalThis as any).reearth.camera.position;
-    if ((globalThis as any).reearth.scene.property.default.sceneMode !== "2d") {
-      (globalThis as any).reearth.camera.disableScreenSpaceController();
+    if (
+      (globalThis as any).reearth.scene.property.default?.sceneMode !== "2d"
+    ) {
+      (globalThis as any).reearth.camera.enableScreenSpaceController(false);
     }
     (globalThis as any).reearth.camera.flyToGround(
       {
@@ -88,7 +90,7 @@ const handles: actHandles = {
     );
   },
   exitPedestrianMode: (resetCamera: boolean) => {
-    (globalThis as any).reearth.camera.enableScreenSpaceController();
+    (globalThis as any).reearth.camera.enableScreenSpaceController(true);
     if (resetCamera && initCameraPos) {
       const curCamera = (globalThis as any).reearth.camera.position;
       (globalThis as any).reearth.camera.flyTo(
