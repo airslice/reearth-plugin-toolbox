@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@emotion/react";
+import _ from "lodash";
 import { ReactNode } from "react";
 
 import { Theme } from "./common";
@@ -12,12 +13,7 @@ const Provider: React.FC<{
   overriddenTheme: Theme | undefined;
 }> = ({ children, theme, overriddenTheme }) => {
   const appliedTheme = theme === "light" ? light : dark;
-  const themeData = {
-    ...appliedTheme,
-    ...overriddenTheme,
-  };
-
-  console.log(themeData);
+  const themeData = _.merge({}, appliedTheme, overriddenTheme);
 
   return (
     <ThemeProvider theme={themeData}>

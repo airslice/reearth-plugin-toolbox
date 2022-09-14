@@ -74,6 +74,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@turf/turf": "^6.5.0",
+    "@types/lodash": "^4.14.185",
     "mini-svg-data-uri": "^1.4.4",
     "react-inlinesvg": "^3.0.0"
   }
