@@ -5,6 +5,7 @@ import Button from "@web/components/atoms/Button";
 import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
+import type { Theme } from "@web/theme/common";
 import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
@@ -13,11 +14,20 @@ import type { MouseEvent } from "src/apiType";
 import { ReactComponent as MouseTip } from "./mousetip.svg";
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
   const isActive = useRef(false);
   const isPicking = useRef(false);
   const isPedestrianMode = useRef(false);
 
   const [buttonText, setButtonText] = useState("Start");
+  const [moveForwardOn, setMoveForwardOn] = useState(false);
+  const [moveBackwardOn, setMoveBackwardOn] = useState(false);
+  const [moveLeftOn, setMoveLeftOn] = useState(false);
+  const [moveRightOn, setMoveRightOn] = useState(false);
+  const [moveUpOn, setMoveUpOn] = useState(false);
+  const [moveDownOn, setMoveDownOn] = useState(false);
 
   const onExit = useCallback(() => {
     postMsg(
@@ -91,13 +101,23 @@ const App = () => {
     }
   }, []);
 
+  const onSetTheme = useCallback(
+    ({ theme, overriddenTheme }: { theme: string; overriddenTheme: Theme }) => {
+      console.log(theme, overriddenTheme);
+      setTheme(theme);
+      setOverriddenTheme(overriddenTheme);
+    },
+    []
+  );
+
   const actHandles: actHandles = useMemo(() => {
     return {
       click: onClick,
       mousedown: onMouseDown,
       mouseup: onMouseUp,
+      setTheme: onSetTheme,
     };
-  }, [onClick, onMouseDown, onMouseUp]);
+  }, [onClick, onMouseDown, onMouseUp, onSetTheme]);
 
   const execEventHandels = useCallback(
     (msg: any) => {
@@ -121,11 +141,13 @@ const App = () => {
       onKeyUp,
       false
     );
+
+    postMsg("getTheme");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <ThemeProvider theme="dark" overriddenTheme={{ colors: {} }}>
+    <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
       <Panel
         title="Pedestrian"
         onResize={onResize}
@@ -152,6 +174,7 @@ const App = () => {
               text={"W"}
               icon="arrowUp"
               buttonStyle="secondary"
+              status="on"
               onClick={handleButtonClick}
             />
           </Line>
