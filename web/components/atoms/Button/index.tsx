@@ -105,6 +105,8 @@ const StyledButton = styled.button<{
 `;
 
 const IconArea = styled.div`
+  display: flex;
+  align-items: center;
   margin-right: 5px;
 `;
 
