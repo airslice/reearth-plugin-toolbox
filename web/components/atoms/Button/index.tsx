@@ -1,7 +1,9 @@
 import styled from "@emotion/styled";
+import Icon from "@web/components/atoms/Icon";
 
 export type Props = {
   text: string;
+  icon?: string;
   buttonType?: "button" | "tag";
   buttonStyle?: "primary" | "secondary";
   compact?: boolean;
@@ -13,6 +15,7 @@ export type Props = {
 
 const Button: React.FC<Props> = ({
   text,
+  icon,
   buttonType = "button",
   buttonStyle = "primary",
   compact = false,
@@ -31,6 +34,11 @@ const Button: React.FC<Props> = ({
       disabled={disabled}
       extendWidth={extendWidth}
     >
+      {icon && (
+        <IconArea>
+          <Icon icon={icon} size={16} />
+        </IconArea>
+      )}
       {text}
     </StyledButton>
   );
@@ -89,6 +97,10 @@ const StyledButton = styled.button<{
           : "1px solid #262626"
         : "1px solid #3b3cd0"};
   }
+`;
+
+const IconArea = styled.div`
+  margin-right: 10px;
 `;
 
 export default Button;
