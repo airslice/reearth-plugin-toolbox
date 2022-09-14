@@ -29,6 +29,90 @@ const App = () => {
   const [moveUpOn, setMoveUpOn] = useState(false);
   const [moveDownOn, setMoveDownOn] = useState(false);
 
+  const toggleMoveForward = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveForwardOn) {
+      if (moveBackwardOn) {
+        setMoveBackwardOn(false);
+        postMsg("endMove", "moveBackward");
+      }
+      postMsg("doMove", "moveForward");
+    } else {
+      postMsg("endMove", "moveForward");
+    }
+    setMoveForwardOn((moveForwardOn) => !moveForwardOn);
+  }, [moveForwardOn, moveBackwardOn]);
+
+  const toggleMoveBackward = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveBackwardOn) {
+      if (moveForwardOn) {
+        setMoveForwardOn(false);
+        postMsg("endMove", "moveForward");
+      }
+      postMsg("doMove", "moveBackward");
+    } else {
+      postMsg("endMove", "moveBackward");
+    }
+    setMoveBackwardOn((moveBackwardOn) => !moveBackwardOn);
+  }, [moveBackwardOn, moveForwardOn]);
+
+  const toggleMoveLeft = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveLeftOn) {
+      if (moveRightOn) {
+        setMoveRightOn(false);
+        postMsg("endMove", "moveRight");
+      }
+      postMsg("doMove", "moveLeft");
+    } else {
+      postMsg("endMove", "moveLeft");
+    }
+    setMoveLeftOn((moveLeftOn) => !moveLeftOn);
+  }, [moveLeftOn, moveRightOn]);
+
+  const toggleMoveRight = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveRightOn) {
+      if (moveLeftOn) {
+        setMoveLeftOn(false);
+        postMsg("endMove", "moveLeft");
+      }
+      postMsg("doMove", "moveRight");
+    } else {
+      postMsg("endMove", "moveRight");
+    }
+    setMoveRightOn((moveRightOn) => !moveRightOn);
+  }, [moveRightOn, moveLeftOn]);
+
+  const toggleMoveUp = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveUpOn) {
+      if (moveDownOn) {
+        setMoveDownOn(false);
+        postMsg("endMove", "moveDown");
+      }
+      postMsg("doMove", "moveUp");
+    } else {
+      postMsg("endMove", "moveUp");
+    }
+    setMoveUpOn((moveUpOn) => !moveUpOn);
+  }, [moveUpOn, moveDownOn]);
+
+  const toggleMoveDown = useCallback(() => {
+    if (!isPedestrianMode.current) return;
+    if (!moveDownOn) {
+      if (moveUpOn) {
+        setMoveUpOn(false);
+        postMsg("endMove", "moveUp");
+      }
+      postMsg("doMove", "moveDown");
+    } else {
+      postMsg("endMove", "moveDown");
+    }
+    setMoveDownOn((moveDownOn) => !moveDownOn);
+  }, [moveDownOn, moveUpOn]);
+
   const onExit = useCallback(() => {
     postMsg(
       "exitPedestrianMode",
@@ -37,6 +121,12 @@ const App = () => {
     isPedestrianMode.current = false;
     isPicking.current = false;
     setButtonText("Start");
+    setMoveForwardOn(false);
+    setMoveBackwardOn(false);
+    setMoveLeftOn(false);
+    setMoveRightOn(false);
+    setMoveUpOn(false);
+    setMoveDownOn(false);
   }, []);
 
   const handleActiveChange = useCallback(
@@ -174,8 +264,8 @@ const App = () => {
               text={"W"}
               icon="arrowUp"
               buttonStyle="secondary"
-              status="on"
-              onClick={handleButtonClick}
+              status={moveForwardOn ? "on" : ""}
+              onClick={toggleMoveForward}
             />
           </Line>
           <Line centered>
@@ -183,22 +273,25 @@ const App = () => {
               text={"A"}
               icon="arrowLeft"
               buttonStyle="secondary"
+              status={moveLeftOn ? "on" : ""}
               extendWidth={true}
-              onClick={handleButtonClick}
+              onClick={toggleMoveLeft}
             />
             <Button
               text={"S"}
               icon="arrowDown"
               buttonStyle="secondary"
+              status={moveBackwardOn ? "on" : ""}
               extendWidth={true}
-              onClick={handleButtonClick}
+              onClick={toggleMoveBackward}
             />
             <Button
               text={"D"}
               icon="arrowRight"
               buttonStyle="secondary"
+              status={moveRightOn ? "on" : ""}
               extendWidth={true}
-              onClick={handleButtonClick}
+              onClick={toggleMoveRight}
             />
           </Line>
         </ArrowWrapper>
@@ -207,15 +300,17 @@ const App = () => {
             text={"Space"}
             icon="arrowLineUp"
             buttonStyle="secondary"
+            status={moveUpOn ? "on" : ""}
             extendWidth={true}
-            onClick={handleButtonClick}
+            onClick={toggleMoveUp}
           />
           <Button
             text={"Shift"}
             icon="arrowLineDown"
             buttonStyle="secondary"
+            status={moveDownOn ? "on" : ""}
             extendWidth={true}
-            onClick={handleButtonClick}
+            onClick={toggleMoveDown}
           />
         </Line>
       </Panel>
