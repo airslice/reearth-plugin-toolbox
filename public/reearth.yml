@@ -5,3 +5,28 @@ extensions:
   - id: starter
     type: widget
     name: Starter
+    schema:
+      groups:
+        - id: default
+          title: Starter
+          fields:
+            - id: theme
+              type: string
+              title: Theme
+              choices:
+                - key: dark
+                  label: Dark
+                - key: light
+                  label: Light
+            - id: backgroundColor
+              type: string
+              title: Background Color
+              ui: color
+            - id: primaryColor
+              type: string
+              title: Primary Color
+              ui: color
+            - id: secondaryColor
+              type: string
+              title: Secondary Color
+              ui: color

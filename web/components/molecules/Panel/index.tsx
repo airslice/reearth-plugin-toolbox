@@ -115,7 +115,7 @@ const Wrapper = styled.div<{ width?: number; height?: number }>`
   position: relative;
   width: ${({ width }) => width}px;
   height: ${({ height }) => height}px;
-  background: #171618;
+  background: ${(props) => props.theme.colors.background};
   color: #c7c5c5;
   border-radius: 4px;
   overflow: hidden;
