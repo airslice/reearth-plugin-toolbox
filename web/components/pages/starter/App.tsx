@@ -6,9 +6,6 @@ import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
-
 const App = () => {
   const isActive = useRef(false);
   const [theme, setTheme] = useState("dark");
