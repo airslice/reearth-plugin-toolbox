@@ -8,13 +8,9 @@ import Panel from "@web/components/molecules/Panel";
 import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
-
-import type { MouseEvent } from "../../../../src/apiType";
+import type { MouseEvent } from "src/apiType";
 
 import { ReactComponent as MouseTip } from "./mousetip.svg";
-
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
 
 const App = () => {
   const isActive = useRef(false);
