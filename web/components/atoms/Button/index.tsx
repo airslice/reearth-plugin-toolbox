@@ -100,7 +100,7 @@ const StyledButton = styled.button<{
 `;
 
 const IconArea = styled.div`
-  margin-right: 10px;
+  margin-right: 5px;
 `;
 
 export default Button;
