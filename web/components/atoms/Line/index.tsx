@@ -11,6 +11,7 @@ const Line: React.FC<Props> = ({ children, centered = false }) => {
 
 const StyledLine = styled.div<{ centered: boolean }>`
   display: flex;
+  width: 100%;
   gap: 8px;
   justify-content: ${({ centered }) => (centered ? "center" : "flex-start")}; ;
 `;
