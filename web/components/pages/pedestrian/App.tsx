@@ -5,6 +5,7 @@ import Button from "@web/components/atoms/Button";
 import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
+import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 
@@ -128,69 +129,78 @@ const App = () => {
   }, []);
 
   return (
-    <Panel
-      title="Pedestrian"
-      onResize={onResize}
-      icon="pedestrian"
-      fullWidth={208}
-      onFoldChange={handleActiveChange}
-    >
-      <Button
-        text={buttonText}
-        buttonStyle="secondary"
-        onClick={handleButtonClick}
-      />
-      <Line centered>
-        <MouseTip />
-      </Line>
-      <EmptyInfo>
-        Pick up a start point on map. Use mouse turn right and left.
-      </EmptyInfo>
+    <ThemeProvider theme="dark" overriddenTheme={{ colors: {} }}>
+      <Panel
+        title="Pedestrian"
+        onResize={onResize}
+        icon="pedestrian"
+        fullWidth={208}
+        onFoldChange={handleActiveChange}
+      >
+        <Button
+          text={buttonText}
+          icon="crosshair"
+          buttonStyle="secondary"
+          onClick={handleButtonClick}
+        />
+        <Line centered>
+          <MouseTip />
+        </Line>
+        <EmptyInfo>
+          Pick up a start point on map. Use mouse turn right and left.
+        </EmptyInfo>
 
-      <ArrowWrapper>
+        <ArrowWrapper>
+          <Line centered>
+            <Button
+              text={"W"}
+              icon="arrowUp"
+              buttonStyle="secondary"
+              onClick={handleButtonClick}
+            />
+          </Line>
+          <Line centered>
+            <Button
+              text={"A"}
+              icon="arrowLeft"
+              buttonStyle="secondary"
+              extendWidth={true}
+              onClick={handleButtonClick}
+            />
+            <Button
+              text={"S"}
+              icon="arrowDown"
+              buttonStyle="secondary"
+              extendWidth={true}
+              onClick={handleButtonClick}
+            />
+            <Button
+              text={"D"}
+              icon="arrowRight"
+              buttonStyle="secondary"
+              extendWidth={true}
+              onClick={handleButtonClick}
+            />
+          </Line>
+        </ArrowWrapper>
         <Line centered>
           <Button
-            text={"W"}
+            text={"Space"}
+            icon="arrowLineUp"
             buttonStyle="secondary"
+            extendWidth={true}
+            onClick={handleButtonClick}
+          />
+          <Button
+            text={"Shift"}
+            icon="arrowLineDown"
+            buttonStyle="secondary"
+            extendWidth={true}
             onClick={handleButtonClick}
           />
         </Line>
-        <Line centered>
-          <Button
-            text={"A"}
-            buttonStyle="secondary"
-            extendWidth={true}
-            onClick={handleButtonClick}
-          />
-          <Button
-            text={"S"}
-            buttonStyle="secondary"
-            extendWidth={true}
-            onClick={handleButtonClick}
-          />
-          <Button
-            text={"D"}
-            buttonStyle="secondary"
-            extendWidth={true}
-            onClick={handleButtonClick}
-          />
-        </Line>
-      </ArrowWrapper>
-      <Line centered>
-        <Button
-          text={"Space"}
-          buttonStyle="secondary"
-          extendWidth={true}
-          onClick={handleButtonClick}
-        />
-        <Button
-          text={"Shift"}
-          buttonStyle="secondary"
-          extendWidth={true}
-          onClick={handleButtonClick}
-        />
-      </Line>
-    </Panel>
+      </Panel>
+    </ThemeProvider>
   );
 };
 
