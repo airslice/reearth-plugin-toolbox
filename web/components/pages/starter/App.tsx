@@ -1,4 +1,5 @@
 import Button from "@web/components/atoms/Button";
+import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
 import type { Theme } from "@web/theme/common";
 import ThemeProvider from "@web/theme/provider";
@@ -60,8 +61,15 @@ const App = () => {
         onResize={onResize}
         onFoldChange={handleActiveChange}
       >
-        <Button text="Button" />
-        <Button text="Button" icon="sun" />
+        <Button text="Primary" />
+        <Line>
+          <Button text="With Icon" icon="sun" extendWidth />
+          <Button text="Secondary" buttonStyle="secondary" extendWidth />
+        </Line>
+        <Line>
+          <Button text="ON" buttonStyle="secondary" extendWidth status="on" />
+          <Button text="OFF" buttonStyle="secondary" extendWidth status="off" />
+        </Line>
       </Panel>
     </ThemeProvider>
   );

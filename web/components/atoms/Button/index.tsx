@@ -30,7 +30,7 @@ const Button: React.FC<Props> = ({
       buttonStyle={buttonStyle}
       compact={compact}
       onClick={onClick}
-      off={status === "off"}
+      status={status ?? ""}
       disabled={disabled}
       extendWidth={extendWidth}
     >
@@ -48,7 +48,7 @@ const StyledButton = styled.button<{
   buttonType: string;
   buttonStyle: string;
   compact: boolean;
-  off: boolean;
+  status: string;
   disabled: boolean;
   extendWidth: boolean;
 }>`
@@ -63,35 +63,40 @@ const StyledButton = styled.button<{
   font-size: 14px;
   line-height: 19px;
   outline: none;
-  border: ${({ off, disabled, buttonStyle }) =>
-    buttonStyle === "secondary"
+  border: ${({ status, disabled, buttonStyle }) =>
+    status === "on"
+      ? "1px solid #3b3cd0"
+      : buttonStyle === "secondary"
       ? "1px solid #595959"
-      : off || disabled
+      : status === "off" || disabled
       ? "1px solid #262626"
       : "1px solid #3b3cd0"};
   cursor: pointer;
   user-select: none;
-  background: ${({ off, disabled, buttonStyle }) =>
-    buttonStyle === "secondary"
+  background: ${({ status, disabled, buttonStyle }) =>
+    status === "on"
+      ? "#3b3cd0"
+      : buttonStyle === "secondary"
       ? "none"
-      : off || disabled
+      : status === "off" || disabled
       ? "#262626"
       : "#3b3cd0"};
-  color: ${({ off, disabled }) => (off || disabled ? "#595959" : "#ededed")};
+  color: ${({ status, disabled }) =>
+    status === "off" || disabled ? "#595959" : "#ededed"};
   pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
   width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
   height: ${({ buttonType }) => (buttonType === "button" ? "30px" : "23px")};
   transition: all 0.1s ease-out;
 
   &:hover {
-    background: ${({ off, disabled, buttonStyle }) =>
-      off || disabled
+    background: ${({ status, disabled, buttonStyle }) =>
+      status === "off" || disabled
         ? buttonStyle === "secondary"
           ? "none"
           : "#262626"
         : "#3b3cd0"};
-    border: ${({ off, disabled, buttonStyle }) =>
-      off || disabled
+    border: ${({ status, disabled, buttonStyle }) =>
+      status === "off" || disabled
         ? buttonStyle === "secondary"
           ? "1px solid #595959"
           : "1px solid #262626"
