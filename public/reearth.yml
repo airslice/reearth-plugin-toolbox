@@ -5,3 +5,28 @@ extensions:
   - id: pedestrian
     type: widget
     name: Pedestrian
+    schema:
+      groups:
+        - id: default
+          title: Pedestrian
+          fields:
+            - id: theme
+              type: string
+              title: Theme
+              choices:
+                - key: dark
+                  label: Dark
+                - key: light
+                  label: Light
+            - id: backgroundColor
+              type: string
+              title: Background Color
+              ui: color
+            - id: primaryColor
+              type: string
+              title: Primary Color
+              ui: color
+            - id: secondaryColor
+              type: string
+              title: Secondary Color
+              ui: color
