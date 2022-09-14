@@ -45,6 +45,11 @@ https://github.com/airslice/reearth-plugin-distance-measurement
 https://github.com/airslice/reearth-plugin-layer-exporter
 ```
 
+[**Pedestrian**](https://github.com/airslice/reearth-plugin-pedestrian)
+```
+https://github.com/airslice/reearth-plugin-pedestrian
+```
+
 ## Known issue
 
 - Sometimes on published (and preview) page marker renders without an update.
