@@ -5,28 +5,28 @@ export type Props = {
   children?: React.ReactNode;
 };
 
-const EmptyInfo: React.FC<Props> = ({ text, children }) => {
+const TextArea: React.FC<Props> = ({ text, children }) => {
   return (
-    <Info>
+    <Text>
       {text && <div>{text}</div>}
       {children}
-    </Info>
+    </Text>
   );
 };
 
-const Info = styled.div`
+const Text = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
   font-style: normal;
-  font-weight: 500;
   font-size: 14px;
-  line-height: 21px;
+  font-weight: 400;
+  line-height: 22px;
   text-align: center;
-  color: #4a4a4a;
+  color: ${(props) => props.theme.colors.weakest};
   user-select: none;
 `;
 
-export default EmptyInfo;
+export default TextArea;

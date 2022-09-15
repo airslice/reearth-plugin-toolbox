@@ -1,16 +1,34 @@
 import Button from "@web/components/atoms/Button";
+import Divider from "@web/components/atoms/Divider";
+import Group from "@web/components/atoms/Group";
 import Line from "@web/components/atoms/Line";
+import Tag from "@web/components/atoms/Tag";
+import TextArea from "@web/components/atoms/TextArea";
+import DropdownBox from "@web/components/molecules/DropdownBox";
 import Panel from "@web/components/molecules/Panel";
 import type { Theme } from "@web/theme/common";
 import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
-import { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useMemo,
+  useRef,
+  useReducer,
+} from "react";
 
 const App = () => {
   const isActive = useRef(false);
   const [theme, setTheme] = useState("dark");
   const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
+  const updateReducer = useCallback(
+    (num: number): number => (num + 1) % 1_000_000,
+    []
+  );
+  const [, forceUpdate] = useReducer(updateReducer, 0);
 
   const onClose = useCallback(() => {}, []);
 
@@ -37,7 +55,6 @@ const App = () => {
         theme: string;
         overriddenTheme: Theme;
       }) => {
-        console.log(theme, overriddenTheme);
         setTheme(theme);
         setOverriddenTheme(overriddenTheme);
       },
@@ -61,15 +78,69 @@ const App = () => {
         onResize={onResize}
         onFoldChange={handleActiveChange}
       >
-        <Button text="Primary" />
+        <Button text="With Icon" icon="sun" extendWidth />
+
+        <Divider />
+
         <Line>
-          <Button text="With Icon" icon="sun" extendWidth />
-          <Button text="Secondary" buttonStyle="secondary" extendWidth />
+          <Button text="Primary" extendWidth />
+          <Button text="Secondary" buttonStyle="secondary" />
         </Line>
-        <Line>
-          <Button text="ON" buttonStyle="secondary" extendWidth status="on" />
-          <Button text="OFF" buttonStyle="secondary" extendWidth status="off" />
-        </Line>
+
+        <Group>
+          <Line>
+            <Button text="ON" buttonStyle="secondary" extendWidth status="on" />
+            <Button text="Disabled" extendWidth disabled />
+          </Line>
+        </Group>
+
+        <Group title="Named Group">
+          <Tag text="tag" buttonType="tag" />
+          <Tag text="off tag" buttonType="tag" status="off" />
+          <Tag text="disabled tag" buttonType="tag" disabled />
+        </Group>
+
+        <TextArea>Some sample text</TextArea>
+
+        <DropdownBox
+          title="Dropdown Box Swither"
+          switcher
+          onResize={forceUpdate}
+          fixedContent={
+            <>
+              <Tag text="fixed1" />
+              <Tag text="fixed2" />
+              <Tag text="fixed3" />
+            </>
+          }
+          mainContent={
+            <>
+              <Tag text="main1" status="off" />
+              <Tag text="main2" status="off" />
+              <Tag text="main3" status="off" />
+            </>
+          }
+        ></DropdownBox>
+
+        <DropdownBox
+          title="Dropdown Box Folder"
+          folder
+          onResize={forceUpdate}
+          fixedContent={
+            <>
+              <Tag text="fixed1" />
+              <Tag text="fixed2" />
+              <Tag text="fixed3" />
+            </>
+          }
+          mainContent={
+            <>
+              <Tag text="main1" status="off" />
+              <Tag text="main2" status="off" />
+              <Tag text="main3" status="off" />
+            </>
+          }
+        ></DropdownBox>
       </Panel>
     </ThemeProvider>
   );

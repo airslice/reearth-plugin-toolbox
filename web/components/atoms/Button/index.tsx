@@ -1,12 +1,11 @@
+import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import Icon from "@web/components/atoms/Icon";
 
 export type Props = {
   text: string;
   icon?: string;
-  buttonType?: "button" | "tag";
   buttonStyle?: "primary" | "secondary";
-  compact?: boolean;
   status?: string;
   disabled?: boolean;
   extendWidth?: boolean;
@@ -16,9 +15,7 @@ export type Props = {
 const Button: React.FC<Props> = ({
   text,
   icon,
-  buttonType = "button",
   buttonStyle = "primary",
-  compact = false,
   status,
   disabled = false,
   extendWidth = false,
@@ -26,9 +23,7 @@ const Button: React.FC<Props> = ({
 }) => {
   return (
     <StyledButton
-      buttonType={buttonType}
       buttonStyle={buttonStyle}
-      compact={compact}
       onClick={onClick}
       status={status ?? ""}
       disabled={disabled}
@@ -45,9 +40,7 @@ const Button: React.FC<Props> = ({
 };
 
 const StyledButton = styled.button<{
-  buttonType: string;
   buttonStyle: string;
-  compact: boolean;
   status: string;
   disabled: boolean;
   extendWidth: boolean;
@@ -56,52 +49,75 @@ const StyledButton = styled.button<{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: ${({ compact }) => (compact ? "2px 4px" : "2px 10px")};
+  padding: 2px 8px;
+  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
+  height: 30px;
   border-radius: 4px;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 19px;
   outline: none;
-  border: ${({ status, disabled, buttonStyle }) =>
-    status === "on"
-      ? "1px solid #3b3cd0"
-      : buttonStyle === "secondary"
-      ? "1px solid #595959"
-      : status === "off" || disabled
-      ? "1px solid #262626"
-      : "1px solid #3b3cd0"};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
+  transition: all 0.1s ease-out;
+  border: 1px solid ${(props) => props.theme.colors.primary};
   cursor: pointer;
   user-select: none;
-  background: ${({ status, disabled, buttonStyle }) =>
-    status === "on"
-      ? "#3b3cd0"
-      : buttonStyle === "secondary"
-      ? "none"
-      : status === "off" || disabled
-      ? "#262626"
-      : "#3b3cd0"};
-  color: ${({ status, disabled }) =>
-    status === "off" || disabled ? "#595959" : "#ededed"};
-  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
-  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
-  height: ${({ buttonType }) => (buttonType === "button" ? "30px" : "23px")};
-  transition: all 0.1s ease-out;
+
+  ${(props) => {
+    if (props.buttonStyle === "secondary") {
+      return css`
+        background: none;
+        color: ${props.theme.colors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    } else {
+      // primary
+      return css`
+        background: ${props.theme.colors.primary};
+        color: ${props.theme.fontColors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    }
+  }};
+
+  ${(props) => {
+    if (props.status === "on") {
+      return css`
+        background: ${props.theme.colors.primary};
+        color: ${props.theme.fontColors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    }
+  }};
+
+  ${(props) => {
+    if (props.disabled) {
+      return css`
+        background: ${props.theme.colors.disabled};
+        color: ${props.theme.fontColors.disabled};
+        border-color: ${props.theme.colors.disabled};
+      `;
+    }
+  }};
 
   @media (any-hover: hover) {
     &:hover {
-      background: ${({ status, disabled, buttonStyle }) =>
-        status === "off" || disabled
-          ? buttonStyle === "secondary"
-            ? "none"
-            : "#262626"
-          : "#3b3cd0"};
-      border: ${({ status, disabled, buttonStyle }) =>
-        status === "off" || disabled
-          ? buttonStyle === "secondary"
-            ? "1px solid #595959"
-            : "1px solid #262626"
-          : "1px solid #3b3cd0"};
+      ${(props) => {
+        if (props.buttonStyle === "secondary") {
+          return css`
+            background: ${props.theme.colors.primary};
+            color: ${props.theme.fontColors.primary};
+            border-color: ${props.theme.colors.primary};
+          `;
+        } else {
+          // primary
+          return css`
+            background: ${props.theme.colors.primary};
+            color: ${props.theme.fontColors.primary};
+            border-color: ${props.theme.colors.primary};
+          `;
+        }
+      }};
     }
   }
 `;
