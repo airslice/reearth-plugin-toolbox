@@ -2,7 +2,7 @@
 
 import styled from "@emotion/styled";
 import Button from "@web/components/atoms/Button";
-import EmptyInfo from "@web/components/atoms/EmptyInfo";
+import TextArea from "@web/components/atoms/TextArea";
 import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
 import type { Theme } from "@web/theme/common";
@@ -234,9 +234,9 @@ const App = () => {
         <Line centered>
           <MouseTip />
         </Line>
-        <EmptyInfo>
+        <TextArea>
           Pick up a start point on map. Use mouse turn right and left.
-        </EmptyInfo>
+        </TextArea>
 
         <ArrowWrapper>
           <Line centered>
