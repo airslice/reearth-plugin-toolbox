@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import React, { AriaAttributes, AriaRole, CSSProperties, memo } from "react";
 
-import Icons from "./svgIcons";
+import CommonSvgIcons from "./commonSvgIcons";
+import PluginSvgIcons from "./pluginSvgIcons";
 
-export type Icons = keyof typeof Icons;
+export type Icons = keyof typeof CommonSvgIcons;
 
 export type Props = {
   className?: string;
@@ -26,7 +27,7 @@ const Icon: React.FC<Props> = ({
 }) => {
   const sizeStr = typeof size === "number" ? `${size}px` : size;
 
-  const Iconele = Icons[icon as Icons];
+  const Iconele = Object.assign(CommonSvgIcons, PluginSvgIcons)[icon as Icons];
 
   return (
     <Wrapper

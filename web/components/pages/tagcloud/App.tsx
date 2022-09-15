@@ -1,15 +1,16 @@
 import Button from "@web/components/atoms/Button";
-import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Group from "@web/components/atoms/Group";
 import Line from "@web/components/atoms/Line";
+import Tag from "@web/components/atoms/Tag";
+import TextArea from "@web/components/atoms/TextArea";
 import Panel from "@web/components/molecules/Panel";
+import type { Theme } from "@web/theme/common";
+import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
+import { postMsg } from "@web/utils/common";
 import { useEffect, useState, useCallback, useMemo, useReducer } from "react";
 
 import { mockTagsData } from "./mock";
-
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
 
 type Tag = {
   id: string;
@@ -24,6 +25,9 @@ export type TagGroup = {
 };
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
   const [tags, setTags] = useState<TagGroup[]>([]);
   const [tagStatus] = useState(new Map());
   const [layerTags] = useState(new Map());
@@ -40,13 +44,7 @@ const App = () => {
       const status = tagStatus.get(tagId);
       const show = !status;
       if (show) {
-        (globalThis as any).parent.postMessage(
-          {
-            act: "showLayers",
-            payload: tagLayers.get(tagId),
-          },
-          "*"
-        );
+        postMsg("showLayers", tagLayers.get(tagId));
       } else {
         const hideLayerIds: string[] = [];
         const layerIds = tagLayers.get(tagId);
@@ -61,13 +59,7 @@ const App = () => {
           if (canHide) hideLayerIds.push(lid);
         });
         if (hideLayerIds) {
-          (globalThis as any).parent.postMessage(
-            {
-              act: "hideLayers",
-              payload: hideLayerIds,
-            },
-            "*"
-          );
+          postMsg("hideLayers", hideLayerIds);
         }
       }
 
@@ -81,12 +73,7 @@ const App = () => {
     tagStatus.forEach((v, k) => {
       tagStatus.set(k, true);
     });
-    (globalThis as any).parent.postMessage(
-      {
-        act: "showAll",
-      },
-      "*"
-    );
+    postMsg("showAll");
     forceUpdate();
   }, [tagStatus]);
 
@@ -94,24 +81,13 @@ const App = () => {
     tagStatus.forEach((v, k) => {
       tagStatus.set(k, false);
     });
-    (globalThis as any).parent.postMessage(
-      {
-        act: "hideAll",
-      },
-      "*"
-    );
+    postMsg("hideAll");
     forceUpdate();
   }, [tagStatus]);
 
-  const onResize = (width: number, height: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "resize",
-        payload: [width, height],
-      },
-      "*"
-    );
-  };
+  const onResize = useCallback((width: number, height: number) => {
+    postMsg("resize", [width, height]);
+  }, []);
 
   const processTagsData = useCallback(
     (tagsdata: TagGroup[]) => {
@@ -141,67 +117,74 @@ const App = () => {
   const actHandles: actHandles = useMemo(() => {
     return {
       tags: processTagsData,
+      setTheme: ({
+        theme,
+        overriddenTheme,
+      }: {
+        theme: string;
+        overriddenTheme: Theme;
+      }) => {
+        setTheme(theme);
+        setOverriddenTheme(overriddenTheme);
+      },
     };
   }, [processTagsData]);
 
-  const init = useCallback(() => {
+  useEffect(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
       if (msg.source !== (globalThis as any).parent || !msg.data.act) return;
       actHandles[msg.data.act as keyof actHandles]?.(msg.data.payload);
     });
-
-    (globalThis as any).parent.postMessage({ act: "getTags" }, "*");
+    postMsg("getTheme");
+    postMsg("getTags");
 
     if (import.meta.env.MODE === "development") {
       processTagsData(mockTagsData);
     }
-  }, [actHandles, processTagsData]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Panel title="Tag Cloud" icon="tag" onResize={onResize}>
-      <>
-        {tags.length > 0 ? (
-          <>
-            {tags.map((tagGroup) => (
-              <Group key={tagGroup.id} noBorder={true}>
-                {tagGroup.tags.map((tag) => (
-                  <Button
-                    text={tag.name}
-                    key={tag.id}
-                    compact={true}
-                    buttonType="tag"
-                    status={tagStatus.get(tag.id) ? "on" : "off"}
-                    onClick={() => {
-                      toggleTag(tag.id);
-                    }}
-                  />
-                ))}
-              </Group>
-            ))}
-            <Line>
-              <Button
-                text="Show All"
-                buttonType="tag"
-                buttonStyle="secondary"
-                onClick={showAll}
-              />
-              <Button
-                text="Hide All"
-                buttonType="tag"
-                buttonStyle="secondary"
-                onClick={hideAll}
-              />
-            </Line>
-          </>
-        ) : (
-          <EmptyInfo text="NO TAG GROUP SELECTED" />
-        )}
-      </>
-    </Panel>
+    <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
+      <Panel title="Tag Cloud" icon="tag" onResize={onResize}>
+        <>
+          {tags.length > 0 ? (
+            <>
+              {tags.map((tagGroup) => (
+                <Group key={tagGroup.id} noBorder={true}>
+                  {tagGroup.tags.map((tag) => (
+                    <Tag
+                      text={tag.name}
+                      key={tag.id}
+                      status={tagStatus.get(tag.id) ? "on" : "off"}
+                      onClick={() => {
+                        toggleTag(tag.id);
+                      }}
+                    />
+                  ))}
+                </Group>
+              ))}
+              <Line>
+                <Button
+                  text="Show All"
+                  buttonStyle="secondary"
+                  extendWidth
+                  onClick={showAll}
+                />
+                <Button
+                  text="Hide All"
+                  buttonStyle="secondary"
+                  extendWidth
+                  onClick={hideAll}
+                />
+              </Line>
+            </>
+          ) : (
+            <TextArea text="NO TAG GROUP SELECTED" />
+          )}
+        </>
+      </Panel>
+    </ThemeProvider>
   );
 };
 

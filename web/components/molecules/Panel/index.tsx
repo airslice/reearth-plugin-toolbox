@@ -60,13 +60,16 @@ const Panel: React.FC<Props> = ({
   return (
     <Wrapper ref={wrapper} width={width} height={height}>
       <FixArea width={fullWidth}>
-        <Header onClick={toggleFolded} height={cellSize}>
+        <Header height={cellSize}>
           <HeaderInfo>
-            <IconArea width={cellSize}>
+            <IconArea width={cellSize} onClick={toggleFolded}>
               <Icon icon={icon} size={20} />
             </IconArea>
             <Title>{title}</Title>
           </HeaderInfo>
+          <IconArea width={cellSize} onClick={toggleFolded}>
+            <Icon icon="cross" size={20} />
+          </IconArea>
         </Header>
         <Content ref={content}>{children}</Content>
       </FixArea>
@@ -80,7 +83,6 @@ const Header = styled.div<{ height?: number }>`
   align-items: center;
   justify-content: space-between;
   padding: 12px 0;
-  cursor: pointer;
   user-select: none;
 `;
 
@@ -95,12 +97,15 @@ const IconArea = styled.div<{ width?: number }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  color: ${(props) => props.theme.colors.main};
+  cursor: pointer;
 `;
 
 const Title = styled.div`
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  color: #c7c5c5;
+  line-height: 22px;
+  color: ${(props) => props.theme.colors.main};
 `;
 
 const Content = styled.div`
@@ -114,7 +119,7 @@ const Wrapper = styled.div<{ width?: number; height?: number }>`
   position: relative;
   width: ${({ width }) => width}px;
   height: ${({ height }) => height}px;
-  background: #171618;
+  background: ${(props) => props.theme.colors.background};
   color: #c7c5c5;
   border-radius: 4px;
   overflow: hidden;

@@ -158,6 +158,23 @@ const forceRerender = () => {
   );
 };
 
+const updateTheme = () => {
+  (globalThis as any).reearth.ui.postMessage({
+    act: "setTheme",
+    payload: {
+      theme: (globalThis as any).reearth.widget.property.customize.theme,
+      overriddenTheme: {
+        colors: {
+          background: (globalThis as any).reearth.widget.property.customize
+            .backgroundColor,
+          primary: (globalThis as any).reearth.widget.property.customize
+            .primaryColor,
+        },
+      },
+    },
+  });
+};
+
 const handles: actHandles = {
   getTags: () => {
     const tarTagGroupName =
@@ -208,6 +225,9 @@ const handles: actHandles = {
   resize: (size: any) => {
     (globalThis as any).reearth.ui.resize(...size);
   },
+  getTheme: () => {
+    updateTheme();
+  },
 };
 
 (globalThis as any).reearth.on("message", (msg: pluginMessage) => {
@@ -218,4 +238,5 @@ const handles: actHandles = {
 
 (globalThis as any).reearth.on("update", () => {
   handles.getTags?.();
+  updateTheme();
 });

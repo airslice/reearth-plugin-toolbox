@@ -20,6 +20,9 @@ export default defineConfig({
     setupFiles: "./web/test/setup.ts",
   },
   resolve: {
-    alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
+    alias: [
+      { find: "@web", replacement: resolve(__dirname, "web") },
+      { find: "@src", replacement: resolve(__dirname, "src") },
+    ],
   },
 });
