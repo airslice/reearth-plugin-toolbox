@@ -1,15 +1,18 @@
 import Button from "@web/components/atoms/Button";
-import EmptyInfo from "@web/components/atoms/EmptyInfo";
+import TextArea from "@web/components/atoms/TextArea";
 import Panel from "@web/components/molecules/Panel";
+import type { Theme } from "@web/theme/common";
+import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
-import { useCallback, useEffect, useMemo } from "react";
-
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
+import { postMsg } from "@web/utils/common";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type LayerData = { [index: string]: any };
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
   const downlaodCSV = useCallback(
     (layersdata: LayerData[], propertyNames: string[]) => {
       let csvData = "";
@@ -71,13 +74,7 @@ const App = () => {
   };
 
   const onResize = useCallback((width: number, height: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "resize",
-        payload: [width, height],
-      },
-      "*"
-    );
+    postMsg("resize", [width, height]);
   }, []);
 
   const actHandles: actHandles = useMemo(() => {
@@ -95,27 +92,41 @@ const App = () => {
           downlaodCSV(layersdata, propertyNames);
         }
       },
+      setTheme: ({
+        theme,
+        overriddenTheme,
+      }: {
+        theme: string;
+        overriddenTheme: Theme;
+      }) => {
+        setTheme(theme);
+        setOverriddenTheme(overriddenTheme);
+      },
     };
   }, [downlaodCSV]);
 
-  const init = useCallback(() => {
+  useEffect(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
       if (msg.source !== (globalThis as any).parent || !msg.data.act) return;
       actHandles[msg.data.act as keyof actHandles]?.(msg.data.payload);
     });
-  }, [actHandles]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
+    postMsg("getTheme");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Panel title="Layer Exporter" onResize={onResize} icon="export">
-      <EmptyInfo>
-        <div>We now only support file export in csv format.</div>
-      </EmptyInfo>
-      <Button text="Export" buttonStyle="secondary" onClick={exportCSV} />
-    </Panel>
+    <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
+      <Panel title="Layer Exporter" onResize={onResize} icon="export">
+        <TextArea>
+          <div>
+            Please make settings in right pannel.
+            <br />
+            We now only support file export in csv format.
+          </div>
+        </TextArea>
+        <Button text="Export" buttonStyle="secondary" onClick={exportCSV} />
+      </Panel>
+    </ThemeProvider>
   );
 };
 

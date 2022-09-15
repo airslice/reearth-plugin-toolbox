@@ -16,8 +16,8 @@ const Group: React.FC<Props> = ({ title, children, noBorder = false }) => {
 };
 
 const Wrapper = styled.div<{ noBorder: boolean }>`
-  background: ${({ noBorder }) => (noBorder ? "none" : "#141414;")};
-  border: ${({ noBorder }) => (noBorder ? "none" : "1px solid #262626")};
+  border: ${(props) =>
+    props.noBorder ? "none" : `1px solid  ${props.theme.colors.weakest}`};
   border-radius: 4px;
   overflow: hidden;
 `;
@@ -26,12 +26,11 @@ const Title = styled.div`
   display: inline-block;
   padding: 2px 8px;
   height: 25px;
-  background: #262626;
   border-radius: 4px 0px;
   font-weight: 500;
   font-size: 14px;
   line-height: 21px;
-  color: #bfbfbf;
+  color: ${(props) => props.theme.colors.main};
 `;
 
 const Content = styled.div<{ noBorder: boolean }>`

@@ -67,7 +67,10 @@ const DropdownBox: React.FC<Props> = ({
               <Icon
                 icon="arrowSelect"
                 size={9}
-                style={{ transform: `rotate(${folded ? "90" : "0"}deg)` }}
+                style={{
+                  transform: `rotate(${folded ? "90" : "0"}deg)`,
+                  marginRight: "5px",
+                }}
               />
             )}
             {switcher && <Switch onClick={toggleEnabled} enabled={enabled} />}
@@ -78,7 +81,7 @@ const DropdownBox: React.FC<Props> = ({
         <FixedContent noBorder={noBorder}>{fixedContent}</FixedContent>
       )}
       {(!switcher || (switcher && enabled)) && !folded && hasMainContent && (
-        <Divider dividerType="secondary" />
+        <Divider />
       )}
       {(!switcher || (switcher && enabled)) && !folded && hasMainContent && (
         <MainContent noBorder={noBorder}>{mainContent}</MainContent>
@@ -88,8 +91,8 @@ const DropdownBox: React.FC<Props> = ({
 };
 
 const Wrapper = styled.div<{ noBorder: boolean }>`
-  background: ${({ noBorder }) => (noBorder ? "none" : "#141414;")};
-  border: ${({ noBorder }) => (noBorder ? "none" : "1px solid #353535")};
+  border: ${(props) =>
+    props.noBorder ? "none" : `1px solid ${props.theme.colors.weakest}`};
   border-radius: 4px;
   overflow: hidden;
 `;
@@ -103,7 +106,7 @@ const Title = styled.div<{ interactive: boolean }>`
   font-weight: 500;
   font-size: 14px;
   line-height: 21px;
-  color: #bfbfbf;
+  color: ${(props) => props.theme.colors.main};
   user-select: none;
   cursor: ${({ interactive }) => (interactive ? "pointer" : "default")};
 `;
