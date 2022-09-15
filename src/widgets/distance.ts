@@ -45,6 +45,23 @@ const findToolboxLayerId = (id: string) => {
   return false;
 };
 
+const updateTheme = () => {
+  (globalThis as any).reearth.ui.postMessage({
+    act: "setTheme",
+    payload: {
+      theme: (globalThis as any).reearth.widget.property.customize?.theme,
+      overriddenTheme: {
+        colors: {
+          background: (globalThis as any).reearth.widget.property.customize
+            ?.backgroundColor,
+          primary: (globalThis as any).reearth.widget.property.customize
+            ?.primaryColor,
+        },
+      },
+    },
+  });
+};
+
 const handles: actHandles = {
   resize: (size: any) => {
     (globalThis as any).reearth.ui.resize(...size);
@@ -200,6 +217,9 @@ const handles: actHandles = {
       },
     });
   },
+  getTheme: () => {
+    updateTheme();
+  },
 };
 
 (globalThis as any).reearth.on("message", (msg: pluginMessage) => {
@@ -227,6 +247,10 @@ const handles: actHandles = {
     act: "rightclick",
     payload: mousedata,
   });
+});
+
+(globalThis as any).reearth.on("update", () => {
+  updateTheme();
 });
 
 // (globalThis as any).reearth.on("mousedown", (mousedata: any) => {

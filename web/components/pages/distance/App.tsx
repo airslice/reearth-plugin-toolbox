@@ -3,11 +3,11 @@ import * as turf from "@turf/turf";
 import Button from "@web/components/atoms/Button";
 import Line from "@web/components/atoms/Line";
 import Panel from "@web/components/molecules/Panel";
+import type { Theme } from "@web/theme/common";
+import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
+import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
 
 type MouseEvent = {
   x?: number;
@@ -26,6 +26,9 @@ type Point = {
 };
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
   const isActive = useRef(false);
   const isRecording = useRef(false);
   // const isModifying = useRef(false);
@@ -46,20 +49,12 @@ const App = () => {
   }, []);
 
   const clear = useCallback(() => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "clearPoints",
-        payload: points.current.map((point) => point.layerId),
-      },
-      "*"
+    postMsg(
+      "clearPoints",
+      points.current.map((point) => point.layerId)
     );
-    (globalThis as any).parent.postMessage(
-      {
-        act: "clearLine",
-        payload: lineId.current,
-      },
-      "*"
-    );
+    postMsg("clearLine", lineId.current);
+
     points.current = [];
     // lineId.current = "";
     distances.current = [];
@@ -91,15 +86,9 @@ const App = () => {
     setButtonText(isRecording.current ? "Finish" : "Start");
   }, [start, finish]);
 
-  const onResize = (width: number, height: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "resize",
-        payload: [width, height],
-      },
-      "*"
-    );
-  };
+  const onResize = useCallback((width: number, height: number) => {
+    postMsg("resize", [width, height]);
+  }, []);
 
   const calcDistance = useCallback((p1: Point, p2: Point) => {
     const from = turf.point([p1.lng, p1.lat]);
@@ -111,18 +100,12 @@ const App = () => {
 
   const addPoint = useCallback(
     (lat: number, lng: number) => {
-      (globalThis as any).parent.postMessage(
-        {
-          act: "addPoint",
-          payload: {
-            lat,
-            lng,
-            mIndex: measureIndex.current,
-            index: points.current.length,
-          },
-        },
-        "*"
-      );
+      postMsg("addPoint", {
+        lat,
+        lng,
+        mIndex: measureIndex.current,
+        index: points.current.length,
+      });
 
       points.current.push({
         lat,
@@ -142,17 +125,11 @@ const App = () => {
   );
 
   const addLine = useCallback((lat: number, lng: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "addLine",
-        payload: {
-          lat,
-          lng,
-          mIndex: measureIndex.current,
-        },
-      },
-      "*"
-    );
+    postMsg("addLine", {
+      lat,
+      lng,
+      mIndex: measureIndex.current,
+    });
   }, []);
 
   const updateLine = useCallback(() => {
@@ -165,16 +142,10 @@ const App = () => {
           height: 0,
         });
       });
-      (globalThis as any).parent.postMessage(
-        {
-          act: "updateLine",
-          payload: {
-            coords,
-            layerId: lineId.current,
-          },
-        },
-        "*"
-      );
+      postMsg("updateLine", {
+        coords,
+        layerId: lineId.current,
+      });
     }
   }, []);
 
@@ -307,6 +278,16 @@ const App = () => {
       pointAdded: handlePointAdded,
       lineAdded: handleLineAdded,
       rightclick: finish,
+      setTheme: ({
+        theme,
+        overriddenTheme,
+      }: {
+        theme: string;
+        overriddenTheme: Theme;
+      }) => {
+        setTheme(theme);
+        setOverriddenTheme(overriddenTheme);
+      },
       // mousedown: handleMouseDown,
       // mouseup: handleMouseUp,
     };
@@ -320,7 +301,7 @@ const App = () => {
     finish,
   ]);
 
-  const init = useCallback(() => {
+  useEffect(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
       if (msg.source !== (globalThis as any).parent || !msg.data.act) return;
       actHandles[msg.data.act as keyof actHandles]?.(msg.data.payload);
@@ -328,37 +309,38 @@ const App = () => {
 
     //
     addLine(0, 0);
-  }, [actHandles, addLine]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
+    postMsg("getTheme");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Panel
-      title="Distance Measurement"
-      onResize={onResize}
-      onFoldChange={handleActiveChange}
-      icon="ruler"
-    >
-      <Result>
-        {totalDistance}
-        <Unit onClick={toggleUnit}>{displayUnit}</Unit>
-      </Result>
-      <Line>
-        <Button
-          text={buttonText}
-          onClick={toggleRecording}
-          extendWidth={true}
-        />
-        <Button
-          text="Clear"
-          onClick={clear}
-          extendWidth={true}
-          disabled={!!isRecording.current || points.current.length === 0}
-        />
-      </Line>
-    </Panel>
+    <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
+      <Panel
+        title="Distance Measurement"
+        onResize={onResize}
+        onFoldChange={handleActiveChange}
+        icon="ruler"
+      >
+        <Result>
+          {totalDistance}
+          <Unit onClick={toggleUnit}>{displayUnit}</Unit>
+        </Result>
+        <Line>
+          <Button
+            text={buttonText}
+            onClick={toggleRecording}
+            buttonStyle="primary"
+            extendWidth={true}
+          />
+          <Button
+            text="Clear"
+            onClick={clear}
+            extendWidth={true}
+            disabled={!!isRecording.current || points.current.length === 0}
+          />
+        </Line>
+      </Panel>
+    </ThemeProvider>
   );
 };
 
@@ -367,9 +349,10 @@ const Result = styled.div`
   align-items: center;
   justify-content: center;
   font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  height: 40px;
+  font-weight: 500;
+  font-size: 16px;
+  height: 44px;
+  color: ${(props) => props.theme.colors.main};
 `;
 const Unit = styled.a`
   padding-left: 10px;
