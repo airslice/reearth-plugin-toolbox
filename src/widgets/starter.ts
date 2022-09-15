@@ -14,8 +14,6 @@ const updateTheme = () => {
             .backgroundColor,
           primary: (globalThis as any).reearth.widget.property.default
             .primaryColor,
-          secondary: (globalThis as any).reearth.widget.property.default
-            .secondaryColor,
         },
       },
     },
