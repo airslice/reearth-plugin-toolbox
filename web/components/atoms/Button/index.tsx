@@ -88,19 +88,21 @@ const StyledButton = styled.button<{
   height: ${({ buttonType }) => (buttonType === "button" ? "30px" : "23px")};
   transition: all 0.1s ease-out;
 
-  &:hover {
-    background: ${({ status, disabled, buttonStyle }) =>
-      status === "off" || disabled
-        ? buttonStyle === "secondary"
-          ? "none"
-          : "#262626"
-        : "#3b3cd0"};
-    border: ${({ status, disabled, buttonStyle }) =>
-      status === "off" || disabled
-        ? buttonStyle === "secondary"
-          ? "1px solid #595959"
-          : "1px solid #262626"
-        : "1px solid #3b3cd0"};
+  @media (any-hover: hover) {
+    &:hover {
+      background: ${({ status, disabled, buttonStyle }) =>
+        status === "off" || disabled
+          ? buttonStyle === "secondary"
+            ? "none"
+            : "#262626"
+          : "#3b3cd0"};
+      border: ${({ status, disabled, buttonStyle }) =>
+        status === "off" || disabled
+          ? buttonStyle === "secondary"
+            ? "1px solid #595959"
+            : "1px solid #262626"
+          : "1px solid #3b3cd0"};
+    }
   }
 `;
 
