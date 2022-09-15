@@ -29,89 +29,64 @@ const App = () => {
   const [moveUpOn, setMoveUpOn] = useState(false);
   const [moveDownOn, setMoveDownOn] = useState(false);
 
-  const toggleMoveForward = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveForwardOn) {
-      if (moveBackwardOn) {
-        setMoveBackwardOn(false);
-        postMsg("endMove", "moveBackward");
-      }
-      postMsg("doMove", "moveForward");
-    } else {
-      postMsg("endMove", "moveForward");
-    }
-    setMoveForwardOn((moveForwardOn) => !moveForwardOn);
-  }, [moveForwardOn, moveBackwardOn]);
+  type moveType =
+    | "moveForward"
+    | "moveBackward"
+    | "moveUp"
+    | "moveDown"
+    | "moveRight"
+    | "moveLeft";
 
-  const toggleMoveBackward = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveBackwardOn) {
-      if (moveForwardOn) {
-        setMoveForwardOn(false);
-        postMsg("endMove", "moveForward");
+  const handleMove = useCallback(
+    (moveType: moveType, enable?: boolean) => {
+      if (!moveType || !isPedestrianMode.current) return;
+      const oppositeMoveTypeMap = new Map<moveType, moveType>([
+        ["moveForward", "moveBackward"],
+        ["moveBackward", "moveForward"],
+        ["moveUp", "moveDown"],
+        ["moveDown", "moveUp"],
+        ["moveLeft", "moveRight"],
+        ["moveRight", "moveLeft"],
+      ]);
+      const moveTypeStatusMap = new Map<moveType, boolean>([
+        ["moveForward", moveForwardOn],
+        ["moveBackward", moveBackwardOn],
+        ["moveUp", moveUpOn],
+        ["moveDown", moveDownOn],
+        ["moveRight", moveRightOn],
+        ["moveLeft", moveLeftOn],
+      ]);
+      const moveTypeStatusSetterMap = new Map<moveType, any>([
+        ["moveForward", setMoveForwardOn],
+        ["moveBackward", setMoveBackwardOn],
+        ["moveUp", setMoveUpOn],
+        ["moveDown", setMoveDownOn],
+        ["moveRight", setMoveRightOn],
+        ["moveLeft", setMoveLeftOn],
+      ]);
+      const on =
+        enable === undefined ? !moveTypeStatusMap.get(moveType) : enable;
+      if (on) {
+        const oppositeMoveType = oppositeMoveTypeMap.get(moveType);
+        if (oppositeMoveType && moveTypeStatusMap.get(oppositeMoveType)) {
+          moveTypeStatusSetterMap.get(oppositeMoveType)(false);
+          postMsg("endMove", oppositeMoveType);
+        }
+        postMsg("doMove", moveType);
+      } else {
+        postMsg("endMove", moveType);
       }
-      postMsg("doMove", "moveBackward");
-    } else {
-      postMsg("endMove", "moveBackward");
-    }
-    setMoveBackwardOn((moveBackwardOn) => !moveBackwardOn);
-  }, [moveBackwardOn, moveForwardOn]);
-
-  const toggleMoveLeft = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveLeftOn) {
-      if (moveRightOn) {
-        setMoveRightOn(false);
-        postMsg("endMove", "moveRight");
-      }
-      postMsg("doMove", "moveLeft");
-    } else {
-      postMsg("endMove", "moveLeft");
-    }
-    setMoveLeftOn((moveLeftOn) => !moveLeftOn);
-  }, [moveLeftOn, moveRightOn]);
-
-  const toggleMoveRight = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveRightOn) {
-      if (moveLeftOn) {
-        setMoveLeftOn(false);
-        postMsg("endMove", "moveLeft");
-      }
-      postMsg("doMove", "moveRight");
-    } else {
-      postMsg("endMove", "moveRight");
-    }
-    setMoveRightOn((moveRightOn) => !moveRightOn);
-  }, [moveRightOn, moveLeftOn]);
-
-  const toggleMoveUp = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveUpOn) {
-      if (moveDownOn) {
-        setMoveDownOn(false);
-        postMsg("endMove", "moveDown");
-      }
-      postMsg("doMove", "moveUp");
-    } else {
-      postMsg("endMove", "moveUp");
-    }
-    setMoveUpOn((moveUpOn) => !moveUpOn);
-  }, [moveUpOn, moveDownOn]);
-
-  const toggleMoveDown = useCallback(() => {
-    if (!isPedestrianMode.current) return;
-    if (!moveDownOn) {
-      if (moveUpOn) {
-        setMoveUpOn(false);
-        postMsg("endMove", "moveUp");
-      }
-      postMsg("doMove", "moveDown");
-    } else {
-      postMsg("endMove", "moveDown");
-    }
-    setMoveDownOn((moveDownOn) => !moveDownOn);
-  }, [moveDownOn, moveUpOn]);
+      moveTypeStatusSetterMap.get(moveType)(on);
+    },
+    [
+      moveForwardOn,
+      moveBackwardOn,
+      moveUpOn,
+      moveDownOn,
+      moveRightOn,
+      moveLeftOn,
+    ]
+  );
 
   const onExit = useCallback(() => {
     postMsg(
@@ -176,24 +151,29 @@ const App = () => {
     postMsg("setLooking", false);
   }, []);
 
-  const onKeyDown = useCallback((e: KeyboardEvent) => {
-    if (!isPedestrianMode.current || isPicking.current) return;
-    const moveType = getMoveTypeFromCode(e.code);
-    if (typeof moveType !== "undefined") {
-      postMsg("doMove", moveType);
-    }
-  }, []);
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!isPedestrianMode.current || isPicking.current) return;
+      const moveType = getMoveTypeFromCode(e.code);
+      if (typeof moveType !== "undefined") {
+        handleMove(moveType, true);
+      }
+    },
+    [handleMove]
+  );
 
-  const onKeyUp = useCallback((e: KeyboardEvent) => {
-    const moveType = getMoveTypeFromCode(e.code);
-    if (typeof moveType !== "undefined") {
-      postMsg("endMove", moveType);
-    }
-  }, []);
+  const onKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      const moveType = getMoveTypeFromCode(e.code);
+      if (typeof moveType !== "undefined") {
+        handleMove(moveType, false);
+      }
+    },
+    [handleMove]
+  );
 
   const onSetTheme = useCallback(
     ({ theme, overriddenTheme }: { theme: string; overriddenTheme: Theme }) => {
-      console.log(theme, overriddenTheme);
       setTheme(theme);
       setOverriddenTheme(overriddenTheme);
     },
@@ -265,7 +245,7 @@ const App = () => {
               icon="arrowUp"
               buttonStyle="secondary"
               status={moveForwardOn ? "on" : ""}
-              onClick={toggleMoveForward}
+              onClick={() => handleMove("moveForward")}
             />
           </Line>
           <Line centered>
@@ -275,7 +255,7 @@ const App = () => {
               buttonStyle="secondary"
               status={moveLeftOn ? "on" : ""}
               extendWidth={true}
-              onClick={toggleMoveLeft}
+              onClick={() => handleMove("moveLeft")}
             />
             <Button
               text={"S"}
@@ -283,7 +263,7 @@ const App = () => {
               buttonStyle="secondary"
               status={moveBackwardOn ? "on" : ""}
               extendWidth={true}
-              onClick={toggleMoveBackward}
+              onClick={() => handleMove("moveBackward")}
             />
             <Button
               text={"D"}
@@ -291,7 +271,7 @@ const App = () => {
               buttonStyle="secondary"
               status={moveRightOn ? "on" : ""}
               extendWidth={true}
-              onClick={toggleMoveRight}
+              onClick={() => handleMove("moveRight")}
             />
           </Line>
         </ArrowWrapper>
@@ -302,7 +282,7 @@ const App = () => {
             buttonStyle="secondary"
             status={moveUpOn ? "on" : ""}
             extendWidth={true}
-            onClick={toggleMoveUp}
+            onClick={() => handleMove("moveUp")}
           />
           <Button
             text={"Shift"}
@@ -310,7 +290,7 @@ const App = () => {
             buttonStyle="secondary"
             status={moveDownOn ? "on" : ""}
             extendWidth={true}
-            onClick={toggleMoveDown}
+            onClick={() => handleMove("moveDown")}
           />
         </Line>
       </Panel>
@@ -351,10 +331,6 @@ function getMoveTypeFromCode(keyCode: string) {
       return "moveRight";
     case "KeyA":
       return "moveLeft";
-    case "KeyQ":
-      return "lookLeft";
-    case "KeyE":
-      return "lookRight";
     default:
       return undefined;
   }

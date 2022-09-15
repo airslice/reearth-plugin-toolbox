@@ -24,6 +24,15 @@ const lookAmount = {
   y: 0,
 };
 
+const oppositeMove = new Map<keyof typeof flags, keyof typeof flags>([
+  ["moveForward", "moveBackward"],
+  ["moveBackward", "moveForward"],
+  ["moveUp", "moveDown"],
+  ["moveDown", "moveUp"],
+  ["moveLeft", "moveRight"],
+  ["moveRight", "moveLeft"],
+]);
+
 const updateCamera = () => {
   const moveRate = (globalThis as any).reearth.camera.position.height / 200.0;
 
@@ -112,10 +121,33 @@ const handles: actHandles = {
   },
   doMove: (moveType: keyof typeof flags) => {
     flags[moveType] = true;
+    const op = oppositeMove.get(moveType);
+    if (op) {
+      flags[op] = false;
+    }
   },
   endMove: (moveType: keyof typeof flags) => {
     flags[moveType] = false;
   },
+};
+
+const updateTheme = () => {
+  (globalThis as any).reearth.ui.postMessage({
+    act: "setTheme",
+    payload: {
+      theme: (globalThis as any).reearth.widget.property.default.theme,
+      overriddenTheme: {
+        colors: {
+          background: (globalThis as any).reearth.widget.property.default
+            .backgroundColor,
+          primary: (globalThis as any).reearth.widget.property.default
+            .primaryColor,
+          secondary: (globalThis as any).reearth.widget.property.default
+            .secondaryColor,
+        },
+      },
+    },
+  });
 };
 
 (globalThis as any).reearth.on("tick", updateCamera);
@@ -166,4 +198,8 @@ const handles: actHandles = {
     act: "mouseup",
     payload: mousedata,
   });
+});
+
+(globalThis as any).reearth.on("update", () => {
+  updateTheme();
 });
