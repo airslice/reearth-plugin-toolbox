@@ -26,7 +26,3 @@ extensions:
               type: string
               title: Primary Color
               ui: color
-            - id: secondaryColor
-              type: string
-              title: Secondary Color
-              ui: color
