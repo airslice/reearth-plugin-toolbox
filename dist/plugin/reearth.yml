@@ -7,8 +7,8 @@ extensions:
     name: Pedestrian
     schema:
       groups:
-        - id: default
-          title: Pedestrian
+        - id: customize
+          title: Customize
           fields:
             - id: theme
               type: string
