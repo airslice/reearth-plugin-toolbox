@@ -1,9 +1,13 @@
 import Button from "@web/components/atoms/Button";
-import EmptyInfo from "@web/components/atoms/EmptyInfo";
 import Line from "@web/components/atoms/Line";
+import Tag from "@web/components/atoms/Tag";
+import TextArea from "@web/components/atoms/TextArea";
 import DropdownBox from "@web/components/molecules/DropdownBox";
 import Panel from "@web/components/molecules/Panel";
+import type { Theme } from "@web/theme/common";
+import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
+import { postMsg } from "@web/utils/common";
 import {
   useEffect,
   useState,
@@ -14,9 +18,6 @@ import {
 } from "react";
 
 import { mockTagsData } from "./mock";
-
-import "@web/components/molecules/Common/common.css";
-import "./app.css";
 
 type Tag = {
   id: string;
@@ -31,6 +32,9 @@ export type TagGroup = {
 };
 
 const App = () => {
+  const [theme, setTheme] = useState("dark");
+  const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
   const [tags, setTags] = useState<TagGroup[]>([]);
 
   const tagStatus = useRef(new Map());
@@ -79,20 +83,8 @@ const App = () => {
       }
     });
 
-    (globalThis as any).parent.postMessage(
-      {
-        act: "showLayers",
-        payload: visibleLayers,
-      },
-      "*"
-    );
-    (globalThis as any).parent.postMessage(
-      {
-        act: "hideLayers",
-        payload: invisibleLayers,
-      },
-      "*"
-    );
+    postMsg("showLayers", visibleLayers);
+    postMsg("hideLayers", invisibleLayers);
   }, [tags, layerTags, tagLayers]);
 
   const toggleTag = useCallback(
@@ -109,13 +101,7 @@ const App = () => {
   }, [tagRenderKey]);
 
   const onResize = useCallback((width: number, height: number) => {
-    (globalThis as any).parent.postMessage(
-      {
-        act: "resize",
-        payload: [width, height],
-      },
-      "*"
-    );
+    postMsg("resize", [width, height]);
   }, []);
 
   const handleTagGroupEnableChange = useCallback(
@@ -159,84 +145,83 @@ const App = () => {
   const actHandles: actHandles = useMemo(() => {
     return {
       tags: processTagsData,
+      setTheme: ({
+        theme,
+        overriddenTheme,
+      }: {
+        theme: string;
+        overriddenTheme: Theme;
+      }) => {
+        setTheme(theme);
+        setOverriddenTheme(overriddenTheme);
+      },
     };
   }, [processTagsData]);
 
-  const init = useCallback(() => {
+  useEffect(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
       if (msg.source !== (globalThis as any).parent || !msg.data.act) return;
       actHandles[msg.data.act as keyof actHandles]?.(msg.data.payload);
     });
-
-    (globalThis as any).parent.postMessage({ act: "getTags" }, "*");
+    postMsg("getTheme");
+    postMsg("getTags");
 
     if (import.meta.env.MODE === "development") {
       processTagsData(mockTagsData);
     }
-  }, [actHandles, processTagsData]);
-
-  useEffect(() => {
-    init();
-  }, [init]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Panel title="Tag Filter" icon="filter" onResize={onResize}>
-      <>
-        {tags.length > 0 ? (
-          <>
-            {tags.map((tagGroup) => (
-              <DropdownBox
-                key={tagGroup.id}
-                title={tagGroup.name}
-                contentId={tagGroup.id}
-                switcher={true}
-                fixedContent={tagGroup.tags
-                  .filter((tag) => tagStatus.current.get(tag.id) === true)
-                  .map((tag) => (
-                    <Button
-                      text={tag.name}
-                      key={tag.id}
-                      buttonType="tag"
-                      compact={true}
-                      status={tagStatus.current.get(tag.id) ? "on" : "off"}
-                      onClick={() => {
-                        toggleTag(tag.id);
-                      }}
-                    />
-                  ))}
-                mainContent={tagGroup.tags
-                  .filter((tag) => tagStatus.current.get(tag.id) === false)
-                  .map((tag) => (
-                    <Button
-                      text={tag.name}
-                      key={tag.id}
-                      buttonType="tag"
-                      buttonStyle="secondary"
-                      compact={true}
-                      status={tagStatus.current.get(tag.id) ? "on" : "off"}
-                      onClick={() => {
-                        toggleTag(tag.id);
-                      }}
-                    />
-                  ))}
-                onResize={forceUpdate}
-                onSwitchChange={handleTagGroupEnableChange}
-              ></DropdownBox>
-            ))}
-            <Line>
-              <Button
-                buttonStyle="secondary"
-                extendWidth
-                text="Filter"
-                onClick={filter}
-              />
-            </Line>
-          </>
-        ) : (
-          <EmptyInfo text="NO TAG GROUP SELECTED" />
-        )}
-      </>
-    </Panel>
+    <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
+      <Panel title="Tag Filter" icon="filter" onResize={onResize}>
+        <>
+          {tags.length > 0 ? (
+            <>
+              {tags.map((tagGroup) => (
+                <DropdownBox
+                  key={tagGroup.id}
+                  title={tagGroup.name}
+                  contentId={tagGroup.id}
+                  switcher={true}
+                  fixedContent={tagGroup.tags
+                    .filter((tag) => tagStatus.current.get(tag.id) === true)
+                    .map((tag) => (
+                      <Tag
+                        text={tag.name}
+                        key={tag.id}
+                        status={tagStatus.current.get(tag.id) ? "on" : "off"}
+                        onClick={() => {
+                          toggleTag(tag.id);
+                        }}
+                      />
+                    ))}
+                  mainContent={tagGroup.tags
+                    .filter((tag) => tagStatus.current.get(tag.id) === false)
+                    .map((tag) => (
+                      <Tag
+                        text={tag.name}
+                        key={tag.id}
+                        status={tagStatus.current.get(tag.id) ? "on" : "off"}
+                        onClick={() => {
+                          toggleTag(tag.id);
+                        }}
+                      />
+                    ))}
+                  onResize={forceUpdate}
+                  onSwitchChange={handleTagGroupEnableChange}
+                ></DropdownBox>
+              ))}
+              <Line>
+                <Button extendWidth text="Search" onClick={filter} />
+              </Line>
+            </>
+          ) : (
+            <TextArea text="NO TAG GROUP SELECTED" />
+          )}
+        </>
+      </Panel>
+    </ThemeProvider>
   );
 };
 

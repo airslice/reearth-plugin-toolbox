@@ -1,10 +1,11 @@
+import { css } from "@emotion/react";
 import styled from "@emotion/styled";
+import Icon from "@web/components/atoms/Icon";
 
 export type Props = {
   text: string;
-  buttonType?: "button" | "tag";
+  icon?: string;
   buttonStyle?: "primary" | "secondary";
-  compact?: boolean;
   status?: string;
   disabled?: boolean;
   extendWidth?: boolean;
@@ -13,9 +14,8 @@ export type Props = {
 
 const Button: React.FC<Props> = ({
   text,
-  buttonType = "button",
+  icon,
   buttonStyle = "primary",
-  compact = false,
   status,
   disabled = false,
   extendWidth = false,
@@ -23,24 +23,25 @@ const Button: React.FC<Props> = ({
 }) => {
   return (
     <StyledButton
-      buttonType={buttonType}
       buttonStyle={buttonStyle}
-      compact={compact}
       onClick={onClick}
-      off={status === "off"}
+      status={status ?? ""}
       disabled={disabled}
       extendWidth={extendWidth}
     >
+      {icon && (
+        <IconArea>
+          <Icon icon={icon} size={16} />
+        </IconArea>
+      )}
       {text}
     </StyledButton>
   );
 };
 
 const StyledButton = styled.button<{
-  buttonType: string;
   buttonStyle: string;
-  compact: boolean;
-  off: boolean;
+  status: string;
   disabled: boolean;
   extendWidth: boolean;
 }>`
@@ -48,47 +49,83 @@ const StyledButton = styled.button<{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: ${({ compact }) => (compact ? "2px 4px" : "2px 10px")};
+  padding: 2px 8px;
+  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
+  height: 30px;
   border-radius: 4px;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 19px;
   outline: none;
-  border: ${({ off, disabled, buttonStyle }) =>
-    buttonStyle === "secondary"
-      ? "1px solid #595959"
-      : off || disabled
-      ? "1px solid #262626"
-      : "1px solid #3b3cd0"};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
+  transition: all 0.1s ease-out;
+  border: 1px solid ${(props) => props.theme.colors.primary};
   cursor: pointer;
   user-select: none;
-  background: ${({ off, disabled, buttonStyle }) =>
-    buttonStyle === "secondary"
-      ? "none"
-      : off || disabled
-      ? "#262626"
-      : "#3b3cd0"};
-  color: ${({ off, disabled }) => (off || disabled ? "#595959" : "#ededed")};
-  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
-  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
-  height: ${({ buttonType }) => (buttonType === "button" ? "30px" : "23px")};
-  transition: all 0.1s ease-out;
 
-  &:hover {
-    background: ${({ off, disabled, buttonStyle }) =>
-      off || disabled
-        ? buttonStyle === "secondary"
-          ? "none"
-          : "#262626"
-        : "#3b3cd0"};
-    border: ${({ off, disabled, buttonStyle }) =>
-      off || disabled
-        ? buttonStyle === "secondary"
-          ? "1px solid #595959"
-          : "1px solid #262626"
-        : "1px solid #3b3cd0"};
+  ${(props) => {
+    if (props.buttonStyle === "secondary") {
+      return css`
+        background: none;
+        color: ${props.theme.colors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    } else {
+      // primary
+      return css`
+        background: ${props.theme.colors.primary};
+        color: ${props.theme.fontColors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    }
+  }};
+
+  ${(props) => {
+    if (props.status === "on") {
+      return css`
+        background: ${props.theme.colors.primary};
+        color: ${props.theme.fontColors.primary};
+        border-color: ${props.theme.colors.primary};
+      `;
+    }
+  }};
+
+  ${(props) => {
+    if (props.disabled) {
+      return css`
+        background: ${props.theme.colors.disabled};
+        color: ${props.theme.fontColors.disabled};
+        border-color: ${props.theme.colors.disabled};
+      `;
+    }
+  }};
+
+  @media (any-hover: hover) {
+    &:hover {
+      ${(props) => {
+        if (props.buttonStyle === "secondary") {
+          return css`
+            background: ${props.theme.colors.primary};
+            color: ${props.theme.fontColors.primary};
+            border-color: ${props.theme.colors.primary};
+          `;
+        } else {
+          // primary
+          return css`
+            background: ${props.theme.colors.primary};
+            color: ${props.theme.fontColors.primary};
+            border-color: ${props.theme.colors.primary};
+          `;
+        }
+      }};
+    }
   }
+`;
+
+const IconArea = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 5px;
 `;
 
 export default Button;
