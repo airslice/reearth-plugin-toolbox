@@ -7,13 +7,13 @@ const updateTheme = () => {
   (globalThis as any).reearth.ui.postMessage({
     act: "setTheme",
     payload: {
-      theme: (globalThis as any).reearth.widget.property.customize.theme,
+      theme: (globalThis as any).reearth.widget.property.customize?.theme,
       overriddenTheme: {
         colors: {
           background: (globalThis as any).reearth.widget.property.customize
-            .backgroundColor,
+            ?.backgroundColor,
           primary: (globalThis as any).reearth.widget.property.customize
-            .primaryColor,
+            ?.primaryColor,
         },
       },
     },
