@@ -7,8 +7,8 @@ extensions:
     name: Starter
     schema:
       groups:
-        - id: default
-          title: Starter
+        - id: customize
+          title: Customize
           fields:
             - id: theme
               type: string
