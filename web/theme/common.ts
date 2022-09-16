@@ -19,6 +19,7 @@ export const commonTheme = {
 };
 
 export type Theme = {
+  name: string;
   colors: { [id: string]: any };
   fontColors: { [id: string]: any };
   borderColors: { [id: string]: any };
