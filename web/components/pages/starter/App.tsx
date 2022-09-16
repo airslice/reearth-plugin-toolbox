@@ -100,6 +100,8 @@ const App = () => {
           </Line>
         </Group>
 
+        <TextArea minHeight={60}>NO TAG GROUP SELECTED.</TextArea>
+
         <Group title="Named Group">
           <Tag text="tag" buttonType="tag" />
           <Tag text="off tag" buttonType="tag" status="off" />
