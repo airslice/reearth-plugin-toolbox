@@ -250,6 +250,7 @@ const App = () => {
               buttonStyle="secondary"
               status={moveForwardOn ? "on" : ""}
               disabled={!moveEnabled}
+              width={56}
               onClick={() => handleMove("moveForward")}
             />
           </Line>
