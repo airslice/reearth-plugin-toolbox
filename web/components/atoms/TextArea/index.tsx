@@ -25,7 +25,7 @@ const Text = styled.div`
   font-weight: 400;
   line-height: 22px;
   text-align: center;
-  color: ${(props) => props.theme.colors.weakest};
+  color: ${(props) => props.theme.colors.main};
   user-select: none;
 `;
 
