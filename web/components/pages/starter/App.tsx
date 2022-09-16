@@ -21,7 +21,7 @@ import {
 
 const App = () => {
   const isActive = useRef(false);
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
 
   const updateReducer = useCallback(
@@ -91,8 +91,16 @@ const App = () => {
           <Line>
             <Button text="ON" buttonStyle="secondary" extendWidth status="on" />
             <Button text="Disabled" extendWidth disabled />
+            <Button
+              text="Disabled"
+              buttonStyle="secondary"
+              extendWidth
+              disabled
+            />
           </Line>
         </Group>
+
+        <TextArea minHeight={60}>NO TAG GROUP SELECTED.</TextArea>
 
         <Group title="Named Group">
           <Tag text="tag" buttonType="tag" />
