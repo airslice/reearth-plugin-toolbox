@@ -180,7 +180,7 @@ const App = () => {
               </Line>
             </>
           ) : (
-            <TextArea text="NO TAG GROUP SELECTED" />
+            <TextArea minHeight={60} text="NO TAG GROUP SELECTED" />
           )}
         </>
       </Panel>
