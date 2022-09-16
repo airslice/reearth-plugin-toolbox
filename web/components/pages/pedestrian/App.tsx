@@ -29,6 +29,8 @@ const App = () => {
   const [moveUpOn, setMoveUpOn] = useState(false);
   const [moveDownOn, setMoveDownOn] = useState(false);
 
+  const [moveEnabled, setMoveEnabled] = useState(false);
+
   type moveType =
     | "moveForward"
     | "moveBackward"
@@ -102,6 +104,7 @@ const App = () => {
     setMoveRightOn(false);
     setMoveUpOn(false);
     setMoveDownOn(false);
+    setMoveEnabled(false);
   }, []);
 
   const handleActiveChange = useCallback(
@@ -132,6 +135,7 @@ const App = () => {
     if (mousedata.lat !== undefined && mousedata.lng !== undefined) {
       isPicking.current = false;
       isPedestrianMode.current = true;
+      setMoveEnabled(true);
 
       postMsg("enterPedestrianMode", {
         lng: mousedata.lng,
@@ -245,6 +249,7 @@ const App = () => {
               icon="arrowUp"
               buttonStyle="secondary"
               status={moveForwardOn ? "on" : ""}
+              disabled={!moveEnabled}
               onClick={() => handleMove("moveForward")}
             />
           </Line>
@@ -254,6 +259,7 @@ const App = () => {
               icon="arrowLeft"
               buttonStyle="secondary"
               status={moveLeftOn ? "on" : ""}
+              disabled={!moveEnabled}
               extendWidth={true}
               onClick={() => handleMove("moveLeft")}
             />
@@ -262,6 +268,7 @@ const App = () => {
               icon="arrowDown"
               buttonStyle="secondary"
               status={moveBackwardOn ? "on" : ""}
+              disabled={!moveEnabled}
               extendWidth={true}
               onClick={() => handleMove("moveBackward")}
             />
@@ -270,6 +277,7 @@ const App = () => {
               icon="arrowRight"
               buttonStyle="secondary"
               status={moveRightOn ? "on" : ""}
+              disabled={!moveEnabled}
               extendWidth={true}
               onClick={() => handleMove("moveRight")}
             />
@@ -281,6 +289,7 @@ const App = () => {
             icon="arrowLineUp"
             buttonStyle="secondary"
             status={moveUpOn ? "on" : ""}
+            disabled={!moveEnabled}
             extendWidth={true}
             onClick={() => handleMove("moveUp")}
           />
@@ -289,6 +298,7 @@ const App = () => {
             icon="arrowLineDown"
             buttonStyle="secondary"
             status={moveDownOn ? "on" : ""}
+            disabled={!moveEnabled}
             extendWidth={true}
             onClick={() => handleMove("moveDown")}
           />
