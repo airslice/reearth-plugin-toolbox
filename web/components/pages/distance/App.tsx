@@ -136,13 +136,13 @@ const App = () => {
     [calcDistance]
   );
 
-  const addLine = useCallback((lat: number, lng: number) => {
-    postMsg("addLine", {
-      lat,
-      lng,
-      mIndex: measureIndex.current,
-    });
-  }, []);
+  // const addLine = useCallback((lat: number, lng: number) => {
+  //   postMsg("addLine", {
+  //     lat,
+  //     lng,
+  //     mIndex: measureIndex.current,
+  //   });
+  // }, []);
 
   const updateLine = useCallback(() => {
     if (points.current.length > 1) {
@@ -315,12 +315,14 @@ const App = () => {
 
   useEffect(() => {
     (globalThis as any).addEventListener("message", (msg: any) => {
-      if (msg.source !== (globalThis as any).parent || !msg.data.act) return;
-      actHandles[msg.data.act as keyof actHandles]?.(msg.data.payload);
+      if (msg.source !== (globalThis as any).parent) return;
+      const data =
+        typeof msg.data === "string" ? JSON.parse(msg.data) : msg.data;
+      actHandles[data.act as keyof actHandles]?.(data.payload);
     });
 
     //
-    addLine(0, 0);
+    // addLine(0, 0);
     postMsg("getTheme");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

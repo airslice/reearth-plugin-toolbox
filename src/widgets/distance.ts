@@ -236,10 +236,11 @@ const handles: actHandles = {
 });
 
 (globalThis as any).reearth.on("mousemove", (mousedata: any) => {
-  (globalThis as any).reearth.ui.postMessage({
+  const data = JSON.stringify({
     act: "mousemove",
     payload: mousedata,
   });
+  (globalThis as any).reearth.ui.postMessage(data);
 });
 
 (globalThis as any).reearth.on("rightclick", (mousedata: any) => {
