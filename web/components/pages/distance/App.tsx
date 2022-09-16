@@ -44,11 +44,9 @@ const App = () => {
   const [totalDistance, setTotalDistance] = useState<string>("0.00");
   const [displayUnit, setDisplayUnit] = useState("km");
 
-  const handleActiveChange = useCallback((active: boolean) => {
-    isActive.current = active;
-  }, []);
-
   const clear = useCallback(() => {
+    if (points.current.length === 0) return;
+
     postMsg(
       "clearPoints",
       points.current.map((point) => point.layerId)
@@ -61,6 +59,10 @@ const App = () => {
     // isModifying.current = false;
     // modifyingPoint.current = undefined;
     setTotalDistance("0.00");
+
+    if (isRecording.current) {
+      measureIndex.current += 1;
+    }
   }, []);
 
   const start = useCallback(() => {
@@ -76,6 +78,16 @@ const App = () => {
       setButtonText("Start");
     }
   }, []);
+
+  const handleActiveChange = useCallback(
+    (active: boolean) => {
+      isActive.current = active;
+      if (!isActive.current) {
+        finish();
+      }
+    },
+    [finish]
+  );
 
   const toggleRecording = useCallback(() => {
     if (!isRecording.current) {
@@ -336,7 +348,7 @@ const App = () => {
             text="Clear"
             onClick={clear}
             extendWidth={true}
-            disabled={!!isRecording.current || points.current.length === 0}
+            buttonStyle="secondary"
           />
         </Line>
       </Panel>
