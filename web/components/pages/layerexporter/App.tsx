@@ -124,7 +124,7 @@ const App = () => {
             We now only support file export in csv format.
           </div>
         </TextArea>
-        <Button text="Export" buttonStyle="secondary" onClick={exportCSV} />
+        <Button text="Export" onClick={exportCSV} />
       </Panel>
     </ThemeProvider>
   );
