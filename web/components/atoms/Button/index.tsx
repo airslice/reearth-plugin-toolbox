@@ -34,7 +34,7 @@ const Button: React.FC<Props> = ({
           <Icon icon={icon} size={16} />
         </IconArea>
       )}
-      {text}
+      <TextWrapper>{text}</TextWrapper>
     </StyledButton>
   );
 };
@@ -45,6 +45,7 @@ const StyledButton = styled.button<{
   disabled: boolean;
   extendWidth: boolean;
 }>`
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -54,7 +55,7 @@ const StyledButton = styled.button<{
   height: 30px;
   border-radius: 4px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
   outline: none;
   pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
@@ -92,11 +93,19 @@ const StyledButton = styled.button<{
 
   ${(props) => {
     if (props.disabled) {
-      return css`
-        background: ${props.theme.colors.disabled};
-        color: ${props.theme.fontColors.disabled};
-        border-color: ${props.theme.colors.disabled};
-      `;
+      if (props.buttonStyle === "secondary") {
+        return css`
+          background: none;
+          color: ${props.theme.colors.disabled};
+          border-color: ${props.theme.colors.disabled};
+        `;
+      } else {
+        return css`
+          background: ${props.theme.colors.disabled};
+          color: ${props.theme.fontColors.disabled};
+          border-color: ${props.theme.colors.disabled};
+        `;
+      }
     }
   }};
 
@@ -115,11 +124,26 @@ const StyledButton = styled.button<{
             background: ${props.theme.colors.primary};
             color: ${props.theme.fontColors.primary};
             border-color: ${props.theme.colors.primary};
+            &::before {
+              content: "";
+              display: block;
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              background: ${props.theme.name === "light"
+                ? "rgba(255,255,255,.05)"
+                : "rgba(255,255,255,.05)"};
+            }
           `;
         }
       }};
     }
   }
+`;
+
+const TextWrapper = styled.div`
+  position: relative;
+  z-index: 2;
 `;
 
 const IconArea = styled.div`

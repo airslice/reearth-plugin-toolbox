@@ -28,12 +28,12 @@ const StyledTag = styled.button<{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 2px 10px;
+  padding: 2px 4px;
   width: auto;
   height: 23px;
   border-radius: 4px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
   outline: none;
   transition: all 0.1s ease-out;
