@@ -3,6 +3,7 @@ import _ from "lodash";
 import { commonTheme } from "../common";
 
 export default _.merge({}, commonTheme, {
+  name: "light",
   colors: {
     background: "#ECECEC",
     // buttons
