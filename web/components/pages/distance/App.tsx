@@ -136,13 +136,13 @@ const App = () => {
     [calcDistance]
   );
 
-  // const addLine = useCallback((lat: number, lng: number) => {
-  //   postMsg("addLine", {
-  //     lat,
-  //     lng,
-  //     mIndex: measureIndex.current,
-  //   });
-  // }, []);
+  const addLine = useCallback((lat: number, lng: number) => {
+    postMsg("addLine", {
+      lat,
+      lng,
+      mIndex: measureIndex.current,
+    });
+  }, []);
 
   const updateLine = useCallback(() => {
     if (points.current.length > 1) {
@@ -194,13 +194,13 @@ const App = () => {
       if (isRecording.current && mousedata.lat && mousedata.lng) {
         addPoint(mousedata.lat, mousedata.lng);
         if (points.current.length === 1) {
-          // addLine(mousedata.lat, mousedata.lng);
+          addLine(mousedata.lat, mousedata.lng);
         } else {
           updateLine();
         }
       }
     },
-    [addPoint, updateLine]
+    [addPoint, updateLine, addLine]
   );
 
   const handleMouseMove = useCallback(
