@@ -98,19 +98,24 @@ const StyledButton = styled.button<{
 
   ${(props) => {
     if (props.disabled) {
-      if (props.buttonStyle === "secondary") {
-        return css`
-          background: none;
-          color: ${props.theme.colors.disabled};
-          border-color: ${props.theme.colors.disabled};
-        `;
-      } else {
-        return css`
-          background: ${props.theme.colors.disabled};
-          color: ${props.theme.fontColors.disabled};
-          border-color: ${props.theme.colors.disabled};
-        `;
-      }
+      return css`
+        background: none;
+        color: ${props.theme.colors.disabled};
+        border-color: ${props.theme.colors.disabled};
+      `;
+      // if (props.buttonStyle === "secondary") {
+      //   return css`
+      //     background: none;
+      //     color: ${props.theme.colors.disabled};
+      //     border-color: ${props.theme.colors.disabled};
+      //   `;
+      // } else {
+      //   return css`
+      //     background: ${props.theme.colors.disabled};
+      //     color: ${props.theme.fontColors.disabled};
+      //     border-color: ${props.theme.colors.disabled};
+      //   `;
+      // }
     }
   }};
 

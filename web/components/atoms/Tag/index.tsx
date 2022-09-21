@@ -62,9 +62,9 @@ const StyledTag = styled.button<{
     if (props.disabled) {
       return css`
         pointer-events: none;
-        background: ${props.theme.colors.disabled};
+        background: none;
+        color: ${props.theme.colors.disabled};
         border-color: ${props.theme.colors.disabled};
-        color: ${props.theme.fontColors.disabled};
       `;
     }
   }};
