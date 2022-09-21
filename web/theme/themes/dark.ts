@@ -8,8 +8,8 @@ export default _.merge({}, commonTheme, {
     background: "#171618",
     // buttons
     primary: "#3B3CD0",
-    disabled: commonTheme.colors.gray[7],
-    off: commonTheme.colors.gray[7],
+    disabled: commonTheme.colors.gray[8],
+    off: commonTheme.colors.gray[10],
     // common
     strongest: commonTheme.colors.gray[2],
     main: commonTheme.colors.gray[6],
@@ -18,8 +18,8 @@ export default _.merge({}, commonTheme, {
   },
   fontColors: {
     // buttons
-    primary: "#FAFAFA",
-    disabled: "#FAFAFA",
-    off: "#FAFAFA",
+    primary: commonTheme.colors.gray[2],
+    disabled: commonTheme.colors.gray[2],
+    off: commonTheme.colors.gray[6],
   },
 });
