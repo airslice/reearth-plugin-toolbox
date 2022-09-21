@@ -46,20 +46,22 @@ const findToolboxLayerId = (id: string) => {
 };
 
 const updateTheme = () => {
-  (globalThis as any).reearth.ui.postMessage({
-    act: "setTheme",
-    payload: {
-      theme: (globalThis as any).reearth.widget.property.customize?.theme,
-      overriddenTheme: {
-        colors: {
-          background: (globalThis as any).reearth.widget.property.customize
-            ?.backgroundColor,
-          primary: (globalThis as any).reearth.widget.property.customize
-            ?.primaryColor,
+  (globalThis as any).reearth.ui.postMessage(
+    JSON.stringify({
+      act: "setTheme",
+      payload: {
+        theme: (globalThis as any).reearth.widget.property.customize?.theme,
+        overriddenTheme: {
+          colors: {
+            background: (globalThis as any).reearth.widget.property.customize
+              ?.backgroundColor,
+            primary: (globalThis as any).reearth.widget.property.customize
+              ?.primaryColor,
+          },
         },
       },
-    },
-  });
+    })
+  );
 };
 
 const handles: actHandles = {
@@ -119,13 +121,15 @@ const handles: actHandles = {
       toolboxFolderId
     );
 
-    (globalThis as any).reearth.ui.postMessage({
-      act: "pointAdded",
-      payload: {
-        index,
-        layerId: findToolboxLayerId(id),
-      },
-    });
+    (globalThis as any).reearth.ui.postMessage(
+      JSON.stringify({
+        act: "pointAdded",
+        payload: {
+          index,
+          layerId: findToolboxLayerId(id),
+        },
+      })
+    );
 
     forceRerender();
   },
@@ -185,12 +189,14 @@ const handles: actHandles = {
 
     const lineLayerId = findToolboxLayerId(id);
 
-    (globalThis as any).reearth.ui.postMessage({
-      act: "lineAdded",
-      payload: {
-        layerId: lineLayerId,
-      },
-    });
+    (globalThis as any).reearth.ui.postMessage(
+      JSON.stringify({
+        act: "lineAdded",
+        payload: {
+          layerId: lineLayerId,
+        },
+      })
+    );
 
     (globalThis as any).reearth.layers.hide(lineLayerId);
   },
@@ -229,10 +235,12 @@ const handles: actHandles = {
 });
 
 (globalThis as any).reearth.on("click", (mousedata: any) => {
-  (globalThis as any).reearth.ui.postMessage({
-    act: "click",
-    payload: mousedata,
-  });
+  (globalThis as any).reearth.ui.postMessage(
+    JSON.stringify({
+      act: "click",
+      payload: mousedata,
+    })
+  );
 });
 
 (globalThis as any).reearth.on("mousemove", (mousedata: any) => {
@@ -244,10 +252,12 @@ const handles: actHandles = {
 });
 
 (globalThis as any).reearth.on("rightclick", (mousedata: any) => {
-  (globalThis as any).reearth.ui.postMessage({
-    act: "rightclick",
-    payload: mousedata,
-  });
+  (globalThis as any).reearth.ui.postMessage(
+    JSON.stringify({
+      act: "rightclick",
+      payload: mousedata,
+    })
+  );
 });
 
 (globalThis as any).reearth.on("update", () => {
