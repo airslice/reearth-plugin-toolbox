@@ -60,7 +60,7 @@ if (!fs.existsSync(`${root}/web/components/pages/${widgetId}`)) {
   fs.mkdirSync(`${root}/web/components/pages/${widgetId}`);
 }
 
-["app.css", "App.tsx", "index.html", "main.tsx"].forEach((webFile) => {
+["App.tsx", "index.html", "main.tsx"].forEach((webFile) => {
   fs.writeFileSync(
     `${root}/web/components/pages/${widgetId}/${webFile}`,
     fs

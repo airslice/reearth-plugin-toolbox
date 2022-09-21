@@ -8,6 +8,7 @@ export type Props = {
   buttonStyle?: "primary" | "secondary";
   status?: string;
   disabled?: boolean;
+  width?: number;
   extendWidth?: boolean;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 };
@@ -17,6 +18,7 @@ const Button: React.FC<Props> = ({
   icon,
   buttonStyle = "primary",
   status,
+  width,
   disabled = false,
   extendWidth = false,
   onClick,
@@ -27,6 +29,7 @@ const Button: React.FC<Props> = ({
       onClick={onClick}
       status={status ?? ""}
       disabled={disabled}
+      width={width}
       extendWidth={extendWidth}
     >
       {icon && (
@@ -43,6 +46,7 @@ const StyledButton = styled.button<{
   buttonStyle: string;
   status: string;
   disabled: boolean;
+  width?: number;
   extendWidth: boolean;
 }>`
   position: relative;
@@ -51,7 +55,8 @@ const StyledButton = styled.button<{
   align-items: center;
   justify-content: center;
   padding: 2px 8px;
-  width: ${({ extendWidth }) => (extendWidth ? "100%" : "auto")};
+  width: ${(props) =>
+    props.extendWidth ? "100%" : props.width ? `${props.width}px` : "auto"};
   height: 30px;
   border-radius: 4px;
   font-style: normal;
@@ -93,19 +98,24 @@ const StyledButton = styled.button<{
 
   ${(props) => {
     if (props.disabled) {
-      if (props.buttonStyle === "secondary") {
-        return css`
-          background: none;
-          color: ${props.theme.colors.disabled};
-          border-color: ${props.theme.colors.disabled};
-        `;
-      } else {
-        return css`
-          background: ${props.theme.colors.disabled};
-          color: ${props.theme.fontColors.disabled};
-          border-color: ${props.theme.colors.disabled};
-        `;
-      }
+      return css`
+        background: none;
+        color: ${props.theme.colors.disabled};
+        border-color: ${props.theme.colors.disabled};
+      `;
+      // if (props.buttonStyle === "secondary") {
+      //   return css`
+      //     background: none;
+      //     color: ${props.theme.colors.disabled};
+      //     border-color: ${props.theme.colors.disabled};
+      //   `;
+      // } else {
+      //   return css`
+      //     background: ${props.theme.colors.disabled};
+      //     color: ${props.theme.fontColors.disabled};
+      //     border-color: ${props.theme.colors.disabled};
+      //   `;
+      // }
     }
   }};
 

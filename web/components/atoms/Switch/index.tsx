@@ -21,7 +21,7 @@ const Wrapper = styled.div<{ enabled: boolean }>`
   border-style: solid;
   border-radius: 16px;
   border-color: ${(props) =>
-    props.enabled ? props.theme.colors.primary : props.theme.colors.off};
+    props.enabled ? props.theme.colors.primary : props.theme.colors.weakest};
   padding: 1px;
   transition: all 0.25s ease-in-out;
   cursor: pointer;
@@ -34,7 +34,7 @@ const Inner = styled.div<{ enabled: boolean }>`
   transition: all 0.25s ease-in-out;
   left: ${({ enabled }) => (enabled ? "calc(100% - 12px)" : "0")};
   background: ${(props) =>
-    props.enabled ? props.theme.colors.primary : props.theme.colors.off};
+    props.enabled ? props.theme.colors.primary : props.theme.colors.weakest};
   border-radius: 16px;
 `;
 
