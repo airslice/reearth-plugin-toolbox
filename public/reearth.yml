@@ -1,5 +1,5 @@
 name: Layer Exporter
-version: 0.1.1
+version: 0.1.2
 id: reearth-plugin-toolbox-layerexporter
 extensions:
   - id: layerexporter
