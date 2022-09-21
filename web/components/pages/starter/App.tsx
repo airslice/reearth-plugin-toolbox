@@ -21,8 +21,12 @@ import {
 
 const App = () => {
   const isActive = useRef(false);
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+
+  const toggleTheme = useCallback(() => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  }, [theme]);
 
   const updateReducer = useCallback(
     (num: number): number => (num + 1) % 1_000_000,
@@ -78,7 +82,12 @@ const App = () => {
         onResize={onResize}
         onFoldChange={handleActiveChange}
       >
-        <Button text="With Icon" icon="sun" extendWidth />
+        <Button
+          text="Toggle Theme"
+          icon="sun"
+          extendWidth
+          onClick={toggleTheme}
+        />
 
         <Divider />
 
