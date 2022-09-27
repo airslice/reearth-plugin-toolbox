@@ -100,6 +100,13 @@ const handles: actHandles = {
   },
   exitPedestrianMode: (resetCamera: boolean) => {
     (globalThis as any).reearth.camera.enableScreenSpaceController(true);
+    flags.looking = false;
+    flags.moveForward = false;
+    flags.moveBackward = false;
+    flags.moveUp = false;
+    flags.moveDown = false;
+    flags.moveLeft = false;
+    flags.moveRight = false;
     if (resetCamera && initCameraPos) {
       const curCamera = (globalThis as any).reearth.camera.position;
       (globalThis as any).reearth.camera.flyTo(
