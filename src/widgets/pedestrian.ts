@@ -34,7 +34,8 @@ const oppositeMove = new Map<keyof typeof flags, keyof typeof flags>([
 ]);
 
 const updateCamera = () => {
-  const moveRate = (globalThis as any).reearth.camera.position.height / 200.0;
+  let moveRate = (globalThis as any).reearth.camera.position.height / 100.0;
+  if (moveRate < 1) moveRate = 1;
 
   if (flags.moveForward) {
     (globalThis as any).reearth.camera.moveForward(moveRate);
@@ -46,7 +47,9 @@ const updateCamera = () => {
     (globalThis as any).reearth.camera.moveUp(moveRate);
   }
   if (flags.moveDown) {
-    (globalThis as any).reearth.camera.moveDown(moveRate);
+    if ((globalThis as any).reearth.camera.position.height > 3) {
+      (globalThis as any).reearth.camera.moveDown(moveRate);
+    }
   }
   if (flags.moveLeft) {
     (globalThis as any).reearth.camera.moveLeft(moveRate);
