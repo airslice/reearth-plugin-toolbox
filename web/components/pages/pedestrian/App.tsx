@@ -21,6 +21,15 @@ const App = () => {
   const isPicking = useRef(false);
   const isPedestrianMode = useRef(false);
 
+  const moveStatus = useRef({
+    moveForward: false,
+    moveBackward: false,
+    moveUp: false,
+    moveDown: false,
+    moveRight: false,
+    moveLeft: false,
+  });
+
   const [buttonText, setButtonText] = useState("Start");
   const [moveForwardOn, setMoveForwardOn] = useState(false);
   const [moveBackwardOn, setMoveBackwardOn] = useState(false);
@@ -39,38 +48,43 @@ const App = () => {
     | "moveRight"
     | "moveLeft";
 
-  const handleMove = useCallback(
-    (moveType: moveType, enable?: boolean) => {
-      if (!moveType || !isPedestrianMode.current) return;
-      const oppositeMoveTypeMap = new Map<moveType, moveType>([
+  const oppositeMoveTypeMap = useMemo(
+    () =>
+      new Map<moveType, moveType>([
         ["moveForward", "moveBackward"],
         ["moveBackward", "moveForward"],
         ["moveUp", "moveDown"],
         ["moveDown", "moveUp"],
         ["moveLeft", "moveRight"],
         ["moveRight", "moveLeft"],
-      ]);
-      const moveTypeStatusMap = new Map<moveType, boolean>([
-        ["moveForward", moveForwardOn],
-        ["moveBackward", moveBackwardOn],
-        ["moveUp", moveUpOn],
-        ["moveDown", moveDownOn],
-        ["moveRight", moveRightOn],
-        ["moveLeft", moveLeftOn],
-      ]);
-      const moveTypeStatusSetterMap = new Map<moveType, any>([
+      ]),
+    []
+  );
+
+  const moveTypeStatusSetterMap = useMemo(
+    () =>
+      new Map<moveType, any>([
         ["moveForward", setMoveForwardOn],
         ["moveBackward", setMoveBackwardOn],
         ["moveUp", setMoveUpOn],
         ["moveDown", setMoveDownOn],
         ["moveRight", setMoveRightOn],
         ["moveLeft", setMoveLeftOn],
-      ]);
-      const on =
-        enable === undefined ? !moveTypeStatusMap.get(moveType) : enable;
+      ]),
+    []
+  );
+
+  const handleMove = useCallback(
+    (moveType: moveType, enable?: boolean) => {
+      if (!moveType || !isPedestrianMode.current) return;
+
+      const on = enable === undefined ? !moveStatus.current[moveType] : enable;
+
       if (on) {
         const oppositeMoveType = oppositeMoveTypeMap.get(moveType);
-        if (oppositeMoveType && moveTypeStatusMap.get(oppositeMoveType)) {
+
+        if (oppositeMoveType && moveStatus.current[oppositeMoveType]) {
+          moveStatus.current[oppositeMoveType] = false;
           moveTypeStatusSetterMap.get(oppositeMoveType)(false);
           postMsg("endMove", oppositeMoveType);
         }
@@ -78,16 +92,11 @@ const App = () => {
       } else {
         postMsg("endMove", moveType);
       }
+
+      moveStatus.current[moveType] = on;
       moveTypeStatusSetterMap.get(moveType)(on);
     },
-    [
-      moveForwardOn,
-      moveBackwardOn,
-      moveUpOn,
-      moveDownOn,
-      moveRightOn,
-      moveLeftOn,
-    ]
+    [moveStatus, oppositeMoveTypeMap, moveTypeStatusSetterMap]
   );
 
   const onExit = useCallback(() => {
@@ -97,6 +106,14 @@ const App = () => {
     );
     isPedestrianMode.current = false;
     isPicking.current = false;
+    moveStatus.current = {
+      moveForward: false,
+      moveBackward: false,
+      moveUp: false,
+      moveDown: false,
+      moveRight: false,
+      moveLeft: false,
+    };
     setButtonText("Start");
     setMoveForwardOn(false);
     setMoveBackwardOn(false);
@@ -117,7 +134,7 @@ const App = () => {
     [onExit]
   );
 
-  const handleButtonClick = useCallback(() => {
+  const onMainButtonClick = useCallback(() => {
     if (isPedestrianMode.current || isPicking.current) {
       onExit();
     } else {
@@ -125,6 +142,14 @@ const App = () => {
       setButtonText("Exit");
     }
   }, [onExit]);
+
+  const onMoveButtonClick = useCallback(
+    (moveType: moveType) => {
+      (globalThis as any).parent.document.body.focus();
+      handleMove(moveType);
+    },
+    [handleMove]
+  );
 
   const onResize = useCallback((width: number, height: number) => {
     postMsg("resize", [width, height]);
@@ -216,6 +241,8 @@ const App = () => {
       false
     );
 
+    (globalThis as any).parent.document.body.setAttribute("tabindex", "0");
+
     postMsg("getTheme");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -233,7 +260,7 @@ const App = () => {
           text={buttonText}
           icon="crosshair"
           buttonStyle="secondary"
-          onClick={handleButtonClick}
+          onClick={onMainButtonClick}
         />
         <Line centered>
           <MouseTip />
@@ -251,7 +278,7 @@ const App = () => {
               status={moveForwardOn ? "on" : ""}
               disabled={!moveEnabled}
               width={56}
-              onClick={() => handleMove("moveForward")}
+              onClick={() => onMoveButtonClick("moveForward")}
             />
           </Line>
           <Line centered>
@@ -262,7 +289,7 @@ const App = () => {
               status={moveLeftOn ? "on" : ""}
               disabled={!moveEnabled}
               extendWidth={true}
-              onClick={() => handleMove("moveLeft")}
+              onClick={() => onMoveButtonClick("moveLeft")}
             />
             <Button
               text={"S"}
@@ -271,7 +298,7 @@ const App = () => {
               status={moveBackwardOn ? "on" : ""}
               disabled={!moveEnabled}
               extendWidth={true}
-              onClick={() => handleMove("moveBackward")}
+              onClick={() => onMoveButtonClick("moveBackward")}
             />
             <Button
               text={"D"}
@@ -280,7 +307,7 @@ const App = () => {
               status={moveRightOn ? "on" : ""}
               disabled={!moveEnabled}
               extendWidth={true}
-              onClick={() => handleMove("moveRight")}
+              onClick={() => onMoveButtonClick("moveRight")}
             />
           </Line>
         </ArrowWrapper>
@@ -292,7 +319,7 @@ const App = () => {
             status={moveUpOn ? "on" : ""}
             disabled={!moveEnabled}
             extendWidth={true}
-            onClick={() => handleMove("moveUp")}
+            onClick={() => onMoveButtonClick("moveUp")}
           />
           <Button
             text={"Shift"}
@@ -301,7 +328,7 @@ const App = () => {
             status={moveDownOn ? "on" : ""}
             disabled={!moveEnabled}
             extendWidth={true}
-            onClick={() => handleMove("moveDown")}
+            onClick={() => onMoveButtonClick("moveDown")}
           />
         </Line>
       </Panel>
