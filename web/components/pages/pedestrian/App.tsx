@@ -8,8 +8,9 @@ import Panel from "@web/components/molecules/Panel";
 import type { Theme } from "@web/theme/common";
 import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
+import L, { Map as LeafletMap } from "leaflet";
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
-import type { MouseEvent } from "src/apiType";
+import type { CameraPosition, MouseEvent } from "src/apiType";
 
 import { ReactComponent as MouseTip } from "./mousetip.svg";
 
@@ -155,19 +156,43 @@ const App = () => {
     postMsg("resize", [width, height]);
   }, []);
 
-  const onClick = useCallback((mousedata: MouseEvent) => {
-    if (!isActive.current || !isPicking.current) return;
-    if (mousedata.lat !== undefined && mousedata.lng !== undefined) {
-      isPicking.current = false;
-      isPedestrianMode.current = true;
-      setMoveEnabled(true);
-
-      postMsg("enterPedestrianMode", {
-        lng: mousedata.lng,
-        lat: mousedata.lat,
+  const updateMiniMap = useCallback((camera: CameraPosition) => {
+    if (miniMap.current) {
+      console.log(camera.lat, camera.lng);
+      miniMap.current.setView([camera.lat, camera.lng], 18, {
+        duration: 0.1,
+        easeLinearity: 1,
+        noMoveStart: true,
       });
     }
   }, []);
+
+  const onClick = useCallback(
+    (mousedata: MouseEvent) => {
+      if (!isActive.current || !isPicking.current) return;
+      if (mousedata.lat !== undefined && mousedata.lng !== undefined) {
+        isPicking.current = false;
+        isPedestrianMode.current = true;
+        setMoveEnabled(true);
+
+        updateMiniMap({
+          lat: mousedata.lat,
+          lng: mousedata.lng,
+          height: 0,
+          heading: 0,
+          pitch: 0,
+          roll: 0,
+          fov: 0.5,
+        });
+
+        postMsg("enterPedestrianMode", {
+          lng: mousedata.lng,
+          lat: mousedata.lat,
+        });
+      }
+    },
+    [updateMiniMap]
+  );
 
   const onMouseDown = useCallback((mousedata: MouseEvent) => {
     if (!isPedestrianMode.current) return;
@@ -215,8 +240,9 @@ const App = () => {
       mousedown: onMouseDown,
       mouseup: onMouseUp,
       setTheme: onSetTheme,
+      updateMiniMap: updateMiniMap,
     };
-  }, [onClick, onMouseDown, onMouseUp, onSetTheme]);
+  }, [onClick, onMouseDown, onMouseUp, onSetTheme, updateMiniMap]);
 
   const execEventHandels = useCallback(
     (msg: any) => {
@@ -225,6 +251,26 @@ const App = () => {
     },
     [actHandles]
   );
+
+  const miniMap = useRef<LeafletMap>();
+
+  const initMiniMap = useCallback(() => {
+    miniMap.current = L.map("minimap", {
+      zoomControl: false,
+      attributionControl: false,
+      dragging: false,
+      boxZoom: false,
+      doubleClickZoom: false,
+      keyboard: false,
+      scrollWheelZoom: false,
+      touchZoom: false,
+      easeLinearity: 1,
+    }).setView([35.68, 139.78], 18);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(miniMap.current);
+  }, []);
 
   useEffect(() => {
     (globalThis as any).addEventListener("message", execEventHandels);
@@ -244,6 +290,11 @@ const App = () => {
     (globalThis as any).parent.document.body.setAttribute("tabindex", "0");
 
     postMsg("getTheme");
+
+    if (!miniMap.current) {
+      initMiniMap();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -331,6 +382,9 @@ const App = () => {
             onClick={() => onMoveButtonClick("moveDown")}
           />
         </Line>
+        <Line>
+          <MiniMapContainer id="minimap" />
+        </Line>
       </Panel>
     </ThemeProvider>
   );
@@ -342,6 +396,11 @@ const ArrowWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+`;
+
+const MiniMapContainer = styled.div`
+  width: 100%;
+  height: 200px;
 `;
 
 function postMsg(act: string, payload?: any) {

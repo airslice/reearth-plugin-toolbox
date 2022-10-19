@@ -33,14 +33,23 @@ export const web =
       viteSingleFile(),
       serverHeaders(),
       svgr(),
-      mode === "production" &&
-        importToCDN({
-          modules: [autoComplete("react"), autoComplete("react-dom")],
-        }),
+      importToCDN({
+        modules: [
+          autoComplete("react"),
+          autoComplete("react-dom"),
+          {
+            name: "leaflet",
+            var: "L",
+            path: "https://unpkg.com/leaflet@1.7.1/dist/leaflet.js",
+            css: "https://unpkg.com/leaflet@1.7.1/dist/leaflet.css",
+          },
+        ],
+      }),
       mode === "production" &&
         viteExternalsPlugin({
           react: "React",
           "react-dom": "ReactDOM",
+          leaflet: "L",
         }),
     ],
     publicDir: false,

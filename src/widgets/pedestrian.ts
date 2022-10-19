@@ -72,6 +72,21 @@ const updateCamera = () => {
   ) {
     (globalThis as any).reearth.camera.moveOverTerrain(1.8);
   }
+
+  if (
+    flags.moveForward ||
+    flags.moveBackward ||
+    flags.moveUp ||
+    flags.moveDown ||
+    flags.moveRight ||
+    flags.moveLeft ||
+    flags.looking
+  ) {
+    (globalThis as any).reearth.ui.postMessage({
+      act: "updateMiniMap",
+      payload: (globalThis as any).reearth.camera.position,
+    });
+  }
 };
 
 const handles: actHandles = {
