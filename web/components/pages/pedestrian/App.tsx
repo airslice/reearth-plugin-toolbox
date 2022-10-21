@@ -10,12 +10,25 @@ import type { Theme } from "@web/theme/common";
 import ThemeProvider from "@web/theme/provider";
 import type { actHandles } from "@web/types";
 import L, { Map as LeafletMap } from "leaflet";
-import { useCallback, useEffect, useRef, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+  useReducer,
+} from "react";
 import type { CameraPosition, MouseEvent } from "src/apiType";
 
 import { ReactComponent as MouseTip } from "./mousetip.svg";
 
 const App = () => {
+  const updateReducer = useCallback(
+    (num: number): number => (num + 1) % 1_000_000,
+    []
+  );
+  const [, forceUpdate] = useReducer(updateReducer, 0);
+
   const [theme, setTheme] = useState("dark");
   const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
   const [showMiniMap, setShowMiniMap] = useState<boolean>(false);
@@ -126,6 +139,10 @@ const App = () => {
     setMoveDownOn(false);
     setMoveEnabled(false);
     setShowMiniMap(false);
+
+    setTimeout(() => {
+      forceUpdate();
+    }, 10);
   }, []);
 
   const handleActiveChange = useCallback(
@@ -165,6 +182,7 @@ const App = () => {
       miniMap.current.panTo([camera.lat, camera.lng], {
         animate: true,
         duration: 0.5,
+        easeLinearity: 1,
       });
       setMiniMapViewRotate(`${(camera.heading / Math.PI) * 180}deg`);
     }
@@ -177,16 +195,6 @@ const App = () => {
         isPicking.current = false;
         isPedestrianMode.current = true;
         setMoveEnabled(true);
-
-        // updateMiniMap({
-        //   lat: mousedata.lat,
-        //   lng: mousedata.lng,
-        //   height: 0,
-        //   heading: 0,
-        //   pitch: 0,
-        //   roll: 0,
-        //   fov: 0.5,
-        // });
 
         setShowMiniMap(true);
 
@@ -271,7 +279,7 @@ const App = () => {
       scrollWheelZoom: false,
       touchZoom: false,
       easeLinearity: 1,
-    }).setView([35.68, 139.78], 18);
+    }).setView([0, 0], 18);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
