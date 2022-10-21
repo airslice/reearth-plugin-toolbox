@@ -5,6 +5,7 @@ import type { pluginMessage, actHandles } from "../type";
 (globalThis as any).reearth.ui.show(html, { width: 144, height: 46 });
 
 let initCameraPos: CameraPosition | undefined = undefined;
+let isPedestrianMode = false;
 const flags = {
   looking: false,
   moveForward: false,
@@ -72,21 +73,6 @@ const updateCamera = () => {
   ) {
     (globalThis as any).reearth.camera.moveOverTerrain(1.8);
   }
-
-  // if (
-  //   flags.moveForward ||
-  //   flags.moveBackward ||
-  //   flags.moveUp ||
-  //   flags.moveDown ||
-  //   flags.moveRight ||
-  //   flags.moveLeft ||
-  //   flags.looking
-  // ) {
-  //   (globalThis as any).reearth.ui.postMessage({
-  //     act: "updateMiniMap",
-  //     payload: (globalThis as any).reearth.camera.position,
-  //   });
-  // }
 };
 
 const handles: actHandles = {
@@ -115,6 +101,7 @@ const handles: actHandles = {
       },
       20
     );
+    isPedestrianMode = true;
   },
   exitPedestrianMode: (resetCamera: boolean) => {
     (globalThis as any).reearth.camera.enableScreenSpaceController(true);
@@ -140,6 +127,7 @@ const handles: actHandles = {
         { duration: 2 }
       );
     }
+    isPedestrianMode = false;
   },
   setLooking: (looking: boolean) => {
     flags.looking = looking;
@@ -231,8 +219,10 @@ const updateTheme = () => {
 });
 
 (globalThis as any).reearth.on("cameramove", (camera: CameraPosition) => {
-  (globalThis as any).reearth.ui.postMessage({
-    act: "updateMiniMap",
-    payload: camera,
-  });
+  if (isPedestrianMode) {
+    (globalThis as any).reearth.ui.postMessage({
+      act: "updateMiniMap",
+      payload: camera,
+    });
+  }
 });

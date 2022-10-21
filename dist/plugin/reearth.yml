@@ -1,5 +1,5 @@
 name: Pedestrian
-version: 0.1.5
+version: 0.1.6
 id: reearth-plugin-pedestrian
 extensions:
   - id: pedestrian

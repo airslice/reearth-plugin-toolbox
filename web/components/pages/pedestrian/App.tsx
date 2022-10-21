@@ -18,6 +18,7 @@ import { ReactComponent as MouseTip } from "./mousetip.svg";
 const App = () => {
   const [theme, setTheme] = useState("dark");
   const [overriddenTheme, setOverriddenTheme] = useState<Theme>();
+  const [showMiniMap, setShowMiniMap] = useState<boolean>(false);
 
   const isActive = useRef(false);
   const isPicking = useRef(false);
@@ -124,6 +125,7 @@ const App = () => {
     setMoveUpOn(false);
     setMoveDownOn(false);
     setMoveEnabled(false);
+    setShowMiniMap(false);
   }, []);
 
   const handleActiveChange = useCallback(
@@ -176,15 +178,17 @@ const App = () => {
         isPedestrianMode.current = true;
         setMoveEnabled(true);
 
-        updateMiniMap({
-          lat: mousedata.lat,
-          lng: mousedata.lng,
-          height: 0,
-          heading: 0,
-          pitch: 0,
-          roll: 0,
-          fov: 0.5,
-        });
+        // updateMiniMap({
+        //   lat: mousedata.lat,
+        //   lng: mousedata.lng,
+        //   height: 0,
+        //   heading: 0,
+        //   pitch: 0,
+        //   roll: 0,
+        //   fov: 0.5,
+        // });
+
+        setShowMiniMap(true);
 
         postMsg("enterPedestrianMode", {
           lng: mousedata.lng,
@@ -192,7 +196,7 @@ const App = () => {
         });
       }
     },
-    [updateMiniMap]
+    [setShowMiniMap]
   );
 
   const onMouseDown = useCallback((mousedata: MouseEvent) => {
@@ -384,7 +388,13 @@ const App = () => {
             onClick={() => onMoveButtonClick("moveDown")}
           />
         </Line>
-        <Line style={isPedestrianMode.current}>
+        <Line
+          style={{
+            display: showMiniMap ? "block" : "none",
+            borderRadius: "4px",
+            overflow: "hidden",
+          }}
+        >
           <ViewIndicator>
             <Icon
               icon={"viewIndicator"}
