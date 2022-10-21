@@ -2,6 +2,7 @@
 
 import styled from "@emotion/styled";
 import Button from "@web/components/atoms/Button";
+import Icon from "@web/components/atoms/Icon";
 import Line from "@web/components/atoms/Line";
 import TextArea from "@web/components/atoms/TextArea";
 import Panel from "@web/components/molecules/Panel";
@@ -257,7 +258,7 @@ const App = () => {
   const initMiniMap = useCallback(() => {
     miniMap.current = L.map("minimap", {
       zoomControl: false,
-      attributionControl: false,
+      // attributionControl: false,
       dragging: false,
       boxZoom: false,
       doubleClickZoom: false,
@@ -383,7 +384,10 @@ const App = () => {
           />
         </Line>
         <Line>
-          <MiniMapContainer id="minimap" />
+          <ViewIndicator>
+            <Icon icon={"viewIndicator"} size={16} />
+          </ViewIndicator>
+          <MiniMapContainer id="minimap"></MiniMapContainer>
         </Line>
       </Panel>
     </ThemeProvider>
@@ -401,6 +405,13 @@ const ArrowWrapper = styled.div`
 const MiniMapContainer = styled.div`
   width: 100%;
   height: 200px;
+`;
+
+const ViewIndicator = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 15px;
 `;
 
 function postMsg(act: string, payload?: any) {
