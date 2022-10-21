@@ -159,12 +159,12 @@ const App = () => {
 
   const updateMiniMap = useCallback((camera: CameraPosition) => {
     if (miniMap.current) {
-      console.log(camera.lat, camera.lng);
-      miniMap.current.setView([camera.lat, camera.lng], 18, {
-        duration: 0.1,
-        easeLinearity: 1,
-        noMoveStart: true,
+      miniMap.current.stop();
+      miniMap.current.panTo([camera.lat, camera.lng], {
+        animate: true,
+        duration: 0.5,
       });
+      setMiniMapViewRotate(`${(camera.heading / Math.PI) * 180}deg`);
     }
   }, []);
 
@@ -254,6 +254,7 @@ const App = () => {
   );
 
   const miniMap = useRef<LeafletMap>();
+  const [miniMapViewRotate, setMiniMapViewRotate] = useState<string>();
 
   const initMiniMap = useCallback(() => {
     miniMap.current = L.map("minimap", {
@@ -383,9 +384,13 @@ const App = () => {
             onClick={() => onMoveButtonClick("moveDown")}
           />
         </Line>
-        <Line>
+        <Line style={isPedestrianMode.current}>
           <ViewIndicator>
-            <Icon icon={"viewIndicator"} size={16} />
+            <Icon
+              icon={"viewIndicator"}
+              size={20}
+              style={{ transform: `rotate(${miniMapViewRotate})` }}
+            />
           </ViewIndicator>
           <MiniMapContainer id="minimap"></MiniMapContainer>
         </Line>
@@ -409,9 +414,14 @@ const MiniMapContainer = styled.div`
 
 const ViewIndicator = styled.div`
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 401;
 `;
 
 function postMsg(act: string, payload?: any) {
