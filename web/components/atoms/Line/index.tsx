@@ -10,6 +10,7 @@ const Line: React.FC<Props> = ({ children, centered = false }) => {
 };
 
 const StyledLine = styled.div<{ centered: boolean }>`
+  position: relative;
   display: flex;
   width: 100%;
   gap: 8px;
