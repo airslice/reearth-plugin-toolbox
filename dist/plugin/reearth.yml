@@ -1,5 +1,5 @@
 name: Tag Filter
-version: 0.1.2
+version: 0.1.3
 id: reearth-plugin-tag-filter
 extensions:
   - id: tagfilter
