@@ -20,7 +20,7 @@ const Panel: React.FC<Props> = ({
   children,
   onResize,
   onFoldChange,
-  cellSize = 46,
+  cellSize = 44,
   fullWidth = 312,
 }) => {
   const [folded, setFolded] = useState(true);
@@ -104,7 +104,7 @@ const IconArea = styled.div<{ width?: number }>`
 const Title = styled.div`
   font-size: 14px;
   font-weight: 700;
-  line-height: 22px;
+  line-height: 20px;
   color: ${(props) => props.theme.colors.main};
 `;
 
