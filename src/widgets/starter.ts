@@ -1,7 +1,7 @@
 import html from "../../dist/web/starter/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
 
-(globalThis as any).reearth.ui.show(html, { width: 312, height: 46 });
+(globalThis as any).reearth.ui.show(html, { width: 312, height: 44 });
 
 const updateTheme = () => {
   (globalThis as any).reearth.ui.postMessage({
