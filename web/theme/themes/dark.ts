@@ -13,8 +13,8 @@ export default _.merge({}, commonTheme, {
     // common
     strongest: commonTheme.colors.gray[2],
     main: commonTheme.colors.gray[6],
-    weak: commonTheme.colors.gray[7],
-    weakest: commonTheme.colors.gray[8],
+    weak: commonTheme.colors.gray[8],
+    weakest: commonTheme.colors.gray[9],
   },
   fontColors: {
     // buttons

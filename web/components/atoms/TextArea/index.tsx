@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 export type Props = {
   text?: string;
   minHeight?: number;
-  children?: React.ReactNode;
+  children?: React.ReactNode | any;
 };
 
 const TextArea: React.FC<Props> = ({ text, minHeight, children }) => {
@@ -27,7 +27,7 @@ const Text = styled.div<{ minHeight?: number }>`
   font-weight: 400;
   line-height: 22px;
   text-align: center;
-  color: ${(props) => props.theme.colors.weak};
+  color: ${(props) => props.theme.colors.main};
   user-select: none;
 
   ${(props) => {
