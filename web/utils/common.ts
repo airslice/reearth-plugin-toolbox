@@ -13,6 +13,6 @@ export const dateFormat = new Intl.DateTimeFormat("en-US", {
   month: "short",
 });
 
-export const timeFormat = new Intl.DateTimeFormat("en-US", {
+export const timeFormat = new Intl.DateTimeFormat("ja-JP-u-ca-japanese", {
   timeStyle: "long",
 });

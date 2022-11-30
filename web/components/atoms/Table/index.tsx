@@ -118,6 +118,7 @@ const StyledTr = styled.tr<{
 }>`
   width: ${({ width }) => (width ? width : "100%")};
   text-align: ${({ textAlign }) => (textAlign ? textAlign : "center")};
+  line-height: 16px;
 `;
 
 const StyledTd = styled.td<{
