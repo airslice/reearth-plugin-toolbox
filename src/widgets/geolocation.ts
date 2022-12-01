@@ -1,7 +1,7 @@
-import html from "../../dist/web/starter/index.html?raw";
+import html from "../../dist/web/geolocation/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
 
-(globalThis as any).reearth.ui.show(html, { width: 312, height: 44 });
+(globalThis as any).reearth.ui.show(html, { width: 208, height: 202 });
 
 const updateTheme = () => {
   (globalThis as any).reearth.ui.postMessage({
@@ -26,6 +26,15 @@ const handles: actHandles = {
   },
   getTheme: () => {
     updateTheme();
+  },
+  getAutoFollowValue: () => {
+    (globalThis as any).reearth.ui.postMessage({
+      act: "setAutoFollow",
+      payload: {
+        autoFollow: (globalThis as any).reearth.widget.property.location
+          .autoFollow,
+      },
+    });
   },
 };
 

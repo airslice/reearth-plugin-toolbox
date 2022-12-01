@@ -6,7 +6,7 @@ export type Props = {
   title: string;
   icon: string;
   children?: React.ReactNode;
-
+  fullHeight?: number;
   cellSize?: number;
   fullWidth?: number;
   ref?: any;
@@ -20,12 +20,13 @@ const Panel: React.FC<Props> = ({
   children,
   onResize,
   onFoldChange,
-  cellSize = 44,
+  cellSize = 46,
   fullWidth = 312,
+  fullHeight = 312,
 }) => {
   const [folded, setFolded] = useState(true);
   const [width, setWidth] = useState(cellSize);
-  const [height, setHeight] = useState(cellSize);
+  const [height, setHeight] = useState(fullHeight);
 
   const content = useRef<HTMLDivElement>(null);
   const wrapper = useRef<HTMLDivElement>(null);

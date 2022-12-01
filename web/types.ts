@@ -6,3 +6,10 @@ export type transMessage = {
 export type actHandles = {
   [key: string]: any;
 };
+
+export type CurrentLocationInfo = {
+  latitude: number;
+  longitude: number;
+  date: string;
+  time: string;
+};
