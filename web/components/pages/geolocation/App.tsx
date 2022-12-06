@@ -14,13 +14,16 @@ const App = () => {
     handleActiveChange,
     onResize,
     CurrentLocation,
+    autoFollow,
+    widgetMode,
+    markerStyle,
   } = usehooks();
 
   const items: { [Key: string]: string | number }[] = [
-    { ["Date"]: CurrentLocation?.date ?? " " },
-    { ["Time"]: CurrentLocation?.time ?? "10:10" },
-    { ["Latitude"]: CurrentLocation?.latitude ?? "84848484" },
-    { ["Longitude"]: CurrentLocation?.longitude ?? "7474747" },
+    { ["Date"]: CurrentLocation?.date ?? "0" },
+    { ["Time"]: CurrentLocation?.time ?? "0" },
+    { ["Latitude"]: CurrentLocation?.latitude ?? "0" },
+    { ["Longitude"]: CurrentLocation?.longitude ?? "0" },
   ];
 
   return (
@@ -30,10 +33,14 @@ const App = () => {
         icon="sun"
         fullWidth={208}
         fullHeight={202}
+        collapsible={widgetMode == "button" ? false : true}
         onResize={onResize}
         onFoldChange={handleActiveChange}
       >
         <InfoCard headers={headers} items={items} />
+        <div>{autoFollow}</div>
+        <div>{widgetMode}</div>
+        <div>{markerStyle?.style}</div>
       </Panel>
     </ThemeProvider>
   );

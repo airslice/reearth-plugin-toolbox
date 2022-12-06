@@ -10,6 +10,7 @@ export type Props = {
   cellSize?: number;
   fullWidth?: number;
   ref?: any;
+  collapsible?: boolean;
   onResize?: (width: number, height: number) => void;
   onFoldChange?: (active: boolean) => void;
 };
@@ -20,6 +21,7 @@ const Panel: React.FC<Props> = ({
   children,
   onResize,
   onFoldChange,
+  collapsible,
   cellSize = 46,
   fullWidth = 312,
   fullHeight = 312,
@@ -32,9 +34,10 @@ const Panel: React.FC<Props> = ({
   const wrapper = useRef<HTMLDivElement>(null);
 
   const toggleFolded = useCallback(() => {
-    setFolded(!folded);
+    if (!collapsible) setFolded(true);
+    else setFolded(!folded);
     onFoldChange?.(folded);
-  }, [folded, onFoldChange]);
+  }, [collapsible, folded, onFoldChange]);
 
   useEffect(() => {
     if (folded) {

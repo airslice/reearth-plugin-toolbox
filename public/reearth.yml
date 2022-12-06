@@ -14,10 +14,12 @@ extensions:
       groups:
         - id: location
           title: My Location
+          representativeField: mode
           fields:
             - id: mode
               title: Mode
               type: string
+              list: true
               defaultValue: button
               choices:
                 - key: button
@@ -34,16 +36,19 @@ extensions:
                 value: button
         - id: markerStyle
           title: Marker Style
+          representativeField: style
           fields:
             - id: style
               type: string
               title: Style
+              list: true
+              defaultValue: point
               choices:
                 - key: point
                   label: Point
                 - key: icon
                   label: Icon
-                - key: 3dModel
+                - key: Model
                   label: 3D model
             - id: pointColor
               type: string
@@ -92,28 +97,28 @@ extensions:
                 field: style
                 type: string
                 value: icon
-            - id: 3dModelUrl
+            - id: modelUrl
               title: 3D Model
               type: url
               ui: file
               availableIf:
                 field: style
                 type: string
-                value: 3dModel
-            - id: 3dModelSize
+                value: Model
+            - id: modelSize
               title: size
               type: number
               availableIf:
                 field: style
                 type: string
-                value: 3dModel
-            - id: 3dModelHeading
+                value: Model
+            - id: modelHeading
               title: Heading
               type: number
               availableIf:
                 field: style
                 type: string
-                value: 3dModel             
+                value: Model             
         - id: customize
           title: Customize
           fields:
