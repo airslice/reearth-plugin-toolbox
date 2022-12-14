@@ -1,3 +1,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-export default {};
+import { ReactComponent as Camera } from "./Icons/camera.svg";
+
+export default {
+  camera: Camera,
+};
