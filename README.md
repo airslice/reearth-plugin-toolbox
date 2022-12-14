@@ -50,6 +50,11 @@ https://github.com/airslice/reearth-plugin-layer-exporter
 https://github.com/airslice/reearth-plugin-pedestrian
 ```
 
+[**Screen Save**](https://github.com/airslice/reearth-plugin-screen-save)
+```
+https://github.com/airslice/reearth-plugin-screen-save
+```
+
 ## Known issue
 
 - Sometimes on published (and preview) page marker renders without an update.
