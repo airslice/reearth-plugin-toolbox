@@ -79,7 +79,7 @@ const App = () => {
             More details please check{" "}
             <StyledLink
               target="_blank"
-              href="https://marketplace.reearth.io/reearth-plugin-toolbox-screensave"
+              href="https://marketplace.reearth.io/plugins/reearth-plugin-toolbox-screensave"
             >
               here
             </StyledLink>
