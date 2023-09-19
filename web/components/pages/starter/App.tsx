@@ -2,6 +2,7 @@ import Button from "@web/components/atoms/Button";
 import Divider from "@web/components/atoms/Divider";
 import Group from "@web/components/atoms/Group";
 import Line from "@web/components/atoms/Line";
+import Selector from "@web/components/atoms/Selector";
 import Tag from "@web/components/atoms/Tag";
 import TextArea from "@web/components/atoms/TextArea";
 import DropdownBox from "@web/components/molecules/DropdownBox";
@@ -158,6 +159,15 @@ const App = () => {
             </>
           }
         ></DropdownBox>
+
+        <Selector
+          title="Selector"
+          onResize={forceUpdate}
+          options={[
+            { title: "Monday", value: "mon" },
+            { title: "Tuesday", value: "tue" },
+          ]}
+        />
       </Panel>
     </ThemeProvider>
   );
