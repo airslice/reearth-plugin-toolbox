@@ -1,4 +1,5 @@
-# reearth-plugin-toolbox
-## Toolbox - Starter
+# Marker to GeoJSON
 
-- Just a simple starter to show some UI elements.
+This is a Re:earth plugin made with [reearth-plugin-toolbox](https://github.com/airslice/reearth-plugin-toolbox).
+
+Export Re:Earth classic marker data to GeoJSON format.
