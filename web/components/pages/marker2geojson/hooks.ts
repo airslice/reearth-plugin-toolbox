@@ -3,6 +3,14 @@ import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useState, useMemo, useReducer } from "react";
 
+type MarkerInfo = {
+  id: string;
+  title?: string;
+  lat?: number;
+  lng?: number;
+  infobox?: any;
+};
+
 export default () => {
   // Theme
   const [theme, setTheme] = useState("dark");
@@ -29,7 +37,42 @@ export default () => {
   );
 
   // Marker To GeoJSON
-  const exportMarkerAsGeoJSON = useCallback(() => {}, []);
+  const [isExporting, setIsExporting] = useState(false);
+  const handleExportMarkerAsGeoJSON = useCallback(() => {
+    setIsExporting(true);
+    postMsg("getMarkersInFolder", currentFolderId);
+  }, [currentFolderId]);
+  const exportMarkerAsGeoJSON = useCallback((markers: MarkerInfo[]) => {
+    console.log(markers);
+    if (markers.length > 0) {
+      const geojson = {
+        type: "FeatureCollection",
+        features: markers.map((marker) => ({
+          type: "Feature",
+          properties: {
+            title: marker.title,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [marker.lng, marker.lat],
+          },
+          reearth: {
+            infobox: marker.infobox,
+          },
+        })),
+      };
+      const blob = new Blob([JSON.stringify(geojson)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "markers.geojson";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    setIsExporting(false);
+  }, []);
 
   // Message handlers
   const actHandles: actHandles = useMemo(() => {
@@ -51,8 +94,11 @@ export default () => {
       }) => {
         setFolders(folders);
       },
+      setMarkers: ({ markers }: { markers: MarkerInfo[] }) => {
+        exportMarkerAsGeoJSON(markers);
+      },
     };
-  }, []);
+  }, [exportMarkerAsGeoJSON]);
 
   useEffect(() => {
     const messageHandler = (event: MessageEvent) => {
@@ -80,8 +126,9 @@ export default () => {
     overriddenTheme,
     folders,
     currentFolderId,
+    isExporting,
     handleSelectFolder,
-    exportMarkerAsGeoJSON,
+    handleExportMarkerAsGeoJSON,
     onResize,
     forceUpdate,
   };

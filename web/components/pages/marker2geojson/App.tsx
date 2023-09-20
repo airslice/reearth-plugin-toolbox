@@ -12,7 +12,7 @@ const App = () => {
     folders,
     currentFolderId,
     handleSelectFolder,
-    exportMarkerAsGeoJSON,
+    handleExportMarkerAsGeoJSON,
     onResize,
     forceUpdate,
   } = useHooks();
@@ -29,7 +29,7 @@ const App = () => {
         />
         <Button
           text="Export to GeoJSON"
-          onClick={exportMarkerAsGeoJSON}
+          onClick={handleExportMarkerAsGeoJSON}
           disabled={!currentFolderId}
         />
       </Panel>

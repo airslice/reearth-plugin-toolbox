@@ -54,6 +54,7 @@ const setTheme = () => {
 // Layers
 let cachedFolders: { id: string; title: string }[] = [];
 const setFolders = () => {
+  console.log("updateFolders");
   (globalThis as any).reearth.ui.postMessage({
     act: "setFolders",
     payload: {
@@ -62,10 +63,10 @@ const setFolders = () => {
   });
 };
 const updateFolders = () => {
-  console.log("updateFolders");
   const folders = (globalThis as any).reearth.layers.layers
     .filter((l: Layer) => l.children !== undefined)
-    .map((l: Layer) => ({ id: l.id, title: l.title }));
+    .map((l: Layer) => ({ id: l.id, title: l.title }))
+    .reverse();
   if (
     cachedFolders.length === folders.length &&
     cachedFolders.every(
@@ -78,6 +79,44 @@ const updateFolders = () => {
   setFolders();
 };
 
+type MarkerInfo = {
+  id: string;
+  title?: string;
+  lat?: number;
+  lng?: number;
+  infobox?: any;
+};
+
+const walkLayer = (layer: Layer, markers: MarkerInfo[]) => {
+  layer.children?.forEach((l) => {
+    if (l.extensionId === "marker") {
+      markers.push({
+        id: l.id,
+        title: l.title,
+        lat: l.property?.default?.location?.lat,
+        lng: l.property?.default?.location?.lng,
+        infobox: l.infobox,
+      });
+    } else if (l.children && l.children.length > 0) {
+      walkLayer(l, markers);
+    }
+  });
+};
+
+const getMarkersInFolder = (folderId: string) => {
+  const folderLayer = (globalThis as any).reearth.layers.layers.find(
+    (l: Layer) => l.id === folderId
+  );
+  const markers: MarkerInfo[] = [];
+  walkLayer(folderLayer, markers);
+  (globalThis as any).reearth.ui.postMessage({
+    act: "setMarkers",
+    payload: {
+      markers,
+    },
+  });
+};
+
 const handles: actHandles = {
   resize: (size: any) => {
     (globalThis as any).reearth.ui.resize(...size);
@@ -88,9 +127,8 @@ const handles: actHandles = {
   getFolders: () => {
     setFolders();
   },
-  updateFolders: () => {
-    updateFolders();
-  },
+  updateFolders,
+  getMarkersInFolder,
 };
 
 (globalThis as any).reearth.on("message", (msg: pluginMessage) => {
