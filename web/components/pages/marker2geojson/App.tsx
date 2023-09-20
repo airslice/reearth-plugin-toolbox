@@ -22,8 +22,9 @@ const App = () => {
       <Panel title="Marker to GeoJSON" onResize={onResize} icon="exportGeoJSON">
         <Selector
           title="Choose a folder"
-          onResize={forceUpdate}
+          placeholder="folder"
           options={folders?.map((f) => ({ title: f.title, value: f.id }))}
+          onResize={forceUpdate}
           onSelect={handleSelectFolder}
         />
         <Button
