@@ -163,6 +163,7 @@ const App = () => {
         <Selector
           title="Selector"
           onResize={forceUpdate}
+          placeholder="Select a day"
           options={[
             { title: "Monday", value: "mon" },
             { title: "Tuesday", value: "tue" },

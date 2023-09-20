@@ -4,12 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Divider from "../Divider";
 
-type OptionValue = string | number | boolean;
 type Props = {
   title?: string;
-  options?: { title: string; value: OptionValue }[];
-  defaultValue?: OptionValue;
-  onSelect?: (value: OptionValue) => void;
+  options?: { title: string; value: any }[];
+  defaultValue?: any;
+  placeholder?: string;
+  onSelect?: (value: any) => void;
   onResize?: () => void;
 };
 
@@ -17,29 +17,30 @@ const Selector: React.FC<Props> = ({
   title,
   options,
   defaultValue,
+  placeholder,
   onSelect,
   onResize,
 }) => {
   const [folded, setFolded] = useState(true);
   useEffect(() => {
     onResize?.();
-  }, [folded, onResize]);
+  }, [folded, options, onResize]);
 
   const [currentValue, setCurrentValue] = useState(defaultValue);
 
-  const currentTitle = useMemo(
-    () => options?.find((o) => o.value === currentValue)?.title,
+  const current = useMemo(
+    () => options?.find((o) => o.value === currentValue),
     [currentValue, options]
   );
 
-  const handleSelect = useCallback(
-    (value: OptionValue) => {
-      setCurrentValue(value);
-      setFolded(true);
-      onSelect?.(value);
-    },
-    [onSelect]
-  );
+  useEffect(() => {
+    onSelect?.(current?.value);
+  });
+
+  const handleSelect = useCallback((value: any) => {
+    setCurrentValue(value);
+    setFolded(true);
+  }, []);
 
   return (
     <Wrapper>
@@ -50,7 +51,11 @@ const Selector: React.FC<Props> = ({
             setFolded(!folded);
           }}
         >
-          <Current>{currentTitle ?? "Please select.."}</Current>
+          <Current>
+            {current?.title ?? (
+              <Placeholder>{placeholder ?? "Please select.."}</Placeholder>
+            )}
+          </Current>
           <Icon
             icon="arrowSelect"
             size={9}
@@ -140,4 +145,8 @@ const Option = styled.div`
     background: ${(props) => props.theme.colors.primary};
     color: ${(props) => props.theme.fontColors.primary};
   }
+`;
+
+const Placeholder = styled.div`
+  color: ${(props) => props.theme.colors.weak};
 `;
