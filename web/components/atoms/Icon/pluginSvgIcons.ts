@@ -1,3 +1,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-export default {};
+import { ReactComponent as ExportGeoJSON } from "./Icons/signout.svg";
+
+export default {
+  exportGeoJSON: ExportGeoJSON,
+};

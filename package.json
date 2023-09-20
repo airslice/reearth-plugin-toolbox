@@ -11,8 +11,8 @@
   "scripts": {
     "start:starter": "vite -c vite.config.starter-web.ts",
     "build": "run-s typecheck clean build:web build:plugin",
-    "build:plugin": "run-s build:starter",
-    "build:web": "run-s build:starter-web",
+    "build:plugin": "run-s build:marker2geojson",
+    "build:web": "run-s build:marker2geojson-web",
     "build:starter": "vite build -c vite.config.starter.ts",
     "build:starter-web": "vite build -c vite.config.starter-web.ts",
     "package": "run-s build zip",
@@ -24,7 +24,10 @@
     "type": "tsc",
     "zip": "node ./scripts/zip.mjs",
     "createwidget": "node ./scripts/createwidget.mjs",
-    "clean": "del dist"
+    "clean": "del dist",
+    "start:marker2geojson": "vite -c vite.config.marker2geojson-web.ts",
+    "build:marker2geojson": "vite build -c vite.config.marker2geojson.ts",
+    "build:marker2geojson-web": "vite build -c vite.config.marker2geojson-web.ts"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
