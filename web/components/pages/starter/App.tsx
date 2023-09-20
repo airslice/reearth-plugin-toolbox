@@ -75,6 +75,14 @@ const App = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const selectorOptions = useMemo(
+    () => [
+      { title: "Monday", value: "mon" },
+      { title: "Tuesday", value: "tue" },
+    ],
+    []
+  );
+
   return (
     <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
       <Panel
@@ -164,10 +172,7 @@ const App = () => {
           title="Selector"
           onResize={forceUpdate}
           placeholder="Select a day"
-          options={[
-            { title: "Monday", value: "mon" },
-            { title: "Tuesday", value: "tue" },
-          ]}
+          options={selectorOptions}
         />
       </Panel>
     </ThemeProvider>
