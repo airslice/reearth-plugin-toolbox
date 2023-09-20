@@ -62,6 +62,7 @@ const Selector: React.FC<Props> = ({
             style={{
               transform: `rotate(${folded ? "90" : "0"}deg)`,
               marginRight: "5px",
+              flexShrink: 0,
             }}
           />
         </CurrentWrapper>
@@ -123,7 +124,11 @@ const CurrentWrapper = styled.div`
   cursor: pointer;
 `;
 
-const Current = styled.div``;
+const Current = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
 
 const DropdownWrapper = styled.div<{ folded: boolean }>`
   display: ${({ folded }) => (folded ? "none" : "block")};
@@ -144,6 +149,9 @@ const Option = styled.div`
   line-height: 21px;
   color: ${(props) => props.theme.colors.main};
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:hover {
     background: ${(props) => props.theme.colors.primary};
