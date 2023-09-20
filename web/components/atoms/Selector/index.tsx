@@ -35,7 +35,7 @@ const Selector: React.FC<Props> = ({
 
   useEffect(() => {
     onSelect?.(current?.value);
-  });
+  }, [current, onSelect]);
 
   const handleSelect = useCallback((value: any) => {
     setCurrentValue(value);
@@ -68,16 +68,20 @@ const Selector: React.FC<Props> = ({
         <DropdownWrapper folded={folded}>
           <Divider />
           <Options>
-            {options?.map((o) => (
-              <Option
-                key={o.value.toString()}
-                onClick={() => {
-                  handleSelect?.(o.value);
-                }}
-              >
-                {o.title}
-              </Option>
-            ))}
+            {options && options.length > 0 ? (
+              options?.map((o) => (
+                <Option
+                  key={o.value.toString()}
+                  onClick={() => {
+                    handleSelect?.(o.value);
+                  }}
+                >
+                  {o.title}
+                </Option>
+              ))
+            ) : (
+              <EmptyOption>EMPTY</EmptyOption>
+            )}
           </Options>
         </DropdownWrapper>
       </ContentWrapper>
@@ -149,4 +153,9 @@ const Option = styled.div`
 
 const Placeholder = styled.div`
   color: ${(props) => props.theme.colors.weak};
+`;
+
+const EmptyOption = styled(Option)`
+  color: ${(props) => props.theme.colors.weak};
+  pointer-events: none;
 `;
