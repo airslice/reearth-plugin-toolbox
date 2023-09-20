@@ -1,4 +1,4 @@
-import { Layer } from "src/apiType";
+import { Infobox, Layer } from "src/apiType";
 
 import html from "../../dist/web/marker2geojson/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
@@ -81,10 +81,8 @@ const updateFolders = () => {
 
 type MarkerInfo = {
   id: string;
-  title?: string;
-  lat?: number;
-  lng?: number;
-  infobox?: any;
+  markerProperty?: Partial<Layer["property"]>;
+  infobox?: Infobox;
 };
 
 const walkLayer = (layer: Layer, markers: MarkerInfo[]) => {
@@ -92,9 +90,7 @@ const walkLayer = (layer: Layer, markers: MarkerInfo[]) => {
     if (l.extensionId === "marker") {
       markers.push({
         id: l.id,
-        title: l.title,
-        lat: l.property?.default?.location?.lat,
-        lng: l.property?.default?.location?.lng,
+        markerProperty: l.property?.default,
         infobox: l.infobox,
       });
     } else if (l.children && l.children.length > 0) {

@@ -2,13 +2,12 @@ import type { Theme } from "@web/theme/common";
 import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useState, useMemo, useReducer } from "react";
+import { Infobox, Layer } from "src/apiType";
 
 type MarkerInfo = {
   id: string;
-  title?: string;
-  lat?: number;
-  lng?: number;
-  infobox?: any;
+  markerProperty?: Partial<Layer["property"]>;
+  infobox?: Infobox;
 };
 
 export default () => {
@@ -43,34 +42,35 @@ export default () => {
     postMsg("getMarkersInFolder", currentFolderId);
   }, [currentFolderId]);
   const exportMarkerAsGeoJSON = useCallback((markers: MarkerInfo[]) => {
-    console.log(markers);
-    if (markers.length > 0) {
-      const geojson = {
-        type: "FeatureCollection",
-        features: markers.map((marker) => ({
-          type: "Feature",
-          properties: {
-            title: marker.title,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: [marker.lng, marker.lat],
-          },
-          reearth: {
-            infobox: marker.infobox,
-          },
-        })),
-      };
-      const blob = new Blob([JSON.stringify(geojson)], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "markers.geojson";
-      a.click();
-      URL.revokeObjectURL(url);
-    }
+    const geojson = {
+      type: "FeatureCollection",
+      features:
+        markers.length > 0
+          ? markers.map((marker) => ({
+              type: "Feature",
+              properties: {
+                markerProperty: marker.markerProperty,
+                infobox: marker.infobox,
+              },
+              geometry: {
+                type: "Point",
+                coordinates: [
+                  marker.markerProperty?.location?.lng,
+                  marker.markerProperty?.location?.lat,
+                ],
+              },
+            }))
+          : [],
+    };
+    const blob = new Blob([JSON.stringify(geojson)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "markers.geojson";
+    a.click();
+    URL.revokeObjectURL(url);
     setIsExporting(false);
   }, []);
 
