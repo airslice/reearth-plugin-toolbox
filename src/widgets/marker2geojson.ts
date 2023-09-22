@@ -54,7 +54,6 @@ const setTheme = () => {
 // Layers
 let cachedFolders: { id: string; title: string }[] = [];
 const setFolders = () => {
-  console.log("updateFolders");
   (globalThis as any).reearth.ui.postMessage({
     act: "setFolders",
     payload: {

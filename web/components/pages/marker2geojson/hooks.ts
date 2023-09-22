@@ -49,8 +49,8 @@ export default () => {
           ? markers.map((marker) => ({
               type: "Feature",
               properties: {
-                markerProperty: marker.markerProperty,
-                infobox: marker.infobox,
+                reearthClassicMarker: marker.markerProperty,
+                reearthClassicInfobox: marker.infobox,
               },
               geometry: {
                 type: "Point",
