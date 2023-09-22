@@ -1,5 +1,3 @@
-import { ViewportSize } from "src/apiType";
-
 import html from "../../dist/web/classicmarkerinfobox/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
 
@@ -47,28 +45,30 @@ const onSelect = () => {
   }
 };
 
-const currentSize = [0, 0];
+const contentSize = [0, 0];
 const minHeight = 280;
-const onResize = (viewport: ViewportSize) => {
-  const halfHeight = viewport.height / 2;
-  reearth.ui.resize(
-    currentSize[0],
-    halfHeight > minHeight ? halfHeight : minHeight
-  );
+
+const onResize = () => {
+  reearth.ui.resize(...getFinalSize(contentSize));
+};
+
+const getFinalSize = (contentSize: number[]) => {
+  const maxHeight = reearth.viewport.height * 0.62;
+  return [
+    contentSize[0],
+    contentSize[1] > maxHeight
+      ? maxHeight
+      : contentSize[1] < minHeight
+      ? minHeight
+      : contentSize[1],
+  ];
 };
 
 const handles: actHandles = {
   resize: (size: [number, number]) => {
-    const halfHeight = reearth.viewport.height / 2;
-    const maxHeight = halfHeight > minHeight ? halfHeight : minHeight;
-    currentSize[0] = size[0];
-    currentSize[1] =
-      size[1] > maxHeight
-        ? maxHeight
-        : size[1] < minHeight
-        ? minHeight
-        : size[1];
-    reearth.ui.resize(...currentSize);
+    contentSize[0] = size[0];
+    contentSize[1] = size[1];
+    reearth.ui.resize(...getFinalSize(contentSize));
   },
   getTheme: () => {
     updateTheme();
