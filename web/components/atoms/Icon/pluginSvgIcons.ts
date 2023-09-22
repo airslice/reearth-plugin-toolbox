@@ -1,3 +1,7 @@
 /// <reference types="vite-plugin-svgr/client" />
 
-export default {};
+import { ReactComponent as Cancel } from "./Icons/cancel.svg";
+
+export default {
+  cancel: Cancel,
+};

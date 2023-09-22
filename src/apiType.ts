@@ -12,12 +12,22 @@ export type Reearth = {
   readonly version: string;
   readonly apiVersion: number;
   readonly visualizer: Visualizer;
+  /** Current visualization engine type. Currently only "cesium" is available. */
+  readonly engineName: string;
+  readonly camera: Camera;
+  readonly clock?: Clock;
   readonly ui: UI;
+  readonly modal: Modal;
+  readonly popup: Popup;
   readonly plugin: Plugin;
+  readonly plugins: Plugins;
   readonly layers: Layers;
   readonly layer?: Layer;
   readonly widget?: Widget;
   readonly block?: Block;
+  readonly scene: Scene;
+  readonly viewport: Viewport;
+  readonly clientStorage: ClientStorage;
   readonly on: <T extends keyof ReearthEventType>(
     type: T,
     callback: (...args: ReearthEventType[T]) => void
@@ -42,10 +52,27 @@ export type MouseEvent = {
   delta?: number;
 };
 
+export type LayerEditEvent = {
+  layerId: string | undefined;
+  scale?: {
+    width: number;
+    length: number;
+    height: number;
+    location: LatLngHeight;
+  };
+  rotate?: { heading: number; pitch: number; roll: number };
+};
+
+export type PluginMessage = {
+  data: any;
+  sender: string;
+};
+
 export type ReearthEventType = {
   update: [];
   close: [];
   cameramove: [camera: CameraPosition];
+  layeredit: [e: LayerEditEvent];
   select: [layerId: string | undefined];
   message: [message: any];
   click: [props: MouseEvent];
@@ -62,6 +89,11 @@ export type ReearthEventType = {
   mouseenter: [props: MouseEvent];
   mouseleave: [props: MouseEvent];
   wheel: [props: MouseEvent];
+  tick: [props: Date];
+  resize: [props: ViewportSize];
+  modalclose: [];
+  popupclose: [];
+  pluginmessage: [props: PluginMessage];
 };
 
 /** Access to the metadata of this plugin and extension currently executed. */
@@ -70,6 +102,42 @@ export type Plugin = {
   readonly extensionId: string;
   readonly extensionType: string;
   readonly property?: any;
+};
+
+export type PluginExtensionInstance = {
+  readonly id: string;
+  readonly pluginId: string;
+  readonly name: string;
+  readonly extensionId: string;
+  readonly extensionType: "widget" | "block";
+  readonly runTimes: number | undefined; // Count number of plugin is run
+};
+
+export type Plugins = {
+  readonly instances: PluginExtensionInstance[];
+  readonly postMessage?: (id: string, message: any) => void;
+};
+
+export type LatLngHeight = {
+  lat: number;
+  lng: number;
+  height: number;
+};
+
+export type Scene = {
+  readonly inEditor: boolean;
+  readonly built: boolean;
+  readonly property?: any;
+  readonly overrideProperty: (property: any) => void;
+  readonly captureScreen: (
+    type?: string,
+    encoderOptions?: number
+  ) => string | undefined;
+  readonly getLocationFromScreen: (
+    x: number,
+    y: number,
+    withTerrain?: boolean
+  ) => LatLngHeight | undefined;
 };
 
 /** You can operate and get data about layers. */
@@ -114,7 +182,12 @@ export type SelectLayerOptions = {
 
 export type OverriddenInfobox = {
   title?: string;
-  content: { key: string; value: string }[];
+  content:
+    | {
+        type: "table";
+        value: { key: string; value: string }[];
+      }
+    | { type: "html"; value: string };
 };
 
 /** Layer is acutually displayed data on the map in which layers are flattened. All properties are stored with all dataset links, etc. resolved. */
@@ -183,6 +256,7 @@ export type Widget<P = any> = {
     vertically: boolean;
   };
   layout?: WidgetLayout;
+  moveTo?: (options: WidgetLocationOptions) => void;
 };
 
 export type WidgetLayout = {
@@ -197,6 +271,10 @@ export type WidgetLocation = {
 };
 
 export type WidgetAlignment = "start" | "centered" | "end";
+
+export type WidgetLocationOptions = WidgetLocation & {
+  method?: "insert" | "append";
+};
 
 /** The API for iframes, which is required not only for displaying the UI but also for calling the browser API. */
 export type UI = {
@@ -243,16 +321,89 @@ export type UI = {
     /** Overrides whether the iframe is extended. This option is only available for widgets on an extendable area on the widget align system. */
     extended?: boolean | undefined
   ) => void;
+  readonly close: () => void;
 };
 
-/** The API for the visualizer. This works regardless of the visualization engine you are using, which ensures the versatility of the plugin. It is recommended that you use this API whenever possible, and call the visualization engine's own low-layer API only when there is something you cannot do. */
+export type Modal = {
+  readonly show: (
+    html: string,
+    options?: {
+      width?: number | string;
+      height?: number | string;
+      background?: string;
+    }
+  ) => void;
+  readonly postMessage: (message: any) => void;
+  readonly update: (options: {
+    width?: number | string;
+    height?: number | string;
+    background?: string;
+  }) => void;
+  readonly close: () => void;
+};
+
+export type PopupPosition =
+  | "top"
+  | "top-start"
+  | "top-end"
+  | "right"
+  | "right-start"
+  | "right-end"
+  | "bottom"
+  | "bottom-start"
+  | "bottom-end"
+  | "left"
+  | "left-start"
+  | "left-end";
+
+export type PopupOffset =
+  | number
+  | {
+      mainAxis?: number;
+      crossAxis?: number;
+      alignmentAxis?: number | null;
+    };
+
+export type Popup = {
+  readonly show: (
+    html: string,
+    options?: {
+      width?: number | string;
+      height?: number | string;
+      position?: PopupPosition;
+      offset?: PopupOffset;
+    }
+  ) => void;
+  readonly postMessage: (message: any) => void;
+  readonly update: (options: {
+    width?: number | string;
+    height?: number | string;
+    position?: PopupPosition;
+    offset?: PopupOffset;
+  }) => void;
+  readonly close: () => void;
+};
+
+/** Deprecated. */
 export type Visualizer = {
-  /** Current visualization engine type. Currently only "cesium" is available. */
+  /** use `reearth.engine` instead. */
   readonly engine: string;
+  /** use `reearth.camera` instead. */
   readonly camera: Camera;
-  /** Current scene property */
+  /** use `reearth.scene.property` instead. */
   readonly property?: any;
+  /** use `reearth.scene.overrideProperty` instead. */
   readonly overrideProperty: (property: any) => void;
+};
+
+export type ViewportSize = {
+  readonly width: number;
+  readonly height: number;
+  readonly isMobile: boolean;
+};
+
+export type Viewport = ViewportSize & {
+  readonly query: Record<string, string>;
 };
 
 type Rect = {
@@ -266,8 +417,8 @@ export type Camera = {
   /** Current camera position */
   readonly position: CameraPosition | undefined;
   readonly viewport: Rect | undefined;
-  readonly zoomIn: (amount: number) => void;
-  readonly zoomOut: (amount: number) => void;
+  readonly zoomIn: (amount: number, options?: CameraOptions) => void;
+  readonly zoomOut: (amount: number, options?: CameraOptions) => void;
   /** Moves the camera position to the specified destination. */
   readonly flyTo: (
     destination: FlyToDestination,
@@ -277,6 +428,25 @@ export type Camera = {
   readonly lookAt: (
     destination: LookAtDestination,
     options?: CameraOptions
+  ) => void;
+  /** Rotate the camera around the center of earth. */
+  readonly rotateRight: (radian: number) => void;
+  /** Move the angle of camera around the center of earth. */
+  readonly orbit: (radian: number) => void;
+  readonly enableScreenSpaceController: (enabled: boolean) => void;
+  readonly lookHorizontal: (amount: number) => void;
+  readonly lookVertical: (amount: number) => void;
+  readonly moveForward: (amount: number) => void;
+  readonly moveBackward: (amount: number) => void;
+  readonly moveUp: (amount: number) => void;
+  readonly moveDown: (amount: number) => void;
+  readonly moveLeft: (amount: number) => void;
+  readonly moveRight: (amount: number) => void;
+  readonly moveOverTerrain: (offset?: number) => void;
+  readonly flyToGround: (
+    destination: FlyToDestination,
+    options?: CameraOptions,
+    offset?: number
   ) => void;
 };
 
@@ -354,7 +524,28 @@ export type CameraOptions = {
   duration?: number;
   /** Easing function. */
   easing?: (time: number) => number;
+  animation?: boolean;
 };
 
 /** Cesium API: available only when the plugin is a primitive */
 export type Cesium = {};
+
+export type Clock = {
+  startTime: Date;
+  stopTime: Date;
+  currentTime: Date;
+  playing: boolean;
+  paused: boolean;
+  /** Speed of time. Specifies a multiplier for the speed of time in reality. Default is 1. */
+  speed: number;
+  readonly tick: () => Date;
+  readonly play: () => void;
+  readonly pause: () => void;
+};
+
+export type ClientStorage = {
+  readonly getAsync: (key: string) => Promise<any>;
+  readonly setAsync: (key: string, value: any) => Promise<void>;
+  readonly deleteAsync: (key: string) => Promise<void>;
+  readonly keysAsync: () => Promise<string[]>;
+};
