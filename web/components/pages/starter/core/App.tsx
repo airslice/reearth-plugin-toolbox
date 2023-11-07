@@ -83,6 +83,14 @@ const App = () => {
     []
   );
 
+  const handleDemoModalBtnClick = useCallback(() => {
+    postMsg("toggleDemoModal");
+  }, []);
+
+  const handleDemoPopupBtnClick = useCallback(() => {
+    postMsg("toggleDemoPopup");
+  }, []);
+
   return (
     <ThemeProvider theme={theme} overriddenTheme={overriddenTheme}>
       <Panel
@@ -174,6 +182,13 @@ const App = () => {
           placeholder="Select a day"
           options={selectorOptions}
         />
+
+        <Group>
+          <Line>
+            <Button text="Demo Modal" onClick={handleDemoModalBtnClick} />
+            <Button text="Demo Popup" onClick={handleDemoPopupBtnClick} />
+          </Line>
+        </Group>
       </Panel>
     </ThemeProvider>
   );

@@ -9,12 +9,14 @@
     "node": ">=16"
   },
   "scripts": {
-    "start:starter": "vite -c vite.config.starter-web.ts",
+    "start:starter": "vite -c vite-configs/starter/web.ts",
     "build": "run-s typecheck clean build:web build:plugin",
     "build:plugin": "run-s build:classicmarkerinfobox",
     "build:web": "run-s build:classicmarkerinfobox-web",
-    "build:starter": "vite build -c vite.config.starter.ts",
-    "build:starter-web": "vite build -c vite.config.starter-web.ts",
+    "build:starter": "run-p build:starter-web build:starter-demo-modal-web build:starter-demo-popup-web; vite build -c vite-configs/starter/index.ts",
+    "build:starter-web": "vite build -c vite-configs/starter/web.ts",
+    "build:starter-demo-modal-web": "vite build -c vite-configs/starter/modals/demo-modal/web.ts",
+    "build:starter-demo-popup-web": "vite build -c vite-configs/starter/popups/demo-popup/web.ts",
     "package": "run-s build zip",
     "typecheck": "tsc",
     "test": "vitest",
