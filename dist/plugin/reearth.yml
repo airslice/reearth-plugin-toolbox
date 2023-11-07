@@ -1,0 +1,28 @@
+name: Toolbox Starter
+version: 0.1.0
+id: reearth-plugin-toolbox-starter
+extensions:
+  - id: starter
+    type: widget
+    name: Starter
+    schema:
+      groups:
+        - id: customize
+          title: Customize
+          fields:
+            - id: theme
+              type: string
+              title: Theme
+              choices:
+                - key: dark
+                  label: Dark
+                - key: light
+                  label: Light
+            - id: backgroundColor
+              type: string
+              title: Background Color
+              ui: color
+            - id: primaryColor
+              type: string
+              title: Primary Color
+              ui: color

@@ -10,7 +10,7 @@ import { viteExternalsPlugin } from "vite-plugin-externals";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgr from "vite-plugin-svgr";
 
-export const plugin = (name: string): UserConfigExport => ({
+export const plugin = ({ name }: { name: string }): UserConfigExport => ({
   build: {
     outDir: "dist/plugin",
     emptyOutDir: false,
@@ -26,39 +26,59 @@ export const plugin = (name: string): UserConfigExport => ({
 });
 
 export const web =
-  (name: string): UserConfigExport =>
-  ({ mode }) => ({
-    plugins: [
-      react(),
-      viteSingleFile(),
-      serverHeaders(),
-      svgr(),
-      mode === "production" &&
-        importToCDN({
-          modules: [autoComplete("react"), autoComplete("react-dom")],
-        }),
-      mode === "production" &&
-        viteExternalsPlugin({
-          react: "React",
-          "react-dom": "ReactDOM",
-        }),
-    ],
-    publicDir: false,
-    root: `./web/components/pages/${name}`,
-    build: {
-      outDir: `../../../../dist/web/${name}`,
-      emptyOutDir: true,
-      reportCompressedSize: false,
-    },
-    test: {
-      globals: true,
-      environment: "jsdom",
-      setupFiles: "./web/test/setup.ts",
-    },
-    resolve: {
-      alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
-    },
-  });
+  ({
+    name,
+    parent,
+    type = "core",
+  }: {
+    name: string;
+    parent?: string;
+    type?: "core" | "modal" | "popup";
+  }): UserConfigExport =>
+  ({ mode }) => {
+    const root =
+      parent && type !== "core"
+        ? `./web/components/pages/${parent}/${type}s/${name}`
+        : `./web/components/pages/${name}/${type}`;
+
+    console.log();
+    const outDir =
+      parent && type !== "core"
+        ? `${__dirname}/dist/web/${parent}/${type}s/${name}`
+        : `${__dirname}/dist/web/${name}/${type}`;
+    return {
+      plugins: [
+        react(),
+        viteSingleFile(),
+        serverHeaders(),
+        svgr(),
+        mode === "production" &&
+          importToCDN({
+            modules: [autoComplete("react"), autoComplete("react-dom")],
+          }),
+        mode === "production" &&
+          viteExternalsPlugin({
+            react: "React",
+            "react-dom": "ReactDOM",
+          }),
+      ],
+      publicDir: false,
+      root,
+      build: {
+        outDir,
+        emptyOutDir: true,
+        reportCompressedSize: false,
+      },
+      test: {
+        globals: true,
+        environment: "jsdom",
+        setupFiles: "./web/test/setup.ts",
+      },
+      resolve: {
+        alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
+      },
+    };
+  };
 
 const serverHeaders = (): Plugin => ({
   name: "server-headers",

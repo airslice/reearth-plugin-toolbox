@@ -3,7 +3,7 @@
 
 import { defineConfig } from "vite";
 
-import { plugin } from "./vite.config.template";
+import { plugin } from "../../vite.config.template";
 
 // https://vitejs.dev/config/
-export default defineConfig(plugin("starter"));
+export default defineConfig(plugin({ name: "starter" }));
