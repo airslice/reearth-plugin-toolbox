@@ -109,11 +109,10 @@ const handles: actHandles = {
             location: {
               lat,
               lng,
-              height: 0,
             },
             pointColor: color,
             style: "point",
-            clampToGround: true,
+            heightReference: "clamp",
           },
           customs: {
             id,
