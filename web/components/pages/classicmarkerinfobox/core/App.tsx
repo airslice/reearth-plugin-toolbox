@@ -3,22 +3,64 @@ import styled from "@emotion/styled";
 import Icon from "@web/components/atoms/Icon";
 import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
+import { createClient } from "microcms-js-sdk";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { Infobox } from "src/apiType";
 
 import BlockComponent from "./Block";
+import { CommentsAndLikes } from "./comment";
 import { typographyStyles } from "./util/value";
+
+export type Settings = {
+  enableComment: boolean | undefined;
+  cmsURL: string | undefined;
+  cmsAPIKey: string | undefined;
+  primaryColor: string | undefined;
+};
 
 const App = () => {
   const [active, setActive] = useState(false);
   const [visible, setVisible] = useState(false);
   const [infobox, setInfobox] = useState<Infobox>();
 
-  const openInfobox = useCallback(({ infobox }: { infobox?: Infobox }) => {
-    setInfobox(infobox);
-    setActive(true);
-    setVisible(true);
-  }, []);
+  const [layerId, setLayerId] = useState<string | undefined>();
+  const [featureId, setFeatureId] = useState<string | undefined>();
+
+  const [enableComment, setEnableComment] = useState(false);
+  const [cmsURL, setCmsURL] = useState("");
+  const [cmsAPIKey, setCmsAPIKey] = useState("");
+
+  const uuid = useMemo(
+    () => (!!layerId && !!featureId ? `${layerId}/${featureId}` : undefined),
+    [layerId, featureId]
+  );
+
+  const client = useMemo(() => {
+    if (!cmsURL || !cmsAPIKey) return;
+    return createClient({
+      serviceDomain: cmsURL,
+      apiKey: cmsAPIKey,
+    });
+  }, [cmsURL, cmsAPIKey]);
+
+  const openInfobox = useCallback(
+    ({
+      infobox,
+      layerId,
+      featureId,
+    }: {
+      infobox?: Infobox;
+      layerId?: string;
+      featureId?: string;
+    }) => {
+      setInfobox(infobox);
+      setLayerId(layerId);
+      setFeatureId(featureId);
+      setActive(true);
+      setVisible(true);
+    },
+    []
+  );
 
   const closeInfobox = useCallback(() => {
     setVisible(false);
@@ -27,12 +69,24 @@ const App = () => {
     }, 300);
   }, []);
 
+  const setSettings = useCallback((settings: Settings) => {
+    setEnableComment(settings.enableComment ?? false);
+    setCmsURL(settings.cmsURL ?? "");
+    setCmsAPIKey(settings.cmsAPIKey ?? "");
+
+    document.documentElement.style.setProperty(
+      "--primary-color",
+      settings.primaryColor ?? "#00BEBE"
+    );
+  }, []);
+
   const actHandles: actHandles = useMemo(() => {
     return {
       openInfobox,
       closeInfobox,
+      setSettings,
     };
-  }, [openInfobox, closeInfobox]);
+  }, [openInfobox, closeInfobox, setSettings]);
 
   useEffect(() => {
     const msgListener = (msg: any) => {
@@ -42,7 +96,7 @@ const App = () => {
     (globalThis as any).addEventListener("message", msgListener);
 
     return () => {
-      (globalThis as any).removeEventListner("message", msgListener);
+      (globalThis as any).removeEventListener("message", msgListener);
     };
   }, [actHandles]);
 
@@ -119,6 +173,10 @@ const App = () => {
     };
   }, [contentRef]);
 
+  useEffect(() => {
+    postMsg("updateSettings");
+  }, []);
+
   return (
     <Wrapper active={active} size={infobox?.property?.default?.size}>
       <Page
@@ -131,7 +189,7 @@ const App = () => {
           {infobox?.property?.default?.title || "Marker"}
         </Title>
         <CloseBtn icon="cancel" size={16} onClick={closeInfobox} />
-        <Content
+        <ContentArea
           paddingTop={infobox?.property?.default?.infoboxPaddingTop}
           paddingBottom={infobox?.property?.default?.infoboxPaddingBottom}
           paddingLeft={infobox?.property?.default?.infoboxPaddingLeft}
@@ -145,7 +203,10 @@ const App = () => {
               infoboxProperty={infobox?.property}
             />
           ))}
-        </Content>
+          {enableComment && uuid && client && (
+            <CommentsAndLikes uuid={uuid} client={client} />
+          )}
+        </ContentArea>
       </Page>
     </Wrapper>
   );
@@ -161,6 +222,11 @@ const Wrapper = styled.div<{ active: boolean; size?: string }>`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
+
+  * {
+    box-sizing: border-box;
+  }
 `;
 
 const Page = styled.div<{
@@ -173,6 +239,8 @@ const Page = styled.div<{
   box-sizing: border-box;
   min-height: 280px;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: #fff;
   border-radius: 6px;
   transform: translate3d(${({ visible }) => (visible ? "0" : "100%")}, 0, 0);
@@ -184,17 +252,13 @@ const Page = styled.div<{
   ${({ styles }) => styles}
 `;
 
-const Content = styled.div<{
+const ContentArea = styled.div<{
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
 }>`
-  max-height: 100%;
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   &::-webkit-scrollbar {
@@ -203,7 +267,6 @@ const Content = styled.div<{
   a {
     color: inherit;
   }
-  padding: 10px 0 20px 0;
   padding-top: ${({ paddingTop }) => (paddingTop ? `${paddingTop}px` : null)};
   padding-bottom: ${({ paddingBottom }) =>
     paddingBottom ? `${paddingBottom}px` : null};
@@ -213,7 +276,7 @@ const Content = styled.div<{
     paddingRight ? `${paddingRight}px` : null};
 `;
 
-const Title = styled.span<{
+const Title = styled.div<{
   show: boolean;
 }>`
   height: 36px;

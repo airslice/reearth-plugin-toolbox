@@ -11,3 +11,27 @@ extensions:
         zone: inner
         section: right
         area: middle
+    schema:
+      groups:
+        - id: default
+          title: Settings
+          fields:
+            - id: enableComment
+              type: bool
+              title: Enable Comment
+            - id: tacLink
+              type: string
+              title: 個人情報の規約 URL 
+            - id: microCMSServiceDomain
+              title: MicroCMS Service Domain
+              type: string
+              private: true
+            - id: microCMSApiKey
+              title: MicroCMS API Key
+              type: string
+              private: true
+            - id: primaryColor
+              title: Primary Color
+              type: string
+              ui: color
+              defaultValue: "#00BEBE"

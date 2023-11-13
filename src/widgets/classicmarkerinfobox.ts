@@ -1,47 +1,55 @@
-import html from "../../dist/web/classicmarkerinfobox/index.html?raw";
+import { Settings } from "@web/components/pages/classicmarkerinfobox/core/App";
+import { ModalSettings } from "@web/components/pages/classicmarkerinfobox/modals/form/App";
+
+import html from "../../dist/web/classicmarkerinfobox/core/index.html?raw";
+import form from "../../dist/web/classicmarkerinfobox/modals/form/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
 
 const reearth = (globalThis as any).reearth;
 reearth.ui.show(html, { width: 0, height: 0 });
 
-const updateTheme = () => {
-  (globalThis as any).reearth.ui.postMessage({
-    act: "setTheme",
-    payload: {
-      theme: (globalThis as any).reearth.widget.property.customize?.theme,
-      overriddenTheme: {
-        colors: {
-          background: (globalThis as any).reearth.widget.property.customize
-            ?.backgroundColor,
-          primary: (globalThis as any).reearth.widget.property.customize
-            ?.primaryColor,
-        },
-      },
-    },
-  });
-};
+let currentUUID: string | undefined = undefined;
 
-const closeInfobox = () => {
+const updateSettings = () => {
   reearth.ui.postMessage({
-    act: "closeInfobox",
-  });
-};
-
-const openInfobox = (infobox: any) => {
-  reearth.ui.postMessage({
-    act: "openInfobox",
+    act: "setSettings",
     payload: {
-      infobox,
-    },
+      enableComment: reearth.widget.property.default?.enableComment,
+      cmsURL: reearth.widget.property.default?.microCMSServiceDomain,
+      cmsAPIKey: reearth.widget.property.default?.microCMSApiKey,
+      primaryColor: reearth.widget.property.default?.primaryColor,
+    } as Settings,
   });
 };
 
-const onSelect = () => {
+const updateSettingsForModal = () => {
+  reearth.modal.postMessage({
+    act: "setSettings",
+    payload: {
+      cmsURL: reearth.widget.property.default?.microCMSServiceDomain,
+      cmsAPIKey: reearth.widget.property.default?.microCMSApiKey,
+      primaryColor: reearth.widget.property.default?.primaryColor,
+      tacLink: reearth.widget.property.default?.tacLink,
+      uuid: currentUUID,
+    } as ModalSettings,
+  });
+};
+
+const onSelect = (layerId: string) => {
   const feature = reearth.layers.selectedFeature;
   if (!feature || !feature.properties?.reearthClassicInfobox) {
-    closeInfobox();
+    reearth.ui.postMessage({
+      act: "closeInfobox",
+    });
   } else {
-    openInfobox(feature.properties?.reearthClassicInfobox);
+    reearth.ui.postMessage({
+      act: "openInfobox",
+      payload: {
+        infobox: feature.properties?.reearthClassicInfobox,
+        layerId,
+        featureId: feature.properties?.reearthFeatureId,
+      },
+    });
   }
 };
 
@@ -70,8 +78,18 @@ const handles: actHandles = {
     contentSize[1] = size[1];
     reearth.ui.resize(...getFinalSize(contentSize));
   },
-  getTheme: () => {
-    updateTheme();
+  updateSettings,
+  updateSettingsForModal,
+  openFormModal: ({ uuid }: { uuid: string }) => {
+    currentUUID = uuid;
+    reearth.modal.show(form, {
+      width: 572,
+      height: 546,
+      background: "rgba(0,0,0,.3)",
+    });
+  },
+  closeFormModal: () => {
+    reearth.modal.close();
   },
 };
 

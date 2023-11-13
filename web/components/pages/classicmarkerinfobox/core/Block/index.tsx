@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import { ComponentType } from "react";
 import type { Block, InfoboxProperty } from "src/apiType";
 
@@ -32,5 +33,13 @@ export default function BlockComponent<P = any>({
       ? builtin[`${props.block.pluginId}/${props.block.extensionId}`]
       : undefined;
 
-  return Builtin ? <Builtin {...props} /> : null;
+  return Builtin ? (
+    <BuiltinWrapper>
+      <Builtin {...props} />
+    </BuiltinWrapper>
+  ) : null;
 }
+
+const BuiltinWrapper = styled.div`
+  padding: 10px 0;
+`;

@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import tinycolor from "tinycolor2";
 
-import { Typography, typographyStyles } from "../util/value";
+import { Typography, typographyStyles } from "../../util/value";
 
 export type Props = {
   className?: string;

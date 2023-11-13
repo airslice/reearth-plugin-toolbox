@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import nl2br from "react-nl2br";
 
 import { Props as BlockProps } from "..";
-import Markdown from "../../components/Markdown";
 import { Typography, typographyStyles } from "../../util/value";
 import { Border } from "../common";
+
+import Markdown from "./Markdown";
 
 export type Props = BlockProps<Property>;
 
