@@ -22,12 +22,8 @@ extensions:
             - id: tacLink
               type: string
               title: 個人情報の規約 URL 
-            - id: microCMSServiceDomain
-              title: MicroCMS Service Domain
-              type: string
-              private: true
-            - id: microCMSApiKey
-              title: MicroCMS API Key
+            - id: backendUrl
+              title: Backend URL
               type: string
               private: true
             - id: primaryColor

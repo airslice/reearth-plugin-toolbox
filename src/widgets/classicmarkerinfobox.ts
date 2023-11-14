@@ -8,15 +8,14 @@ import type { pluginMessage, actHandles } from "../type";
 const reearth = (globalThis as any).reearth;
 reearth.ui.show(html, { width: 0, height: 0 });
 
-let currentUUID: string | undefined = undefined;
+let currentPostId: string | undefined = undefined;
 
 const updateSettings = () => {
   reearth.ui.postMessage({
     act: "setSettings",
     payload: {
       enableComment: reearth.widget.property.default?.enableComment,
-      cmsURL: reearth.widget.property.default?.microCMSServiceDomain,
-      cmsAPIKey: reearth.widget.property.default?.microCMSApiKey,
+      backendUrl: reearth.widget.property.default?.backendUrl,
       primaryColor: reearth.widget.property.default?.primaryColor,
     } as Settings,
   });
@@ -26,11 +25,10 @@ const updateSettingsForModal = () => {
   reearth.modal.postMessage({
     act: "setSettings",
     payload: {
-      cmsURL: reearth.widget.property.default?.microCMSServiceDomain,
-      cmsAPIKey: reearth.widget.property.default?.microCMSApiKey,
+      backendUrl: reearth.widget.property.default?.backendUrl,
       primaryColor: reearth.widget.property.default?.primaryColor,
       tacLink: reearth.widget.property.default?.tacLink,
-      uuid: currentUUID,
+      postId: currentPostId,
     } as ModalSettings,
   });
 };
@@ -80,8 +78,8 @@ const handles: actHandles = {
   },
   updateSettings,
   updateSettingsForModal,
-  openFormModal: ({ uuid }: { uuid: string }) => {
-    currentUUID = uuid;
+  openFormModal: ({ postId }: { postId: string }) => {
+    currentPostId = postId;
     reearth.modal.show(form, {
       width: 572,
       height: 546,
@@ -90,6 +88,11 @@ const handles: actHandles = {
   },
   closeFormModal: () => {
     reearth.modal.close();
+  },
+  refetchComments: () => {
+    reearth.ui.postMessage({
+      act: "refetchComments",
+    });
   },
 };
 

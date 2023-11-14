@@ -5,44 +5,56 @@ import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { actHandles } from "src/type";
 
+import useData from "./useData";
+
 export type ModalSettings = {
+  postId: string | undefined;
   tacLink: string | undefined;
-  uuid: string | undefined;
-  cmsURL: string | undefined;
-  cmsAPIKey: string | undefined;
+  backendUrl: string | undefined;
   primaryColor: string | undefined;
 };
 
 const App: React.FC = () => {
-  const [cmsURL, setCmsURL] = useState("");
-  const [cmsAPIKey, setCmsAPIKey] = useState("");
+  const [backendUrl, setBackendUrl] = useState("");
 
-  const [uuid, setUuid] = useState<string | undefined>();
+  const [postId, setPostId] = useState<string | undefined>();
   const [checked, setChecked] = useState(false);
   const [tacLink, setTACLink] = useState("");
-  const [address, setAddress] = useState("");
-  const [name, setName] = useState("");
-  const [commentContent, setCommentContent] = useState("");
+
+  const [prefecture, setPrefecture] = useState(
+    localStorage.getItem("memo-prefecture") ?? ""
+  );
+  const [authorName, setAuthorName] = useState(
+    localStorage.getItem("memo-authorName") ?? ""
+  );
+  const [content, setContent] = useState("");
 
   const [submitSucceeded, setSubmitSucceeded] = useState(false);
 
-  const handleAddressChange = useCallback(
+  const { isLoading, addComment } = useData({
+    postId,
+    backendUrl,
+  });
+
+  const handlePrefectureChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAddress(e.target.value);
+      setPrefecture(e.target.value);
+      localStorage.setItem("memo-prefecture", e.target.value);
     },
     []
   );
 
-  const handleNameChange = useCallback(
+  const handleAuthorNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setName(e.target.value);
+      setAuthorName(e.target.value);
+      localStorage.setItem("memo-authorName", e.target.value);
     },
     []
   );
 
-  const handleCommentContentChange = useCallback(
+  const handleContentChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setCommentContent(e.target.value);
+      setContent(e.target.value);
     },
     []
   );
@@ -56,10 +68,9 @@ const App: React.FC = () => {
   }, []);
 
   const setSettings = useCallback((settings: ModalSettings) => {
-    setCmsURL(settings.cmsURL ?? "");
-    setCmsAPIKey(settings.cmsAPIKey ?? "");
+    setBackendUrl(settings.backendUrl ?? "");
     setTACLink(settings.tacLink ?? "");
-    setUuid(settings.uuid ?? "");
+    setPostId(settings.postId ?? "");
 
     document.documentElement.style.setProperty(
       "--primary-color",
@@ -89,15 +100,20 @@ const App: React.FC = () => {
     postMsg("updateSettingsForModal");
   }, []);
 
-  const canSubmit = useMemo(() => {
-    return uuid && address && name && commentContent && checked;
-  }, [uuid, address, name, commentContent, checked]);
+  const allowSubmit = useMemo(() => {
+    return !!postId && !!prefecture && !!authorName && !!content && !!checked;
+  }, [postId, prefecture, authorName, content, checked]);
 
-  const handleSubmit = useCallback(() => {
-    // TODO: submit
-    console.log(uuid, address, name, commentContent);
-    setSubmitSucceeded(true);
-  }, [uuid, address, name, commentContent]);
+  const handleSubmit = useCallback(async () => {
+    const result = await addComment({
+      prefecture,
+      authorName,
+      content,
+    });
+
+    setSubmitSucceeded(!!result);
+    postMsg("refetchComments");
+  }, [prefecture, authorName, content, addComment]);
 
   return (
     <Form>
@@ -119,21 +135,27 @@ const App: React.FC = () => {
           <>
             <FormItem>
               <FormItemLabel>おところ</FormItemLabel>
-              <FormItemInput onChange={handleAddressChange} />
+              <FormItemInput
+                value={prefecture}
+                onChange={handlePrefectureChange}
+              />
               <FormItemTip>
                 ※必須：県と市、あるいは国と都市名の形で入力してください。
               </FormItemTip>
             </FormItem>
             <FormItem>
               <FormItemLabel>お名前</FormItemLabel>
-              <FormItemInput onChange={handleNameChange} />
+              <FormItemInput
+                value={authorName}
+                onChange={handleAuthorNameChange}
+              />
               <FormItemTip>
                 ※必須：県と市、あるいは国と都市名の形で入力してください。
               </FormItemTip>
             </FormItem>
             <FormItem>
               <FormItemLabel>コメント</FormItemLabel>
-              <FormItemTextarea onChange={handleCommentContentChange} />
+              <FormItemTextarea onChange={handleContentChange} />
               <FormItemTip>
                 ※必須：県と市、あるいは国と都市名の形で入力してください。
               </FormItemTip>
@@ -161,7 +183,10 @@ const App: React.FC = () => {
           <FormButton onClick={closeFormModal} secondary>
             キャンセル
           </FormButton>
-          <FormButton disabled={!canSubmit} onClick={handleSubmit}>
+          <FormButton
+            disabled={!allowSubmit || isLoading}
+            onClick={handleSubmit}
+          >
             送る
           </FormButton>
         </FormFooter>

@@ -3,18 +3,16 @@ import styled from "@emotion/styled";
 import Icon from "@web/components/atoms/Icon";
 import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
-import { createClient } from "microcms-js-sdk";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { Infobox } from "src/apiType";
 
 import BlockComponent from "./Block";
-import { CommentsAndLikes } from "./comment";
+import { CommentsAndLikes, CommentsAndLikesHandles } from "./comment";
 import { typographyStyles } from "./util/value";
 
 export type Settings = {
   enableComment: boolean | undefined;
-  cmsURL: string | undefined;
-  cmsAPIKey: string | undefined;
+  backendUrl: string | undefined;
   primaryColor: string | undefined;
 };
 
@@ -27,21 +25,14 @@ const App = () => {
   const [featureId, setFeatureId] = useState<string | undefined>();
 
   const [enableComment, setEnableComment] = useState(false);
-  const [cmsURL, setCmsURL] = useState("");
-  const [cmsAPIKey, setCmsAPIKey] = useState("");
+  const [backendUrl, setBackendUrl] = useState("");
 
-  const uuid = useMemo(
-    () => (!!layerId && !!featureId ? `${layerId}/${featureId}` : undefined),
+  const commentsAndLikesRef = useRef<CommentsAndLikesHandles | null>(null);
+
+  const postId = useMemo(
+    () => (!!layerId && !!featureId ? `${layerId}-${featureId}` : undefined),
     [layerId, featureId]
   );
-
-  const client = useMemo(() => {
-    if (!cmsURL || !cmsAPIKey) return;
-    return createClient({
-      serviceDomain: cmsURL,
-      apiKey: cmsAPIKey,
-    });
-  }, [cmsURL, cmsAPIKey]);
 
   const openInfobox = useCallback(
     ({
@@ -71,8 +62,7 @@ const App = () => {
 
   const setSettings = useCallback((settings: Settings) => {
     setEnableComment(settings.enableComment ?? false);
-    setCmsURL(settings.cmsURL ?? "");
-    setCmsAPIKey(settings.cmsAPIKey ?? "");
+    setBackendUrl(settings.backendUrl ?? "");
 
     document.documentElement.style.setProperty(
       "--primary-color",
@@ -80,13 +70,18 @@ const App = () => {
     );
   }, []);
 
+  const refetchComments = useCallback(() => {
+    commentsAndLikesRef.current?.refetchComments();
+  }, []);
+
   const actHandles: actHandles = useMemo(() => {
     return {
       openInfobox,
       closeInfobox,
       setSettings,
+      refetchComments,
     };
-  }, [openInfobox, closeInfobox, setSettings]);
+  }, [openInfobox, closeInfobox, setSettings, refetchComments]);
 
   useEffect(() => {
     const msgListener = (msg: any) => {
@@ -161,7 +156,7 @@ const App = () => {
         height = contentRef.current?.clientHeight;
       }
 
-      setContentHeight((height ?? 214) + 30);
+      setContentHeight((height ?? 214) + 10);
     });
 
     if (contentRef.current) {
@@ -172,6 +167,10 @@ const App = () => {
       resizeObserver.disconnect();
     };
   }, [contentRef]);
+
+  useEffect(() => {
+    contentRef.current?.scrollTo(0, 0);
+  }, [infobox]);
 
   useEffect(() => {
     postMsg("updateSettings");
@@ -203,8 +202,12 @@ const App = () => {
               infoboxProperty={infobox?.property}
             />
           ))}
-          {enableComment && uuid && client && (
-            <CommentsAndLikes uuid={uuid} client={client} />
+          {enableComment && postId && backendUrl && (
+            <CommentsAndLikes
+              postId={postId}
+              backendUrl={backendUrl}
+              ref={commentsAndLikesRef}
+            />
           )}
         </ContentArea>
       </Page>
@@ -258,7 +261,6 @@ const ContentArea = styled.div<{
   paddingLeft?: number;
   paddingRight?: number;
 }>`
-  flex: 1;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   &::-webkit-scrollbar {

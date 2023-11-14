@@ -1,53 +1,69 @@
 import styled from "@emotion/styled";
 import Icon from "@web/components/atoms/Icon";
 import { postMsg } from "@web/utils/common";
-import { useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback, useState, useImperativeHandle } from "react";
 
-import { CommentItem, CommentItemType } from "./CommentItem";
-import { mockComments } from "./mock";
+import { CommentItem } from "./CommentItem";
+import useData from "./useData";
 
 type CommentsAndLikesProps = {
-  uuid: string;
-  client: any;
+  postId: string;
+  backendUrl: string;
 };
-export const CommentsAndLikes: React.FC<CommentsAndLikesProps> = ({
-  uuid,
-  client,
-}) => {
-  const [showCommentPanel, setShowCommentPanel] = useState(true);
-  const [comments, setComments] = useState<CommentItemType[]>(mockComments);
-  const [hasLiked, setHasLiked] = useState(false);
-  const [totalLikes, setTotalLikes] = useState(0);
-  const [totalComments, setTotalComments] = useState(0);
 
-  useEffect(() => {
-    if (!client || !uuid) return;
-    console.log(uuid);
-    client
-      .get({
-        endpoint: "comments",
-      })
-      .then((res: any) => console.log(res));
-  }, [client, uuid]);
+export type CommentsAndLikesHandles = {
+  refetchComments: () => void;
+};
+
+export const CommentsAndLikes = forwardRef(function CommentsAndLikes(
+  { postId, backendUrl }: CommentsAndLikesProps,
+  ref: React.Ref<{ refetchComments: () => void }>
+) {
+  const [showCommentPanel, setShowCommentPanel] = useState(true);
+
+  const {
+    comments,
+    likesNum,
+    hasLiked,
+    isFetchingNewPost,
+    isAddingLike,
+    refetch,
+    addLike,
+  } = useData({
+    postId,
+    backendUrl,
+  });
 
   const toggleCommentPanel = useCallback(() => {
     setShowCommentPanel(!showCommentPanel);
   }, [showCommentPanel]);
 
   const openFormModal = useCallback(() => {
-    postMsg("openFormModal", { uuid });
-  }, [uuid]);
+    postMsg("openFormModal", { postId });
+  }, [postId]);
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        refetchComments() {
+          refetch();
+        },
+      };
+    },
+    [refetch]
+  );
 
   return (
     <StyledCommentsAndLikes>
       <ActionsWrapper>
         <Action active={showCommentPanel} onClick={toggleCommentPanel}>
           <Icon size={24} icon="comment" />
-          <ActionText>{totalComments}</ActionText>
+          <ActionText>{isFetchingNewPost ? "-" : comments.length}</ActionText>
         </Action>
-        <Action active={hasLiked}>
+        <Action active={hasLiked} onClick={addLike} disabled={isAddingLike}>
           <Icon size={24} icon="like" />
-          <ActionText>{totalLikes}</ActionText>
+          <ActionText>{isFetchingNewPost ? "-" : likesNum}</ActionText>
         </Action>
       </ActionsWrapper>
       {showCommentPanel && (
@@ -57,17 +73,19 @@ export const CommentsAndLikes: React.FC<CommentsAndLikesProps> = ({
               コメントを書く
             </CommentButton>
           </CommentButtonWrapper>
-          <CommentList>
-            <CommentListTitle>コメント</CommentListTitle>
-            {comments.map((comment, index) => (
-              <CommentItem key={index} comment={comment}></CommentItem>
-            ))}
-          </CommentList>
+          {comments?.length > 0 && !isFetchingNewPost && (
+            <CommentList>
+              <CommentListTitle>コメント</CommentListTitle>
+              {comments.map((comment, index) => (
+                <CommentItem key={index} comment={comment}></CommentItem>
+              ))}
+            </CommentList>
+          )}
         </CommentPanel>
       )}
     </StyledCommentsAndLikes>
   );
-};
+});
 
 const StyledCommentsAndLikes = styled.div`
   display: block;
@@ -93,6 +111,7 @@ const ActionsWrapper = styled.div`
 
 const Action = styled.div<{
   active: boolean;
+  disabled?: boolean;
 }>`
   display: flex;
   align-items: center;
@@ -100,6 +119,7 @@ const Action = styled.div<{
   gap: 6px;
   cursor: pointer;
   color: ${({ active }) => (active ? "var(--primary-color)" : "#A8A8A8")};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
 `;
 
 const ActionText = styled.span`

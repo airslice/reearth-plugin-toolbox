@@ -3,10 +3,11 @@ import Icon from "@web/components/atoms/Icon";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type CommentItemType = {
-  uuid: string;
-  address: string;
-  name: string;
-  comment: string;
+  prefecture: string;
+  authorName: string;
+  content: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type CommentItemProps = {
@@ -41,11 +42,11 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment }) => {
   return (
     <StyledCommentItem>
       <Commenter>
-        <Name>{comment.name}</Name>
-        <City>{comment.address}</City>
+        <Name>{comment.authorName}</Name>
+        <City>{comment.prefecture}</City>
       </Commenter>
       <CommentContainer ref={CommentContainerRef} extended={extended}>
-        {comment.comment}
+        {comment.content}
       </CommentContainer>
       {isOverflow && (
         <ExtendButton onClick={toggleExtended}>
