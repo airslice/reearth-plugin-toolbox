@@ -1,5 +1,5 @@
 name: Toolbox Marker to GeoJSON
-version: 0.1.0
+version: 0.1.1
 id: reearth-plugin-toolbox-marker-to-geojson
 extensions:
   - id: marker2geojson

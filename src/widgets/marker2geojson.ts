@@ -108,6 +108,7 @@ const getMarkersInFolder = (folderId: string) => {
     act: "setMarkers",
     payload: {
       markers,
+      title: folderLayer?.title,
     },
   });
 };

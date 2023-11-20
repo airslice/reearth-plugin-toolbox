@@ -41,39 +41,6 @@ export default () => {
     setIsExporting(true);
     postMsg("getMarkersInFolder", currentFolderId);
   }, [currentFolderId]);
-  const exportMarkerAsGeoJSON = useCallback((markers: MarkerInfo[]) => {
-    const geojson = {
-      type: "FeatureCollection",
-      features:
-        markers.length > 0
-          ? markers.map((marker) => ({
-              type: "Feature",
-              properties: {
-                reearthFeatureId: marker.id,
-                reearthClassicMarker: marker.markerProperty,
-                reearthClassicInfobox: marker.infobox,
-              },
-              geometry: {
-                type: "Point",
-                coordinates: [
-                  marker.markerProperty?.location?.lng,
-                  marker.markerProperty?.location?.lat,
-                ],
-              },
-            }))
-          : [],
-    };
-    const blob = new Blob([JSON.stringify(geojson)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "markers.geojson";
-    a.click();
-    URL.revokeObjectURL(url);
-    setIsExporting(false);
-  }, []);
 
   // Message handlers
   const actHandles: actHandles = useMemo(() => {
@@ -95,11 +62,47 @@ export default () => {
       }) => {
         setFolders(folders);
       },
-      setMarkers: ({ markers }: { markers: MarkerInfo[] }) => {
-        exportMarkerAsGeoJSON(markers);
+      setMarkers: ({
+        markers,
+        title,
+      }: {
+        markers: MarkerInfo[];
+        title?: string;
+      }) => {
+        const geojson = {
+          type: "FeatureCollection",
+          features:
+            markers.length > 0
+              ? markers.map((marker) => ({
+                  type: "Feature",
+                  properties: {
+                    reearthFeatureId: marker.id,
+                    reearthClassicMarker: marker.markerProperty,
+                    reearthClassicInfobox: marker.infobox,
+                  },
+                  geometry: {
+                    type: "Point",
+                    coordinates: [
+                      marker.markerProperty?.location?.lng,
+                      marker.markerProperty?.location?.lat,
+                    ],
+                  },
+                }))
+              : [],
+        };
+        const blob = new Blob([JSON.stringify(geojson)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${title ?? "markers"}.geojson`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setIsExporting(false);
       },
     };
-  }, [exportMarkerAsGeoJSON]);
+  }, []);
 
   useEffect(() => {
     const messageHandler = (event: MessageEvent) => {
