@@ -21,8 +21,8 @@ export default ({ backendUrl, postId }: Props) => {
         },
         body: JSON.stringify(comment),
       });
-      setIsLoading(false);
       const result = await res.json();
+      setIsLoading(false);
       return result;
     },
     [backendUrl, postId]

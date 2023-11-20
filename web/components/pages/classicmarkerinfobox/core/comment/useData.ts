@@ -62,8 +62,10 @@ export default ({ backendUrl, postId }: Props) => {
     })();
   }, [postId, fetchComments]);
 
+  const [hasLiked, setHasLiked] = useState<boolean>(false);
+
   const addLike = useCallback(async () => {
-    if (!backendUrl || !postId) return;
+    if (!backendUrl || !postId || hasLiked) return;
     setIsAddingLike(true);
     const res = await fetch(`${backendUrl}/posts/${postId}/likes`, {
       method: "POST",
@@ -72,19 +74,17 @@ export default ({ backendUrl, postId }: Props) => {
       },
     });
     const result = await res.json();
-    setIsAddingLike(false);
     if (result) {
       localStorage.setItem(`like-${postId}`, "true");
       setHasLiked(true);
     }
-    refetch();
-  }, [backendUrl, postId, refetch]);
-
-  const [hasLiked, setHasLiked] = useState<boolean>(false);
+    await refetch();
+    setIsAddingLike(false);
+  }, [backendUrl, postId, hasLiked, refetch]);
 
   useEffect(() => {
     setHasLiked(localStorage.getItem(`like-${postId}`) === "true");
-  }, [postId]);
+  }, [postId, isAddingLike]);
 
   return {
     comments,

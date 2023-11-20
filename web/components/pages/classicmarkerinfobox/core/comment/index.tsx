@@ -4,6 +4,7 @@ import { postMsg } from "@web/utils/common";
 import { forwardRef, useCallback, useState, useImperativeHandle } from "react";
 
 import { CommentItem } from "./CommentItem";
+import Loading from "./Loading";
 import useData from "./useData";
 
 type CommentsAndLikesProps = {
@@ -59,11 +60,23 @@ export const CommentsAndLikes = forwardRef(function CommentsAndLikes(
       <ActionsWrapper>
         <Action active={showCommentPanel} onClick={toggleCommentPanel}>
           <Icon size={24} icon="comment" />
-          <ActionText>{isFetchingNewPost ? "-" : comments.length}</ActionText>
+          {isFetchingNewPost ? (
+            <Loading />
+          ) : (
+            <ActionText>{comments.length}</ActionText>
+          )}
         </Action>
-        <Action active={hasLiked} onClick={addLike} disabled={isAddingLike}>
+        <Action
+          active={!isAddingLike && hasLiked}
+          onClick={addLike}
+          disabled={isAddingLike || hasLiked}
+        >
           <Icon size={24} icon="like" />
-          <ActionText>{isFetchingNewPost ? "-" : likesNum}</ActionText>
+          {isFetchingNewPost || isAddingLike ? (
+            <Loading />
+          ) : (
+            <ActionText>{likesNum}</ActionText>
+          )}
         </Action>
       </ActionsWrapper>
       {showCommentPanel && (

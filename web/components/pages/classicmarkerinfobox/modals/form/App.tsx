@@ -5,6 +5,7 @@ import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { actHandles } from "src/type";
 
+import Loading from "./Loading";
 import useData from "./useData";
 
 export type ModalSettings = {
@@ -71,6 +72,7 @@ const App: React.FC = () => {
     setBackendUrl(settings.backendUrl ?? "");
     setTACLink(settings.tacLink ?? "");
     setPostId(settings.postId ?? "");
+    setChecked(!settings.tacLink);
 
     document.documentElement.style.setProperty(
       "--primary-color",
@@ -160,21 +162,23 @@ const App: React.FC = () => {
                 ※必須：県と市、あるいは国と都市名の形で入力してください。
               </FormItemTip>
             </FormItem>
-            <TAC>
-              <CheckButton onClick={toggleChecked}>
-                {checked ? (
-                  <Icon icon="checkboxChecked" size={16} />
-                ) : (
-                  <Icon icon="checkboxEmpty" size={16} />
-                )}
-              </CheckButton>
-              <div>
-                <CheckLink target="_blank" href={tacLink}>
-                  個人情報の規約
-                </CheckLink>
-                <CheckText>を読み、同意します。</CheckText>
-              </div>
-            </TAC>
+            {!!tacLink && (
+              <TAC>
+                <CheckButton onClick={toggleChecked}>
+                  {checked ? (
+                    <Icon icon="checkboxChecked" size={16} />
+                  ) : (
+                    <Icon icon="checkboxEmpty" size={16} />
+                  )}
+                </CheckButton>
+                <div>
+                  <CheckLink target="_blank" href={tacLink}>
+                    個人情報の規約
+                  </CheckLink>
+                  <CheckText>を読み、同意します。</CheckText>
+                </div>
+              </TAC>
+            )}
           </>
         )}
       </FormBody>
@@ -187,6 +191,7 @@ const App: React.FC = () => {
             disabled={!allowSubmit || isLoading}
             onClick={handleSubmit}
           >
+            {isLoading && <Loading />}
             送る
           </FormButton>
         </FormFooter>
@@ -239,6 +244,7 @@ const FormBody = styled.div`
   padding: 24px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 20px;
 `;
 
@@ -258,9 +264,9 @@ const FormButton = styled.div<{ secondary?: boolean; disabled?: boolean }>`
   height: 38px;
   min-width: 76px;
   padding: 4px 16px;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 5px;
   cursor: pointer;
   background-color: ${({ secondary, disabled }) =>
     disabled ? "#C6C6C6" : secondary ? "none" : "var(--primary-color)"};
