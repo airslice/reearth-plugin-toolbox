@@ -1,0 +1,33 @@
+name: Visualizer Toolbox Classic Marker Infobox
+version: 1.0.0
+id: reearth-plugin-toolbox-classic-marker-infobox
+extensions:
+  - id: classicmarkerinfobox
+    type: widget
+    name: Classic Marker Infobox
+    singleOnly: true
+    widgetLayout:
+      defaultLocation:
+        zone: inner
+        section: right
+        area: middle
+    schema:
+      groups:
+        - id: default
+          title: Settings
+          fields:
+            - id: enableComment
+              type: bool
+              title: Enable Comment
+            - id: tacLink
+              type: string
+              title: 個人情報の規約 URL 
+            - id: backendUrl
+              title: Backend URL
+              type: string
+              private: true
+            - id: primaryColor
+              title: Primary Color
+              type: string
+              ui: color
+              defaultValue: "#00BEBE"

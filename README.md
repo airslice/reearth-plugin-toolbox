@@ -1,4 +1,3 @@
 # reearth-plugin-toolbox
-## Toolbox - Starter
 
-- Just a simple starter to show some UI elements.
+## Toolbox - Classic Marker Infobox (for Visualizer)

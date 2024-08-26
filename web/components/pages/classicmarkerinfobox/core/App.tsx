@@ -4,7 +4,7 @@ import Icon from "@web/components/atoms/Icon";
 import type { actHandles } from "@web/types";
 import { postMsg } from "@web/utils/common";
 import { useCallback, useEffect, useState, useMemo, useRef } from "react";
-import { Infobox } from "src/apiType";
+import { Infobox } from "src/classicTypes";
 
 import BlockComponent from "./Block";
 import { CommentsAndLikes, CommentsAndLikesHandles } from "./comment";

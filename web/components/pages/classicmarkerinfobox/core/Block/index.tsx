@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import { ComponentType } from "react";
-import type { Block, InfoboxProperty } from "src/apiType";
+import type { Block, InfoboxProperty } from "src/classicTypes";
 
 import { ValueType, ValueTypes } from "../util/value";
 
 import builtin from "./builtin";
 
-export type { Block } from "src/apiType";
+export type { Block } from "src/classicTypes";
 
 export type Props<BP = any> = {
   isEditable?: boolean;

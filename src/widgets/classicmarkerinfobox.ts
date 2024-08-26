@@ -1,11 +1,12 @@
 import { Settings } from "@web/components/pages/classicmarkerinfobox/core/App";
 import { ModalSettings } from "@web/components/pages/classicmarkerinfobox/modals/form/App";
+import { GlobalThis } from "src/apiTypes";
 
 import html from "../../dist/web/classicmarkerinfobox/core/index.html?raw";
 import form from "../../dist/web/classicmarkerinfobox/modals/form/index.html?raw";
 import type { pluginMessage, actHandles } from "../type";
 
-const reearth = (globalThis as any).reearth;
+const reearth = (globalThis as unknown as GlobalThis).reearth;
 reearth.ui.show(html, { width: 0, height: 0 });
 
 let currentPostId: string | undefined = undefined;
@@ -14,9 +15,9 @@ const updateSettings = () => {
   reearth.ui.postMessage({
     act: "setSettings",
     payload: {
-      enableComment: reearth.widget.property.default?.enableComment,
-      backendUrl: reearth.widget.property.default?.backendUrl,
-      primaryColor: reearth.widget.property.default?.primaryColor,
+      enableComment: reearth.extension.widget?.property?.default?.enableComment,
+      backendUrl: reearth.extension.widget?.property?.default?.backendUrl,
+      primaryColor: reearth.extension.widget?.property?.default?.primaryColor,
     } as Settings,
   });
 };
@@ -25,15 +26,16 @@ const updateSettingsForModal = () => {
   reearth.modal.postMessage({
     act: "setSettings",
     payload: {
-      backendUrl: reearth.widget.property.default?.backendUrl,
-      primaryColor: reearth.widget.property.default?.primaryColor,
-      tacLink: reearth.widget.property.default?.tacLink,
+      backendUrl: reearth.extension.widget?.property?.default?.backendUrl,
+      primaryColor: reearth.extension.widget?.property?.default?.primaryColor,
+      tacLink: reearth.extension?.widget?.property?.default?.tacLink,
       postId: currentPostId,
     } as ModalSettings,
   });
 };
 
-const onSelect = (layerId: string) => {
+const onSelect = (layerId?: string) => {
+  if (!layerId) return;
   const feature = reearth.layers.selectedFeature;
   if (!feature || !feature.properties?.reearthClassicInfobox) {
     reearth.ui.postMessage({
@@ -58,8 +60,8 @@ const onResize = () => {
   reearth.ui.resize(...getFinalSize(contentSize));
 };
 
-const getFinalSize = (contentSize: number[]) => {
-  const maxHeight = reearth.viewport.height * 0.62;
+const getFinalSize = (contentSize: number[]): [number, number] => {
+  const maxHeight = reearth.viewer.viewport.height * 0.62;
   return [
     contentSize[0],
     contentSize[1] > maxHeight
@@ -96,12 +98,12 @@ const handles: actHandles = {
   },
 };
 
-reearth.on("message", (msg: pluginMessage) => {
+reearth.extension.on("message", (msg: pluginMessage) => {
   if (msg?.act) {
     handles[msg.act]?.(msg.payload);
   }
 });
 
-reearth.on("select", onSelect);
+reearth.layers.on("select", onSelect);
 
-reearth.on("resize", onResize);
+reearth.viewer.on("resize", onResize);

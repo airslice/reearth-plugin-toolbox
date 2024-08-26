@@ -1,5 +1,5 @@
-name: Toolbox Classic Marker Infobox
-version: 0.1.0
+name: Visualizer Toolbox Classic Marker Infobox
+version: 1.0.0
 id: reearth-plugin-toolbox-classic-marker-infobox
 extensions:
   - id: classicmarkerinfobox

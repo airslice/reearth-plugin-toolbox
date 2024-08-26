@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import type { InfoboxProperty } from "src/apiType";
+import type { InfoboxProperty } from "src/classicTypes";
 
 import fonts from "../util/fonts";
 import { typographyStyles } from "../util/value";
